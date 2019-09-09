@@ -6,5 +6,6 @@ def apply(df):
     stream = exploded_mdl_to_stream.apply(df)
 
     df = pd.DataFrame(stream)
+    df.type = "succint"
 
     return df
