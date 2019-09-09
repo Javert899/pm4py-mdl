@@ -1,8 +1,8 @@
-from pm4py.algo.mvp.gen_framework.rel_events import rel_dfg
-from pm4py.algo.mvp.gen_framework.rel_events import being_produced
-from pm4py.algo.mvp.gen_framework.rel_events import existence
-from pm4py.algo.mvp.gen_framework.rel_events import link
-from pm4py.algo.mvp.gen_framework.rel_events import eventually_follows
+from pm4pymdl.algo.mvp.gen_framework.rel_events import rel_dfg
+from pm4pymdl.algo.mvp.gen_framework.rel_events import being_produced
+from pm4pymdl.algo.mvp.gen_framework.rel_events import existence
+from pm4pymdl.algo.mvp.gen_framework.rel_events import link
+from pm4pymdl.algo.mvp.gen_framework.rel_events import eventually_follows
 
 REL_DFG = "rel_dfg"
 BEING_PRODUCED = "being_produced"
