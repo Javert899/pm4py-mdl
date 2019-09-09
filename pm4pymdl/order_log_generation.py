@@ -134,10 +134,13 @@ def generate_log():
 
         i = i + 2
 
-    return pd.DataFrame(list_events)
+    df = pd.DataFrame(list_events)
+    df.type = "exploded"
+
+    return df
 
 
 if __name__ == "__main__":
     df = generate_log()
-    print(df)
 
+    print(df)

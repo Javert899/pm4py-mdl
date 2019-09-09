@@ -85,4 +85,6 @@ def apply(file_path, parameters=None):
     dataframe = pd.DataFrame.from_dict(stream)
     dataframe = dataframe.sort_values("event_timestamp")
 
+    dataframe.type = "exploded"
+
     return dataframe

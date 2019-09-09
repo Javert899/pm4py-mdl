@@ -9,4 +9,5 @@ def apply(file_path, parameters=None):
         df = pd.read_csv(file_path, sep=',', quotechar='\"')
         return df
     elif file_path.endswith(".parquet"):
-        return parquet_importer.apply(file_path)
+        df = parquet_importer.apply(file_path)
+        return df

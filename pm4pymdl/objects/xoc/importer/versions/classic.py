@@ -90,5 +90,7 @@ def apply(file_path, parameters=None):
     if import_timestamp:
         dataframe = dataframe.sort_values(["event_timestamp", "event_id"])
 
+    dataframe.type = "exploded"
+
     print("events: ",considered_events,"objects: ",len(considered_objects),"activities: ",len(considered_activities),"classes: ",len(considered_classes))
     return dataframe
