@@ -12,6 +12,9 @@ def apply(stream):
         basic_event = {k: ev[k] for k in event_keys}
 
         for k in object_keys:
+            if type(ev[k]) is str:
+                if ev[k][0] == "[":
+                    ev[k] = eval(ev[k])
             values = ev[k]
             if values is not None:
                 if not (str(values).lower() == "nan" or str(values).lower() == "nat"):
