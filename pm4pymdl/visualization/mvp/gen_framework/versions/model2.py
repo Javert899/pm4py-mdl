@@ -1,8 +1,7 @@
 from graphviz import Digraph
-from pm4py.visualization.common import gview
-from pm4py.visualization.common import save as gsave
 import uuid
 import tempfile
+from pm4pymdl.visualization.mvp.gen_framework.versions import dfg_clean
 
 COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#306A8A", "#678225", "#2742FE", "#4C9A75",
           "#4C36E9", "#7DB022", "#EDAC54", "#EAC439", "#EAC439", "#1A9C45", "#8A51C4", "#496A63", "#FB9543", "#2B49DD",
@@ -15,6 +14,7 @@ def apply(model, parameters=None):
 
     min_node_freq = parameters["min_node_freq"] if "min_node_freq" in parameters else 0
     min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 0
+    dfg_cleaning_threshold = parameters["dfg_cleaning_threshold"] if "dfg_cleaning_threshold" in parameters else -1
 
     image_format = "png"
     if "format" in parameters:
@@ -41,13 +41,18 @@ def apply(model, parameters=None):
 
     for index, persp in enumerate(persp_list):
         color = COLORS[index % len(COLORS)]
-        for edge in model.edge_freq[persp]:
+        edges = model.edge_freq[persp]
+
+        if dfg_cleaning_threshold > -1:
+            edges = dfg_clean.clean_dfg_based_on_noise_thresh(edges, model.node_freq, dfg_cleaning_threshold)
+
+        for edge in edges:
             if edge.split("@@")[0] in nodes_map and edge.split("@@")[1] in nodes_map:
-                if model.edge_freq[persp][edge] >= min_edge_freq:
+                if edges[edge] >= min_edge_freq:
                     act1 = nodes_map[edge.split("@@")[0]]
                     act2 = nodes_map[edge.split("@@")[1]]
 
-                    g.edge(act1, act2, persp + " ("+str(model.edge_freq[persp][edge])+")", color=color, fontcolor=color)
+                    g.edge(act1, act2, persp + " ("+str(edges[edge])+")", color=color, fontcolor=color)
 
     g.attr(overlap='false')
     g.attr(fontsize='11')
