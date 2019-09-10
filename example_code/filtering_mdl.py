@@ -5,7 +5,7 @@ from pm4pymdl.visualization.mvp.gen_framework import factory as vis_factory
 from pm4pymdl.objects.mdl.exporter import factory as mdl_exporter
 
 # import a succint MDL table
-succint_table = mdl_importer.apply("example_logs/mdl/order_management.mdl")
+succint_table = mdl_importer.apply("../example_logs/mdl/order_management.mdl")
 print(len(succint_table), succint_table.type)
 # convert it into an exploded MDL table
 exploded_table = succint_mdl_to_exploded_mdl.apply(succint_table)

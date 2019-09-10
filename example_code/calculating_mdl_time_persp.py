@@ -1,7 +1,7 @@
 from pm4pymdl.objects.mdl.importer import factory as mdl_importer
 
 # import a log in Parquet format, that is stored as exploded MDL table
-exploded_table = mdl_importer.apply("example_logs/parquet/pkdd99.parquet")
+exploded_table = mdl_importer.apply("../example_logs/parquet/pkdd99.parquet")
 print(exploded_table.columns)
 
 # focus on the account ID: we wish to calculate the time from the previous event
