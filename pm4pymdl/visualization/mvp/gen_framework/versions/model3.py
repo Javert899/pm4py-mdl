@@ -7,6 +7,7 @@ COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#30
           "#4C36E9", "#7DB022", "#EDAC54", "#EAC439", "#EAC439", "#1A9C45", "#8A51C4", "#496A63", "#FB9543", "#2B49DD",
           "#13ADA5", "#2DD8C1", "#2E53D7", "#EF9B77", "#06924F", "#AC2C4D", "#82193F", "#0140D3"]
 
+
 def apply(model, parameters=None):
     if parameters is None:
         parameters = {}
@@ -14,6 +15,7 @@ def apply(model, parameters=None):
     min_node_freq = parameters["min_node_freq"] if "min_node_freq" in parameters else 0
     min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 0
     dfg_cleaning_threshold = parameters["dfg_cleaning_threshold"] if "dfg_cleaning_threshold" in parameters else -1
+    max_edge_ratio = parameters["max_edge_ratio"] if "max_edge_ratio" in parameters else 100000000
 
     image_format = "png"
     if "format" in parameters:
@@ -54,11 +56,15 @@ def apply(model, parameters=None):
         for edge in edges:
             if edge.split("@@")[0] in cluster_acti_corr[persp] and edge.split("@@")[1] in cluster_acti_corr[persp]:
                 if edges[edge] >= min_edge_freq:
-                    act1 = cluster_acti_corr[persp][edge.split("@@")[0]]
-                    act2 = cluster_acti_corr[persp][edge.split("@@")[1]]
+                    act1 = edge.split("@@")[0]
+                    act2 = edge.split("@@")[1]
+                    act1_corr = cluster_acti_corr[persp][act1]
+                    act2_corr = cluster_acti_corr[persp][act2]
 
-                    g.edge(act1, act2, persp + " ("+str(edges[edge])+")", color=color, fontcolor=color)
-
+                    if max(edges[edge] / model.node_freq[persp][act1],
+                           edges[edge] / model.node_freq[persp][act2]) < max_edge_ratio:
+                        g.edge(act1_corr, act2_corr, persp + " (" + str(edges[edge]) + ")", color=color,
+                               fontcolor=color)
 
     g.attr(overlap='false')
     g.attr(fontsize='11')

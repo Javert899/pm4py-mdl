@@ -4,5 +4,5 @@ from pm4pymdl.visualization.mvp.gen_framework import factory as vis_factory
 
 df = mdl_importer.apply("../example_logs/mdl/order_management.mdl")
 model = discovery.apply(df, model_type_variant="model3", node_freq_variant="type31", edge_freq_variant="type11")
-gviz = vis_factory.apply(model)
+gviz = vis_factory.apply(model, parameters={"format": "svg"})
 vis_factory.view(gviz)

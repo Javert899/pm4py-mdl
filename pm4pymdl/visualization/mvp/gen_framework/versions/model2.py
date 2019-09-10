@@ -15,6 +15,7 @@ def apply(model, parameters=None):
     min_node_freq = parameters["min_node_freq"] if "min_node_freq" in parameters else 0
     min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 0
     dfg_cleaning_threshold = parameters["dfg_cleaning_threshold"] if "dfg_cleaning_threshold" in parameters else -1
+    max_edge_ratio = parameters["max_edge_ratio"] if "max_edge_ratio" in parameters else 100000000
 
     image_format = "png"
     if "format" in parameters:
@@ -49,10 +50,13 @@ def apply(model, parameters=None):
         for edge in edges:
             if edge.split("@@")[0] in nodes_map and edge.split("@@")[1] in nodes_map:
                 if edges[edge] >= min_edge_freq:
-                    act1 = nodes_map[edge.split("@@")[0]]
-                    act2 = nodes_map[edge.split("@@")[1]]
+                    act1 = edge.split("@@")[0]
+                    act2 = edge.split("@@")[1]
+                    act1_corr = nodes_map[act1]
+                    act2_corr = nodes_map[act2]
 
-                    g.edge(act1, act2, persp + " ("+str(edges[edge])+")", color=color, fontcolor=color)
+                    if max(edges[edge]/model.node_freq[act1], edges[edge]/model.node_freq[act2]) < max_edge_ratio:
+                        g.edge(act1_corr, act2_corr, persp + " ("+str(edges[edge])+")", color=color, fontcolor=color)
 
     g.attr(overlap='false')
     g.attr(fontsize='11')
