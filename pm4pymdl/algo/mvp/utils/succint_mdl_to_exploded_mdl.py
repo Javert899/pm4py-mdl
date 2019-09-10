@@ -6,7 +6,8 @@ def apply(df):
     stream = df.to_dict('r')
 
     exploded_stream = succint_stream_to_exploded_stream.apply(stream)
+
+    df = pd.DataFrame(exploded_stream)
     df.type = "exploded"
 
-    return pd.DataFrame(exploded_stream)
-
+    return df

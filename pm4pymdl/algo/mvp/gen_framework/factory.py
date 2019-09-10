@@ -20,11 +20,16 @@ def apply(df, model_type_variant=MODEL1, rel_ev_variant=REL_DFG, node_freq_varia
     if parameters is None:
         parameters = {}
 
+    conversion_needed = False
+
     try:
         if df.type == "succint":
-            df = succint_mdl_to_exploded_mdl.apply(df)
+            conversion_needed = True
     except:
         pass
+
+    if conversion_needed:
+        df = succint_mdl_to_exploded_mdl.apply(df)
 
     model = model_factory.apply(df, variant=model_type_variant)
     rel_ev = rel_ev_factory.apply(df, model, variant=rel_ev_variant)
