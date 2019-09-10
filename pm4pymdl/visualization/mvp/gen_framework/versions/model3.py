@@ -44,11 +44,11 @@ def apply(model, parameters=None):
         color = COLORS[index % len(COLORS)]
 
         for edge in model.edge_freq[persp]:
+            if edge.split("@@")[0] in cluster_acti_corr[persp] and edge.split("@@")[1] in cluster_acti_corr[persp]:
+                act1 = cluster_acti_corr[persp][edge.split("@@")[0]]
+                act2 = cluster_acti_corr[persp][edge.split("@@")[1]]
 
-            act1 = cluster_acti_corr[persp][edge.split("@@")[0]]
-            act2 = cluster_acti_corr[persp][edge.split("@@")[1]]
-
-            g.edge(act1, act2, persp + " ("+str(model.edge_freq[persp][edge])+")", color=color, fontcolor=color)
+                g.edge(act1, act2, persp + " ("+str(model.edge_freq[persp][edge])+")", color=color, fontcolor=color)
 
 
     g.attr(overlap='false')

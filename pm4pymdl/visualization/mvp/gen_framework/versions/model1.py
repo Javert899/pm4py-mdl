@@ -35,10 +35,11 @@ def apply(model, parameters=None):
     for index, persp in enumerate(persp_list):
         color = COLORS[index % len(COLORS)]
         for edge in model.edge_freq[persp]:
-            act1 = nodes_map[edge.split("@@")[0]]
-            act2 = nodes_map[edge.split("@@")[1]]
+            if edge.split("@@")[0] in nodes_map and edge.split("@@")[1] in nodes_map:
+                act1 = nodes_map[edge.split("@@")[0]]
+                act2 = nodes_map[edge.split("@@")[1]]
 
-            g.edge(act1, act2, persp + " ("+str(model.edge_freq[persp][edge])+")", color=color, fontcolor=color)
+                g.edge(act1, act2, persp + " ("+str(model.edge_freq[persp][edge])+")", color=color, fontcolor=color)
 
     g.attr(overlap='false')
     g.attr(fontsize='11')
