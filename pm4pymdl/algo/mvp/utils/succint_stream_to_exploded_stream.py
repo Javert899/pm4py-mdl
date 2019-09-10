@@ -13,10 +13,11 @@ def apply(stream):
 
         for k in object_keys:
             values = ev[k]
-            if not str(values).lower() == "nan":
-                for v in values:
-                    event = deepcopy(basic_event)
-                    event[k] = v
-                    new_stream.append(event)
+            if values is not None:
+                if not (str(values).lower() == "nan" or str(values).lower() == "nat"):
+                    for v in values:
+                        event = deepcopy(basic_event)
+                        event[k] = v
+                        new_stream.append(event)
 
     return new_stream

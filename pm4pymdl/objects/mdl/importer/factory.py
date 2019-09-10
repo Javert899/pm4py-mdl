@@ -11,5 +11,5 @@ def apply(file_path, parameters=None):
         return df
     elif file_path.endswith(".parquet"):
         df = parquet_importer.apply(file_path)
-        df.type = "succint"
+        df.type = "exploded"
         return df

@@ -12,6 +12,9 @@ def apply(model, parameters=None):
     if parameters is None:
         parameters = {}
 
+    min_node_freq = parameters["min_node_freq"] if "min_node_freq" in parameters else 0
+    min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 0
+
     image_format = "png"
     if "format" in parameters:
         image_format = parameters["format"]
@@ -36,19 +39,21 @@ def apply(model, parameters=None):
             c.attr(label='class: ' + p)
 
             for act in model.node_freq[p]:
-                this_uuid = str(uuid.uuid4())
-                c.node(this_uuid, act + "(" + str(model.node_freq[p][act]) + ")", fillcolor=color, style="filled")
-                cluster_acti_corr[p][act] = this_uuid
+                if model.node_freq[p][act] >= min_node_freq:
+                    this_uuid = str(uuid.uuid4())
+                    c.node(this_uuid, act + "(" + str(model.node_freq[p][act]) + ")", fillcolor=color, style="filled")
+                    cluster_acti_corr[p][act] = this_uuid
 
     for index, persp in enumerate(perspectives):
         color = COLORS[index % len(COLORS)]
 
         for edge in model.edge_freq[persp]:
             if edge.split("@@")[0] in cluster_acti_corr[persp] and edge.split("@@")[1] in cluster_acti_corr[persp]:
-                act1 = cluster_acti_corr[persp][edge.split("@@")[0]]
-                act2 = cluster_acti_corr[persp][edge.split("@@")[1]]
+                if model.edge_freq[persp][edge] >= min_edge_freq:
+                    act1 = cluster_acti_corr[persp][edge.split("@@")[0]]
+                    act2 = cluster_acti_corr[persp][edge.split("@@")[1]]
 
-                g.edge(act1, act2, persp + " ("+str(model.edge_freq[persp][edge])+")", color=color, fontcolor=color)
+                    g.edge(act1, act2, persp + " ("+str(model.edge_freq[persp][edge])+")", color=color, fontcolor=color)
 
 
     g.attr(overlap='false')

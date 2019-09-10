@@ -13,6 +13,9 @@ def apply(model, parameters=None):
     if parameters is None:
         parameters = {}
 
+    min_node_freq = parameters["min_node_freq"] if "min_node_freq" in parameters else 0
+    min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 0
+
     image_format = "png"
     if "format" in parameters:
         image_format = parameters["format"]
@@ -27,8 +30,9 @@ def apply(model, parameters=None):
     for activity in all_activities:
         this_uuid = str(uuid.uuid4())
 
-        g.node(this_uuid, activity + "(" + str(model.node_freq[activity]) + ")")
-        nodes_map[activity] = this_uuid
+        if model.node_freq[activity] >= min_node_freq:
+            g.node(this_uuid, activity + "(" + str(model.node_freq[activity]) + ")")
+            nodes_map[activity] = this_uuid
 
     persp_list = sorted(list(model.edge_freq))
 
@@ -36,10 +40,11 @@ def apply(model, parameters=None):
         color = COLORS[index % len(COLORS)]
         for edge in model.edge_freq[persp]:
             if edge.split("@@")[0] in nodes_map and edge.split("@@")[1] in nodes_map:
-                act1 = nodes_map[edge.split("@@")[0]]
-                act2 = nodes_map[edge.split("@@")[1]]
+                if model.edge_freq[persp][edge] >= min_edge_freq:
+                    act1 = nodes_map[edge.split("@@")[0]]
+                    act2 = nodes_map[edge.split("@@")[1]]
 
-                g.edge(act1, act2, persp + " ("+str(model.edge_freq[persp][edge])+")", color=color, fontcolor=color)
+                    g.edge(act1, act2, persp + " ("+str(model.edge_freq[persp][edge])+")", color=color, fontcolor=color)
 
     g.attr(overlap='false')
     g.attr(fontsize='11')
