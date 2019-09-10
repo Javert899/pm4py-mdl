@@ -7,10 +7,10 @@ def apply(df, file_path, parameters=None):
         parameters = {}
 
     if file_path.endswith(".csv") or file_path.endswith(".mdl"):
-        conversion_needed = False
+        conversion_needed = True
         try:
-            if df.type == "exploded":
-                conversion_needed = True
+            if df.type == "succint":
+                conversion_needed = False
         except:
             pass
 
