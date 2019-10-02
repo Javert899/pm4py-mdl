@@ -1,0 +1,12 @@
+from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl
+
+
+def apply(df, persp, parameters=None):
+    if df.type == "succint":
+        df = succint_mdl_to_exploded_mdl(df)
+        df.type = "exploded"
+
+    cols = [x for x in df.columns if x.startswith("event_") or x == persp]
+    df = df[cols].dropna(subset=[persp])
+
+    return dict(df.groupby("event_id").first()["event_activity"].value_counts())
