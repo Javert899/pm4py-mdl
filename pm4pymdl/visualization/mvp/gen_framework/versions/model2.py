@@ -25,9 +25,12 @@ def apply(model, parameters=None):
     g = Digraph("", filename=filename, engine='dot', graph_attr={'bgcolor': 'transparent'})
 
     nodes_map = {}
+    all_persp ={}
 
     all_activities = model.get_all_activities()
     persp_list = sorted(list(model.edge_freq))
+
+
 
     for activity in all_activities:
         this_uuid = str(uuid.uuid4())
@@ -37,8 +40,13 @@ def apply(model, parameters=None):
         act_color = COLORS[act_index % len(COLORS)]
 
         if model.node_freq[activity] >= min_node_freq:
+            if not act_index in all_persp:
+                another_uuid = str(uuid.uuid4())
+                g.node(another_uuid, str(act_class), fillcolor=act_color, style="filled", shape="box")
+                all_persp[act_index] = another_uuid
             g.node(this_uuid, activity + " (" + str(act_class) + ", " + str(model.node_freq[activity]) + ")", fillcolor=act_color, style="filled")
             nodes_map[activity] = this_uuid
+            g.edge(all_persp[act_index], this_uuid, "", color=act_color)
 
     for index, persp in enumerate(persp_list):
         color = COLORS[index % len(COLORS)]
