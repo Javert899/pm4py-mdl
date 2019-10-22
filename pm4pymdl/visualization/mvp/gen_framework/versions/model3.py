@@ -27,6 +27,8 @@ def apply(model, parameters=None):
     cluster_corr = {}
     cluster_acti_corr = {}
 
+    count_nodes = 0
+
     perspectives = sorted(list(model.node_freq.keys()))
     for index, p in enumerate(perspectives):
         color = COLORS[index % len(COLORS)]
@@ -45,6 +47,10 @@ def apply(model, parameters=None):
                     this_uuid = str(uuid.uuid4())
                     c.node(this_uuid, act + "(" + str(model.node_freq[p][act]) + ")", fillcolor=color, style="filled")
                     cluster_acti_corr[p][act] = this_uuid
+
+                    count_nodes = count_nodes + 1
+
+    count_edges = 0
 
     for index, persp in enumerate(perspectives):
         color = COLORS[index % len(COLORS)]
@@ -65,6 +71,10 @@ def apply(model, parameters=None):
                            edges[edge] / model.node_freq[persp][act2]) < max_edge_ratio:
                         g.edge(act1_corr, act2_corr, persp + " (" + str(edges[edge]) + ")", color=color,
                                fontcolor=color)
+                        count_edges = count_edges + 1
+
+    print("Type 3 nodes", count_nodes)
+    print("Type 3 edges", count_edges)
 
     g.attr(overlap='false')
     g.attr(fontsize='11')

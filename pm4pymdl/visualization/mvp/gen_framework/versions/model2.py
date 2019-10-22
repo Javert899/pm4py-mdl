@@ -30,7 +30,7 @@ def apply(model, parameters=None):
     all_activities = model.get_all_activities()
     persp_list = sorted(list(model.edge_freq))
 
-
+    count_nodes = 0
 
     for activity in all_activities:
         this_uuid = str(uuid.uuid4())
@@ -47,6 +47,10 @@ def apply(model, parameters=None):
             g.node(this_uuid, activity + " (" + str(act_class) + ", " + str(model.node_freq[activity]) + ")", fillcolor=act_color, style="filled")
             nodes_map[activity] = this_uuid
             g.edge(all_persp[act_index], this_uuid, "", color=act_color)
+
+            count_nodes = count_nodes + 1
+
+    count_edges = 0
 
     for index, persp in enumerate(persp_list):
         color = COLORS[index % len(COLORS)]
@@ -65,6 +69,10 @@ def apply(model, parameters=None):
 
                     if max(edges[edge]/model.node_freq[act1], edges[edge]/model.node_freq[act2]) < max_edge_ratio:
                         g.edge(act1_corr, act2_corr, persp + " ("+str(edges[edge])+")", color=color, fontcolor=color)
+                        count_edges = count_edges + 1
+
+    print("Type 2 nodes",count_nodes)
+    print("Type 2 edges",count_edges)
 
     g.attr(overlap='false')
     g.attr(fontsize='11')
