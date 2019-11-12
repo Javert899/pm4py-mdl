@@ -24,24 +24,39 @@ def apply(df, parameters=None):
     ret["group_size_hist_replay"] = {}
 
     for persp in persps:
-
+        print(persp,"getting log")
         log = factory.apply(df, persp, parameters=parameters)
+        print(persp,"got log")
 
         net, im, fm = inductive_miner.apply(log)
+        print(persp,"got model")
+
         activ_count = factory.apply(df, persp, variant="activity_occurrence", parameters=parameters)
+        print(persp,"got activ_count")
 
         variants_idx = variants_module.get_variants_from_log_trace_idx(log)
         variants = variants_module.convert_variants_trace_idx_to_trace_obj(log, variants_idx)
         parameters_tr = {PARAM_ACTIVITY_KEY: "concept:name", "variants": variants}
 
+        print(persp,"got variants")
+
+
         aligned_traces, place_fitness_per_trace, transition_fitness_per_trace, notexisting_activities_in_model = tr_factory.apply(log, net, im, fm, parameters={"enable_place_fitness": True, "disable_variants": True})
+
+        print(persp,"done tbr")
 
         element_statistics = performance_map.single_element_statistics(log, net, im,
                                                                        aligned_traces, variants_idx)
 
+        print(persp,"done element_statistics")
+
         aggregated_statistics = performance_map.aggregate_statistics(element_statistics)
 
+        print(persp,"done aggregated_statistics")
+
         group_size_hist = factory.apply(df, persp, variant="group_size_hist", parameters=parameters)
+
+        print(persp,"done group_size_hist")
 
         occurrences = {}
         for trans in transition_fitness_per_trace:

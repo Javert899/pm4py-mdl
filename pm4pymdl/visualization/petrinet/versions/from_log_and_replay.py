@@ -70,23 +70,26 @@ def apply(obj, parameters=None):
             source_node = arc.source
             target_node = arc.target
 
-            arc_count = float(rr[arc]['label'])
+            if arc in rr:
 
-            if type(source_node) is PetriNet.Place:
-                if target_node.label is not None:
-                    ratio = "'<<%.2f>>'" % (arc_count / ac[target_node.label])
+                arc_count = float(rr[arc]['label'])
+
+                if type(source_node) is PetriNet.Place:
+                    if target_node.label is not None and ac[target_node.label] > 0:
+                        ratio = "'<<%.2f>>'" % (arc_count / ac[target_node.label])
+                    else:
+                        ratio = "'<<1.00>>'"
                 else:
-                    ratio = "'<<1.00>>'"
+                    if source_node.label is not None and ac[source_node.label] > 0:
+                        ratio = "'<<%.2f>>'" % (arc_count / ac[source_node.label])
+                    else:
+                        ratio = "'<<1.00>>'"
+
+                g.edge(all_objs[source_node], all_objs[target_node], label=ratio, penwidth=str(rr[arc]['penwidth']), color=color)
+
+                all_objs[arc] = this_uuid
             else:
-                if source_node.label is not None:
-                    ratio = "'<<%.2f>>'" % (arc_count / ac[source_node.label])
-                else:
-                    ratio = "'<<1.00>>'"
-
-            print(rr[arc])
-            g.edge(all_objs[source_node], all_objs[target_node], label=ratio, penwidth=str(rr[arc]['penwidth']), color=color)
-
-            all_objs[arc] = this_uuid
+                g.edge(all_objs[source_node], all_objs[target_node], label="", color=color)
 
     g.attr(overlap='false')
     g.attr(fontsize='11')

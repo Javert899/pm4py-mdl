@@ -71,8 +71,12 @@ def apply(model, parameters=None):
                         g.edge(act1_corr, act2_corr, persp + " ("+str(edges[edge])+")", color=color, fontcolor=color)
                         count_edges = count_edges + 1
 
-    print("Type 2 nodes",count_nodes)
-    print("Type 2 edges",count_edges)
+    if "count_nodes" in parameters and "count_edges" in parameters:
+        print("Type 2 nodes",count_nodes,"recall",count_nodes/parameters["count_nodes"])
+        print("Type 2 edges",count_edges,"recall",count_edges/parameters["count_edges"])
+    else:
+        print("Type 2 nodes",count_nodes)
+        print("Type 2 edges",count_edges)
 
     g.attr(overlap='false')
     g.attr(fontsize='11')

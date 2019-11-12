@@ -73,8 +73,12 @@ def apply(model, parameters=None):
                                fontcolor=color)
                         count_edges = count_edges + 1
 
-    print("Type 3 nodes", count_nodes)
-    print("Type 3 edges", count_edges)
+    if "count_nodes" in parameters and "count_edges" in parameters:
+        print("Type 3 nodes", count_nodes, "recall",count_nodes/parameters["count_nodes"])
+        print("Type 3 edges", count_edges, "recall",count_edges/parameters["count_edges"])
+    else:
+        print("Type 3 nodes", count_nodes)
+        print("Type 3 edges", count_edges)
 
     g.attr(overlap='false')
     g.attr(fontsize='11')
