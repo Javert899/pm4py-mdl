@@ -22,8 +22,16 @@ def apply(obj, parameters=None):
 
     nets = obj["nets"]
     replay = obj["replay"]
-    act_count = obj["act_count_replay"]
+    act_count = obj["act_count"]
     group_size = obj["group_size_hist_replay"]
+    aligned_traces = obj["aligned_traces"]
+    place_fitness_per_trace_persp = obj["place_fitness_per_trace"]
+    aggregated_statistics_frequency = obj["aggregated_statistics_frequency"]
+    aggregated_statistics_performance_min = obj["aggregated_statistics_performance_min"]
+    aggregated_statistics_performance_max = obj["aggregated_statistics_performance_max"]
+    aggregated_statistics_performance_median = obj["aggregated_statistics_performance_median"]
+    aggregated_statistics_performance_mean = obj["aggregated_statistics_performance_mean"]
+    aligned_traces = obj["aligned_traces"]
 
     all_objs = {}
     trans_names = {}
@@ -39,14 +47,40 @@ def apply(obj, parameters=None):
         ac = act_count[persp]
         gs = group_size[persp]
 
+        ag_freq = aggregated_statistics_frequency[persp]
+        ag_perf_min = aggregated_statistics_performance_min[persp]
+        ag_perf_max = aggregated_statistics_performance_max[persp]
+        ag_perf_median = aggregated_statistics_performance_median[persp]
+        ag_perf_mean = aggregated_statistics_performance_mean[persp]
+        al_trac = aligned_traces[persp]
+        place_fitness_per_trace = place_fitness_per_trace_persp[persp]
+
+        for pl in place_fitness_per_trace:
+            if place_fitness_per_trace[pl]["c"] + place_fitness_per_trace[pl]["r"] > place_fitness_per_trace[pl]["p"] + \
+                    place_fitness_per_trace[pl]["m"]:
+                place_fitness_per_trace[pl]["m"] += place_fitness_per_trace[pl]["c"] + place_fitness_per_trace[pl][
+                    "r"] - \
+                                                    place_fitness_per_trace[pl]["p"]
+            elif place_fitness_per_trace[pl]["c"] + place_fitness_per_trace[pl]["r"] < place_fitness_per_trace[pl][
+                "p"] + \
+                    place_fitness_per_trace[pl]["m"]:
+                place_fitness_per_trace[pl]["r"] += place_fitness_per_trace[pl]["p"] + place_fitness_per_trace[pl][
+                    "m"] - \
+                                                    place_fitness_per_trace[pl]["c"]
+
+        #print("ag_freq",ag_freq)
+        #print("ag_perf_min",ag_perf_min)
+        #print("ag_perf_max",ag_perf_max)
+        #print("ag_perf_median",ag_perf_median)
+        #print("ag_perf_mean",ag_perf_mean)
+        #print("al_trac",al_trac)
+        #print("pl_fitness",place_fitness_per_trace)
+
+        #input()
+
         for pl in net.places:
             this_uuid = str(uuid.uuid4())
-            if pl in im:
-                g.node(this_uuid, "", shape="circle", fillcolor=color, style="filled")
-            elif pl in fm:
-                g.node(this_uuid, "", shape="circle", fillcolor=color, style="filled")
-            else:
-                g.node(this_uuid, "", shape="circle", fillcolor=color, style="filled")
+            g.node(this_uuid, "", shape="circle", fillcolor=color, style="filled")
             all_objs[pl] = this_uuid
 
         for tr in net.transitions:

@@ -1,6 +1,7 @@
 import pm4py
 from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl
 from pm4pymdl.algo.mvp.projection import factory
+from pm4py.algo.discovery.alpha import factory as alpha_miner
 from pm4py.algo.discovery.inductive import factory as inductive_miner
 from pm4py.algo.conformance.tokenreplay import factory as tr_factory
 from pm4py.visualization.petrinet.util import performance_map
@@ -22,6 +23,13 @@ def apply(df, parameters=None):
     ret["group_size_hist"] = {}
     ret["act_count_replay"] = {}
     ret["group_size_hist_replay"] = {}
+    ret["aligned_traces"] = {}
+    ret["place_fitness_per_trace"] = {}
+    ret["aggregated_statistics_frequency"] = {}
+    ret["aggregated_statistics_performance_min"] = {}
+    ret["aggregated_statistics_performance_max"] = {}
+    ret["aggregated_statistics_performance_median"] = {}
+    ret["aggregated_statistics_performance_mean"] = {}
 
     for persp in persps:
         print(persp,"getting log")
@@ -29,6 +37,7 @@ def apply(df, parameters=None):
         print(persp,"got log")
 
         net, im, fm = inductive_miner.apply(log)
+        #net, im, fm = alpha_miner.apply(log)
         print(persp,"got model")
 
         activ_count = factory.apply(df, persp, variant="activity_occurrence", parameters=parameters)
@@ -36,7 +45,7 @@ def apply(df, parameters=None):
 
         variants_idx = variants_module.get_variants_from_log_trace_idx(log)
         variants = variants_module.convert_variants_trace_idx_to_trace_obj(log, variants_idx)
-        parameters_tr = {PARAM_ACTIVITY_KEY: "concept:name", "variants": variants}
+        #parameters_tr = {PARAM_ACTIVITY_KEY: "concept:name", "variants": variants}
 
         print(persp,"got variants")
 
@@ -53,6 +62,18 @@ def apply(df, parameters=None):
         aggregated_statistics = performance_map.aggregate_statistics(element_statistics)
 
         print(persp,"done aggregated_statistics")
+
+        element_statistics_performance = performance_map.single_element_statistics(log, net, im,
+                                                                       aligned_traces, variants_idx)
+
+        print(persp,"done element_statistics_performance")
+
+        aggregated_statistics_performance_min = performance_map.aggregate_statistics(element_statistics_performance, measure="performance", aggregation_measure="min")
+        aggregated_statistics_performance_max = performance_map.aggregate_statistics(element_statistics_performance, measure="performance", aggregation_measure="max")
+        aggregated_statistics_performance_median = performance_map.aggregate_statistics(element_statistics_performance, measure="performance", aggregation_measure="median")
+        aggregated_statistics_performance_mean = performance_map.aggregate_statistics(element_statistics_performance, measure="performance", aggregation_measure="mean")
+
+        print(persp,"done aggregated_statistics_performance")
 
         group_size_hist = factory.apply(df, persp, variant="group_size_hist", parameters=parameters)
 
@@ -85,6 +106,14 @@ def apply(df, parameters=None):
 
         ret["nets"][persp] = [net, im, fm]
         ret["act_count"][persp] = activ_count
+        ret["aligned_traces"][persp] = aligned_traces
+        ret["place_fitness_per_trace"][persp] = place_fitness_per_trace
+        ret["aggregated_statistics_frequency"][persp] = aggregated_statistics
+        ret["aggregated_statistics_performance_min"][persp] = aggregated_statistics_performance_min
+        ret["aggregated_statistics_performance_max"][persp] = aggregated_statistics_performance_max
+        ret["aggregated_statistics_performance_median"][persp] = aggregated_statistics_performance_median
+        ret["aggregated_statistics_performance_mean"][persp] = aggregated_statistics_performance_mean
+
         ret["replay"][persp] = aggregated_statistics
         ret["group_size_hist"][persp] = group_size_hist
         ret["act_count_replay"][persp] = len_different_ids
