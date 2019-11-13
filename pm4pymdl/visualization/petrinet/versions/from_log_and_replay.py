@@ -3,7 +3,6 @@ import tempfile
 from graphviz import Digraph
 from pm4py.objects.petri.petrinet import PetriNet
 
-
 COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#306A8A", "#678225", "#2742FE", "#4C9A75",
           "#4C36E9", "#7DB022", "#EDAC54", "#EAC439", "#EAC439", "#1A9C45", "#8A51C4", "#496A63", "#FB9543", "#2B49DD",
           "#13ADA5", "#2DD8C1", "#2E53D7", "#EF9B77", "#06924F", "#AC2C4D", "#82193F", "#0140D3"]
@@ -36,7 +35,6 @@ def apply(obj, parameters=None):
     all_objs = {}
     trans_names = {}
 
-
     for index, persp in enumerate(nets):
         orig_act_count = {}
         orig_arc_count = {}
@@ -68,19 +66,20 @@ def apply(obj, parameters=None):
                     "m"] - \
                                                     place_fitness_per_trace[pl]["c"]
 
-        #print("ag_freq",ag_freq)
-        #print("ag_perf_min",ag_perf_min)
-        #print("ag_perf_max",ag_perf_max)
-        #print("ag_perf_median",ag_perf_median)
-        #print("ag_perf_mean",ag_perf_mean)
-        #print("al_trac",al_trac)
-        #print("pl_fitness",place_fitness_per_trace)
+        # print("ag_freq",ag_freq)
+        # print("ag_perf_min",ag_perf_min)
+        # print("ag_perf_max",ag_perf_max)
+        # print("ag_perf_median",ag_perf_median)
+        # print("ag_perf_mean",ag_perf_mean)
+        # print("al_trac",al_trac)
+        # print("pl_fitness",place_fitness_per_trace)
 
-        #input()
+        # input()
 
         for pl in net.places:
             this_uuid = str(uuid.uuid4())
-            g.node(this_uuid, "", shape="circle", fillcolor=color, style="filled")
+            pl_str = "p=%d c=%d m=%d r=%d" % (place_fitness_per_trace[pl]["p"], place_fitness_per_trace[pl]["c"], place_fitness_per_trace[pl]["m"], place_fitness_per_trace[pl]["r"])
+            g.node(this_uuid, pl_str, shape="circle", fillcolor=color, style="filled", fontsize="8.0", labelfontsize="8.0")
             all_objs[pl] = this_uuid
 
         for tr in net.transitions:
@@ -92,7 +91,7 @@ def apply(obj, parameters=None):
                 count = rr[tr]["label"].split("(")[-1].split("]")[0]
                 orig_act_count[tr] = count
                 this_act_count = "%.2f" % (float(ac[tr.label]))
-                g.node(this_uuid, "'" + tr.label+" <<"+this_act_count+">>'", shape="box")
+                g.node(this_uuid, "'" + tr.label + " \\n<<" + this_act_count + ">>'", shape="box")
                 trans_names[tr.label] = this_uuid
                 all_objs[tr] = this_uuid
             else:
@@ -108,22 +107,30 @@ def apply(obj, parameters=None):
 
                 arc_count = float(rr[arc]['label'])
 
+                if arc in ag_perf_min:
+                    perf_str = "\\npmin=%s pmax=%s pmedian=%s pmean=%s" % (
+                    ag_perf_min[arc]['label'], ag_perf_max[arc]['label'], ag_perf_median[arc]['label'],
+                    ag_perf_mean[arc]['label'])
+                else:
+                    perf_str = ""
+
                 if type(source_node) is PetriNet.Place:
                     if target_node.label is not None and ac[target_node.label] > 0:
-                        ratio = "'<<%.2f>>'" % (arc_count / ac[target_node.label])
+                        ratio = "'<<%.2f>> (arc_count=%d, act_count=%d)" % (arc_count / ac[target_node.label], arc_count, ac[target_node.label]) + perf_str + "'"
                     else:
-                        ratio = "'<<1.00>>'"
+                        ratio = "'<<1.00>>" + perf_str + "'"
                 else:
                     if source_node.label is not None and ac[source_node.label] > 0:
-                        ratio = "'<<%.2f>>'" % (arc_count / ac[source_node.label])
+                        ratio = "'<<%.2f>>  (arc_count=%d, act_count=%d)" % (arc_count / ac[source_node.label], arc_count, ac[source_node.label]) + perf_str + "'"
                     else:
-                        ratio = "'<<1.00>>'"
+                        ratio = "'<<1.00>>" + perf_str + "'"
 
-                g.edge(all_objs[source_node], all_objs[target_node], label=ratio, penwidth=str(rr[arc]['penwidth']), color=color)
+                g.edge(all_objs[source_node], all_objs[target_node], label=ratio, penwidth=str(rr[arc]['penwidth']),
+                       color=color, fontsize="8.0")
 
                 all_objs[arc] = this_uuid
             else:
-                g.edge(all_objs[source_node], all_objs[target_node], label="", color=color)
+                g.edge(all_objs[source_node], all_objs[target_node], label="", color=color, fontsize="8.0")
 
     g.attr(overlap='false')
     g.attr(fontsize='11')
