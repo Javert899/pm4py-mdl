@@ -2,6 +2,7 @@ import uuid
 import tempfile
 from graphviz import Digraph
 from pm4py.objects.petri.petrinet import PetriNet
+from statistics import median, mean
 
 COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#306A8A", "#678225", "#2742FE", "#4C9A75",
           "#4C36E9", "#7DB022", "#EDAC54", "#EAC439", "#EAC439", "#1A9C45", "#8A51C4", "#496A63", "#FB9543", "#2B49DD",
@@ -25,6 +26,7 @@ def apply(obj, parameters=None):
     group_size = obj["group_size_hist_replay"]
     aligned_traces = obj["aligned_traces"]
     place_fitness_per_trace_persp = obj["place_fitness_per_trace"]
+    group_size_hist_persp = obj["group_size_hist"]
     aggregated_statistics_frequency = obj["aggregated_statistics_frequency"]
     aggregated_statistics_performance_min = obj["aggregated_statistics_performance_min"]
     aggregated_statistics_performance_max = obj["aggregated_statistics_performance_max"]
@@ -52,6 +54,7 @@ def apply(obj, parameters=None):
         ag_perf_mean = aggregated_statistics_performance_mean[persp]
         al_trac = aligned_traces[persp]
         place_fitness_per_trace = place_fitness_per_trace_persp[persp]
+        group_size_hist = group_size_hist_persp[persp]
 
         for pl in place_fitness_per_trace:
             if place_fitness_per_trace[pl]["c"] + place_fitness_per_trace[pl]["r"] > place_fitness_per_trace[pl]["p"] + \
@@ -90,8 +93,8 @@ def apply(obj, parameters=None):
             elif tr.label not in trans_names:
                 count = rr[tr]["label"].split("(")[-1].split("]")[0]
                 orig_act_count[tr] = count
-                this_act_count = "%.2f" % (float(ac[tr.label]))
-                g.node(this_uuid, "'" + tr.label + " \\n<<" + this_act_count + ">>'", shape="box")
+                this_act_count = "%d" % (float(ac[tr.label]))
+                g.node(this_uuid, tr.label + " \\n" + this_act_count + "", shape="box")
                 trans_names[tr.label] = this_uuid
                 all_objs[tr] = this_uuid
             else:
@@ -116,14 +119,18 @@ def apply(obj, parameters=None):
 
                 if type(source_node) is PetriNet.Place:
                     if target_node.label is not None and ac[target_node.label] > 0:
-                        ratio = "'<<%.2f>> (arc_count=%d, act_count=%d)" % (arc_count / ac[target_node.label], arc_count, ac[target_node.label]) + perf_str + "'"
+                        pre = "EVGS: min=%d max=%d median=%d mean=%.2f\\n" % (min(group_size_hist[target_node.label]), max(group_size_hist[target_node.label]),
+                                                                              median(group_size_hist[target_node.label]), mean(group_size_hist[target_node.label]))
+                        ratio = pre + "TR: %.2f (rep_arc_count=%d, rep_act_count=%d)" % (arc_count / ac[target_node.label], arc_count, ac[target_node.label]) + perf_str + ""
                     else:
-                        ratio = "'<<1.00>>" + perf_str + "'"
+                        ratio = "1.00" + perf_str + ""
                 else:
                     if source_node.label is not None and ac[source_node.label] > 0:
-                        ratio = "'<<%.2f>>  (arc_count=%d, act_count=%d)" % (arc_count / ac[source_node.label], arc_count, ac[source_node.label]) + perf_str + "'"
+                        pre = "EVGS: min=%d max=%d median=%d mean=%.2f\\n" % (min(group_size_hist[source_node.label]), max(group_size_hist[source_node.label]),
+                                                                              median(group_size_hist[source_node.label]), mean(group_size_hist[source_node.label]))
+                        ratio = pre + "TR=%.2f (rep_arc_count=%d, rep_act_count=%d)" % (arc_count / ac[source_node.label], arc_count, ac[source_node.label]) + perf_str + ""
                     else:
-                        ratio = "'<<1.00>>" + perf_str + "'"
+                        ratio = "1.00" + perf_str + ""
 
                 g.edge(all_objs[source_node], all_objs[target_node], label=ratio, penwidth=str(rr[arc]['penwidth']),
                        color=color, fontsize="8.0")
