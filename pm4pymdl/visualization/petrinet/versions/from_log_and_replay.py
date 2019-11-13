@@ -82,7 +82,14 @@ def apply(obj, parameters=None):
         for pl in net.places:
             this_uuid = str(uuid.uuid4())
             pl_str = "p=%d c=%d m=%d r=%d" % (place_fitness_per_trace[pl]["p"], place_fitness_per_trace[pl]["c"], place_fitness_per_trace[pl]["m"], place_fitness_per_trace[pl]["r"])
-            g.node(this_uuid, pl_str, shape="circle", fillcolor=color, style="filled", fontsize="8.0", labelfontsize="8.0")
+            if pl in im:
+                g.node(this_uuid, pl_str, shape="circle", fillcolor=color, style="filled", fontsize="8.0", labelfontsize="8.0")
+            elif pl in fm:
+                g.node(this_uuid, pl_str, shape="egg", fillcolor=color, style="filled", fontsize="8.0",
+                       labelfontsize="8.0")
+            else:
+                g.node(this_uuid, pl_str, shape="ellipse", fillcolor=color, style="filled", fontsize="8.0",
+                       labelfontsize="8.0")
             all_objs[pl] = this_uuid
 
         for tr in net.transitions:
@@ -119,16 +126,18 @@ def apply(obj, parameters=None):
 
                 if type(source_node) is PetriNet.Place:
                     if target_node.label is not None and ac[target_node.label] > 0:
-                        pre = "EVGS: min=%d max=%d median=%d mean=%.2f\\n" % (min(group_size_hist[target_node.label]), max(group_size_hist[target_node.label]),
-                                                                              median(group_size_hist[target_node.label]), mean(group_size_hist[target_node.label]))
-                        ratio = pre + "TR: %.2f (rep_arc_count=%d, rep_act_count=%d)" % (arc_count / ac[target_node.label], arc_count, ac[target_node.label]) + perf_str + ""
+                        pre = "EVGS: min=%d max=%d median=%d mean=%.2f uniqobj=%d totcount=%d\\n" % (min(group_size_hist[target_node.label]), max(group_size_hist[target_node.label]),
+                                                                              median(group_size_hist[target_node.label]), mean(group_size_hist[target_node.label]), len(group_size_hist[target_node.label]), sum(group_size_hist[target_node.label]))
+                        int = "TR: %.2f (rep_arc_count=%d, rep_act_count=%d)" % (arc_count / ac[target_node.label], arc_count, ac[target_node.label])
+                        ratio = pre + perf_str + ""
                     else:
                         ratio = "1.00" + perf_str + ""
                 else:
                     if source_node.label is not None and ac[source_node.label] > 0:
-                        pre = "EVGS: min=%d max=%d median=%d mean=%.2f\\n" % (min(group_size_hist[source_node.label]), max(group_size_hist[source_node.label]),
-                                                                              median(group_size_hist[source_node.label]), mean(group_size_hist[source_node.label]))
-                        ratio = pre + "TR=%.2f (rep_arc_count=%d, rep_act_count=%d)" % (arc_count / ac[source_node.label], arc_count, ac[source_node.label]) + perf_str + ""
+                        pre = "EVGS: min=%d max=%d median=%d mean=%.2f uniqobj=%d totcount=%d\\n" % (min(group_size_hist[source_node.label]), max(group_size_hist[source_node.label]),
+                                                                              median(group_size_hist[source_node.label]), mean(group_size_hist[source_node.label]), len(group_size_hist[source_node.label]), sum(group_size_hist[source_node.label]))
+                        int = "TR=%.2f (rep_arc_count=%d, rep_act_count=%d)" % (arc_count / ac[source_node.label], arc_count, ac[source_node.label])
+                        ratio = pre + perf_str + ""
                     else:
                         ratio = "1.00" + perf_str + ""
 
