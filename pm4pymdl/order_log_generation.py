@@ -105,6 +105,8 @@ def generate_log():
                 else:
                     list_events = list_events + generate_event("return", {"package": [8 * i, 8 * i + 1, 8 * i + 4, 8 * i + 5, 8*i +2, 8*i +3, 8*i +6, 8*i +7]})
                     break
+            else:
+                break
 
         i = i + 2
 
