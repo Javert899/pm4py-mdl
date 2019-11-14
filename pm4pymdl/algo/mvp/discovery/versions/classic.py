@@ -88,7 +88,7 @@ def apply(df, parameters=None):
         MIN_DFG_OCCURRENCES] if MIN_DFG_OCCURRENCES in parameters else defaults.DEFAULT_MIN_DFG_OCCURRENCES
     dfg_pre_cleaning_noise_thresh = parameters[
         DFG_PRE_CLEANING_NOISE_THRESH] if DFG_PRE_CLEANING_NOISE_THRESH in parameters else defaults.DEFAULT_DFG_PRE_CLEANING_NOISE_THRESH
-    decreasing_factor_sa_ea = parameters[DECREASING_FACTOR] if DECREASING_FACTOR in parameters else 0.6
+    decreasing_factor_sa_ea = parameters[DECREASING_FACTOR] if DECREASING_FACTOR in parameters else 0.0
     performance = parameters[PERFORMANCE] if PERFORMANCE in parameters else False
     perspectives = parameters[PERSPECTIVES] if PERSPECTIVES in parameters else None
     use_timestamp = parameters[USE_TIMESTAMP] if USE_TIMESTAMP in parameters else True
@@ -99,12 +99,12 @@ def apply(df, parameters=None):
 
     r = lambda: random.randint(0, 255)
     if perspectives is None:
-        perspectives = list(df.columns)
+        perspectives = list(x for x in df.columns if not x.startswith("event"))
 
-        del perspectives[perspectives.index("event_id")]
-        del perspectives[perspectives.index("event_activity")]
-        if "event_timestamp" in perspectives:
-            del perspectives[perspectives.index("event_timestamp")]
+        #del perspectives[perspectives.index("event_id")]
+        #del perspectives[perspectives.index("event_activity")]
+        #if "event_timestamp" in perspectives:
+        #    del perspectives[perspectives.index("event_timestamp")]
         perspectives = sorted(perspectives)
     for p_ind, p in enumerate(perspectives):
         has_timestamp = False
@@ -141,9 +141,9 @@ def apply(df, parameters=None):
             parameters_sa_ea[constants.PARAMETER_CONSTANT_ACTIVITY_KEY] = "event_activity"
             start_activities = start_activities_filter.get_start_activities(proj_df, parameters=parameters_sa_ea)
             end_activities = end_activities_filter.get_end_activities(proj_df, parameters=parameters_sa_ea)
-            start_activities = clean_sa_ea(start_activities, decreasing_factor_sa_ea)
-            end_activities = clean_sa_ea(end_activities, decreasing_factor_sa_ea)
-            activities_occurrences = attributes_filter.get_attribute_values(proj_df, "event_activity")
+            #start_activities = clean_sa_ea(start_activities, decreasing_factor_sa_ea)
+            #end_activities = clean_sa_ea(end_activities, decreasing_factor_sa_ea)
+            activities_occurrences = attributes_filter.get_attribute_values(df, "event_activity")
             activities = list(activities_occurrences.keys())
 
             if performance:
