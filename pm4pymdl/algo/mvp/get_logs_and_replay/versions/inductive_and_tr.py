@@ -6,10 +6,19 @@ from pm4py.algo.discovery.inductive import factory as inductive_miner
 from pm4py.algo.conformance.tokenreplay import factory as tr_factory
 from pm4py.visualization.petrinet.util import performance_map
 from pm4py.algo.filtering.log.variants import variants_filter as variants_module
+from pm4py.algo.filtering.log.paths import paths_filter
+from pm4py.algo.filtering.log.variants import variants_filter
+from pm4py.algo.filtering.log.attributes import attributes_filter
+from copy import deepcopy
 
 PARAM_ACTIVITY_KEY = pm4py.util.constants.PARAMETER_CONSTANT_ACTIVITY_KEY
 
 def apply(df, parameters=None):
+    if parameters is None:
+        parameters = {}
+
+    allowed_activities = parameters["allowed_activities"] if "allowed_activities" in parameters else None
+
     if df.type == "succint":
         df = succint_mdl_to_exploded_mdl(df)
         df.type = "exploded"
@@ -34,10 +43,21 @@ def apply(df, parameters=None):
     for persp in persps:
         print(persp,"getting log")
         log = factory.apply(df, persp, parameters=parameters)
+        print(len(log))
+
+
+        if allowed_activities is not None:
+            filtered_log = attributes_filter.apply_events(log, allowed_activities[persp])
+        else:
+            filtered_log = log
+
+        # filtered_log = variants_filter.apply_auto_filter(deepcopy(filtered_log), parameters={"decreasingFactor": 0.5})
+
+        print(len(log))
         print(persp,"got log")
 
-        net, im, fm = inductive_miner.apply(log)
-        #net, im, fm = alpha_miner.apply(log)
+        net, im, fm = inductive_miner.apply(filtered_log)
+        #net, im, fm = alpha_miner.apply(filtered_log)
         print(persp,"got model")
 
         activ_count = factory.apply(df, persp, variant="activity_occurrence", parameters=parameters)
