@@ -15,8 +15,10 @@ def apply(stream):
             if type(ev[k]) is str:
                 if ev[k][0] == "[":
                     ev[k] = eval(ev[k])
+                    #ev[k] = ev[k][1:-1].split(",")
             values = ev[k]
             if values is not None:
+            #if values is not None and len(values) > 0:
                 if not (str(values).lower() == "nan" or str(values).lower() == "nat"):
                     for v in values:
                         event = deepcopy(basic_event)
