@@ -4,7 +4,7 @@ from graphviz import Digraph
 from pm4py.objects.petri.petrinet import PetriNet
 from statistics import median, mean
 
-COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#306A8A", "#678225", "#2742FE", "#4C9A75",
+COLORS = ["#05B202", "#A13CCD", "#BA0D39", "#39F6C0", "#E90638", "#07B423", "#306A8A", "#678225", "#2742FE", "#4C9A75",
           "#4C36E9", "#7DB022", "#EDAC54", "#EAC439", "#EAC439", "#1A9C45", "#8A51C4", "#496A63", "#FB9543", "#2B49DD",
           "#13ADA5", "#2DD8C1", "#2E53D7", "#EF9B77", "#06924F", "#AC2C4D", "#82193F", "#0140D3"]
 
@@ -126,7 +126,7 @@ def apply(obj, parameters=None):
 
                 if type(source_node) is PetriNet.Place:
                     if target_node.label is not None and ac[target_node.label] > 0:
-                        pre = "EVGS: min=%d max=%d median=%d mean=%.2f uniqobj=%d totcount=%d\\n" % (min(group_size_hist[target_node.label]), max(group_size_hist[target_node.label]),
+                        pre = "EVGS: min=%d max=%d median=%d mean=%.2f eve=%d obj=%d\\n" % (min(group_size_hist[target_node.label]), max(group_size_hist[target_node.label]),
                                                                               median(group_size_hist[target_node.label]), mean(group_size_hist[target_node.label]), len(group_size_hist[target_node.label]), sum(group_size_hist[target_node.label]))
                         int = "TR: %.2f (rep_arc_count=%d, rep_act_count=%d)" % (arc_count / ac[target_node.label], arc_count, ac[target_node.label])
                         ratio = pre + perf_str + ""
@@ -134,7 +134,7 @@ def apply(obj, parameters=None):
                         ratio = "1.00" + perf_str + ""
                 else:
                     if source_node.label is not None and ac[source_node.label] > 0:
-                        pre = "EVGS: min=%d max=%d median=%d mean=%.2f uniqobj=%d totcount=%d\\n" % (min(group_size_hist[source_node.label]), max(group_size_hist[source_node.label]),
+                        pre = "EVGS: min=%d max=%d median=%d mean=%.2f eve=%d obj=%d\\n" % (min(group_size_hist[source_node.label]), max(group_size_hist[source_node.label]),
                                                                               median(group_size_hist[source_node.label]), mean(group_size_hist[source_node.label]), len(group_size_hist[source_node.label]), sum(group_size_hist[source_node.label]))
                         int = "TR=%.2f (rep_arc_count=%d, rep_act_count=%d)" % (arc_count / ac[source_node.label], arc_count, ac[source_node.label])
                         ratio = pre + perf_str + ""
