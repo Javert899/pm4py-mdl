@@ -59,15 +59,19 @@ def apply(obj, parameters=None):
         for pl in place_fitness_per_trace:
             if place_fitness_per_trace[pl]["c"] + place_fitness_per_trace[pl]["r"] > place_fitness_per_trace[pl]["p"] + \
                     place_fitness_per_trace[pl]["m"]:
-                place_fitness_per_trace[pl]["m"] += place_fitness_per_trace[pl]["c"] + place_fitness_per_trace[pl][
+                """place_fitness_per_trace[pl]["m"] += place_fitness_per_trace[pl]["c"] + place_fitness_per_trace[pl][
                     "r"] - \
-                                                    place_fitness_per_trace[pl]["p"]
+                                                    place_fitness_per_trace[pl]["p"]"""
+                place_fitness_per_trace[pl]["c"] = place_fitness_per_trace[pl]["p"] + place_fitness_per_trace[pl]["m"] - \
+                                                   place_fitness_per_trace[pl]["r"]
             elif place_fitness_per_trace[pl]["c"] + place_fitness_per_trace[pl]["r"] < place_fitness_per_trace[pl][
                 "p"] + \
                     place_fitness_per_trace[pl]["m"]:
-                place_fitness_per_trace[pl]["r"] += place_fitness_per_trace[pl]["p"] + place_fitness_per_trace[pl][
+                """place_fitness_per_trace[pl]["r"] += place_fitness_per_trace[pl]["p"] + place_fitness_per_trace[pl][
                     "m"] - \
-                                                    place_fitness_per_trace[pl]["c"]
+                                                    place_fitness_per_trace[pl]["c"]"""
+                place_fitness_per_trace[pl]["p"] = place_fitness_per_trace[pl]["c"] + place_fitness_per_trace[pl]["r"] - \
+                                                   place_fitness_per_trace[pl]["m"]
 
         # print("ag_freq",ag_freq)
         # print("ag_perf_min",ag_perf_min)
@@ -81,15 +85,36 @@ def apply(obj, parameters=None):
 
         for pl in net.places:
             this_uuid = str(uuid.uuid4())
-            pl_str = "p=%d c=%d m=%d r=%d" % (place_fitness_per_trace[pl]["p"], place_fitness_per_trace[pl]["c"], place_fitness_per_trace[pl]["m"], place_fitness_per_trace[pl]["r"])
-            if pl in im:
-                g.node(this_uuid, pl_str, shape="circle", fillcolor=color, style="filled", fontsize="8.0", labelfontsize="8.0")
-            elif pl in fm:
-                g.node(this_uuid, pl_str, shape="egg", fillcolor=color, style="filled", fontsize="8.0",
-                       labelfontsize="8.0")
+            pl_str = "p=%d r=%d\\nc=%d m=%d" % (
+                place_fitness_per_trace[pl]["p"], place_fitness_per_trace[pl]["r"], place_fitness_per_trace[pl]["c"],
+                place_fitness_per_trace[pl]["m"])
+            is_double_circled = False
+            for arc in pl.in_arcs:
+                if arc.source.label in group_size_hist:
+                    if len(group_size_hist[arc.source.label]) != sum(group_size_hist[arc.source.label]):
+                        is_double_circled = True
+            for arc in pl.out_arcs:
+                if arc.target.label in group_size_hist:
+                    if len(group_size_hist[arc.target.label]) != sum(group_size_hist[arc.target.label]):
+                        is_double_circled = True
+            if is_double_circled:
+                if pl in im:
+                    g.node(this_uuid, pl_str, shape="doublecircle", style="filled", color=color, fillcolor=color,
+                           fontsize="13.0", labelfontsize="13.0", penwidth="3.0")
+                elif pl in fm:
+                    g.node(this_uuid, pl_str, shape="doublecircle", style="filled", color=color, fillcolor=color,
+                           fontsize="13.0", labelfontsize="13.0", penwidth="3.0")
+                else:
+                    g.node(this_uuid, pl_str, shape="doublecircle", color=color, fontsize="13.0", labelfontsize="13.0", penwidth="3.0")
             else:
-                g.node(this_uuid, pl_str, shape="ellipse", fillcolor=color, style="filled", fontsize="8.0",
-                       labelfontsize="8.0")
+                if pl in im:
+                    g.node(this_uuid, pl_str, shape="circle", style="filled", fillcolor=color, color=color,
+                           fontsize="13.0", labelfontsize="13.0")
+                elif pl in fm:
+                    g.node(this_uuid, pl_str, shape="circle", style="filled", color=color, fillcolor=color,
+                           fontsize="13.0", labelfontsize="13.0")
+                else:
+                    g.node(this_uuid, pl_str, shape="circle", color=color, fontsize="13.0", labelfontsize="13.0")
             all_objs[pl] = this_uuid
 
         for tr in net.transitions:
@@ -101,7 +126,8 @@ def apply(obj, parameters=None):
                 count = rr[tr]["label"].split("(")[-1].split("]")[0]
                 orig_act_count[tr] = count
                 this_act_count = "%d" % (float(ac[tr.label]))
-                g.node(this_uuid, tr.label + " \\n" + this_act_count + "", shape="box")
+                g.node(this_uuid, tr.label + " \\n" + this_act_count + "", shape="box", fontsize="36.0",
+                       labelfontsize="36.0")
                 trans_names[tr.label] = this_uuid
                 all_objs[tr] = this_uuid
             else:
@@ -112,41 +138,66 @@ def apply(obj, parameters=None):
 
             source_node = arc.source
             target_node = arc.target
+            to_double_arc = False
 
             if arc in rr:
 
                 arc_count = float(rr[arc]['label'])
 
                 if arc in ag_perf_min:
-                    perf_str = "\\npmin=%s pmax=%s pmedian=%s pmean=%s" % (
-                    ag_perf_min[arc]['label'], ag_perf_max[arc]['label'], ag_perf_median[arc]['label'],
-                    ag_perf_mean[arc]['label'])
+                    perf_str = "\\nperf: median=%s mean=%s" % (
+                        ag_perf_median[arc]['label'],
+                        ag_perf_mean[arc]['label'])
                 else:
                     perf_str = ""
 
                 if type(source_node) is PetriNet.Place:
-                    if target_node.label is not None and ac[target_node.label] > 0:
-                        pre = "EVGS: min=%d max=%d median=%d mean=%.2f eve=%d obj=%d\\n" % (min(group_size_hist[target_node.label]), max(group_size_hist[target_node.label]),
-                                                                              median(group_size_hist[target_node.label]), mean(group_size_hist[target_node.label]), len(group_size_hist[target_node.label]), sum(group_size_hist[target_node.label]))
-                        int = "TR: %.2f (rep_arc_count=%d, rep_act_count=%d)" % (arc_count / ac[target_node.label], arc_count, ac[target_node.label])
-                        ratio = pre + perf_str + ""
-                    else:
-                        ratio = "1.00" + perf_str + ""
-                else:
-                    if source_node.label is not None and ac[source_node.label] > 0:
-                        pre = "EVGS: min=%d max=%d median=%d mean=%.2f eve=%d obj=%d\\n" % (min(group_size_hist[source_node.label]), max(group_size_hist[source_node.label]),
-                                                                              median(group_size_hist[source_node.label]), mean(group_size_hist[source_node.label]), len(group_size_hist[source_node.label]), sum(group_size_hist[source_node.label]))
-                        int = "TR=%.2f (rep_arc_count=%d, rep_act_count=%d)" % (arc_count / ac[source_node.label], arc_count, ac[source_node.label])
-                        ratio = pre + perf_str + ""
-                    else:
-                        ratio = "1.00" + perf_str + ""
+                    if True or (target_node.label is not None and ac[target_node.label] > 0):
+                        # if ac[target_node.label] > 0:
+                        if target_node.label in group_size_hist and max(group_size_hist[target_node.label]) > 1:
+                            pre = "freq: median=%d mean=%.2f\\neve=%d uniqobj=%d\\n" % (
+                                median(group_size_hist[target_node.label]), mean(group_size_hist[target_node.label]),
+                                len(group_size_hist[target_node.label]), sum(group_size_hist[target_node.label]))
+                        else:
+                            # pre="freq: %d\\n" % len(group_size_hist[target_node.label])
+                            pre = "uniqobj=" + str(int(arc_count))
+                        if target_node.label in group_size_hist and sum(group_size_hist[target_node.label]) != len(
+                                group_size_hist[target_node.label]):
+                            to_double_arc = True
 
-                g.edge(all_objs[source_node], all_objs[target_node], label=ratio, penwidth=str(rr[arc]['penwidth']),
-                       color=color, fontsize="8.0")
+                        ratio = pre + perf_str + ""
+                    else:
+                        # ratio = "1.00" + perf_str + ""
+                        ratio = "freq: " + str(int(arc_count))
+                else:
+                    if True or (source_node.label is not None and ac[source_node.label] > 0):
+                        # if ac[source_node.label] > 0:
+                        if source_node.label in group_size_hist and max(group_size_hist[source_node.label]) > 1:
+                            pre = "freq: median=%d mean=%.2f\\neve=%d uniqobj=%d\\n" % (
+                                median(group_size_hist[source_node.label]), mean(group_size_hist[source_node.label]),
+                                len(group_size_hist[source_node.label]), sum(group_size_hist[source_node.label]))
+                        else:
+                            # pre="freq: %d\\n" % len(group_size_hist[source_node.label])
+                            pre = "uniqobj=" + str(int(arc_count))
+                        if source_node.label in group_size_hist and sum(group_size_hist[source_node.label]) != len(
+                                group_size_hist[source_node.label]):
+                            to_double_arc = True
+
+                        ratio = pre + perf_str + ""
+                    else:
+                        # ratio = "1.00" + perf_str + ""
+                        ratio = "freq: " + str(int(arc_count))
+
+                if to_double_arc:
+                    g.edge(all_objs[source_node], all_objs[target_node], label=ratio, penwidth=str(3.0*float(rr[arc]['penwidth'])),
+                           color=color + ":white:" + color, fontsize="13.0")
+                else:
+                    g.edge(all_objs[source_node], all_objs[target_node], label=ratio, penwidth=str(1.2*float(rr[arc]['penwidth'])),
+                           color=color, fontsize="13.0")
 
                 all_objs[arc] = this_uuid
             else:
-                g.edge(all_objs[source_node], all_objs[target_node], label="", color=color, fontsize="8.0")
+                g.edge(all_objs[source_node], all_objs[target_node], label="", color=color, fontsize="11.0")
 
     g.attr(overlap='false')
     g.attr(fontsize='11')
