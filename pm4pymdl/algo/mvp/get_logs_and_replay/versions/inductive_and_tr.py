@@ -51,7 +51,7 @@ def apply(df, parameters=None):
     allowed_activities = parameters["allowed_activities"] if "allowed_activities" in parameters else None
 
     if df.type == "succint":
-        df = succint_mdl_to_exploded_mdl(df)
+        df = succint_mdl_to_exploded_mdl.apply(df)
         df.type = "exploded"
 
     persps = [x for x in df.columns if not x.startswith("event_")]
@@ -78,6 +78,8 @@ def apply(df, parameters=None):
 
 
         if allowed_activities is not None:
+            if persp not in allowed_activities:
+                continue
             filtered_log = attributes_filter.apply_events(log, allowed_activities[persp])
         else:
             filtered_log = log
