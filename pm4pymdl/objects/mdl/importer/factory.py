@@ -11,8 +11,10 @@ def apply(file_path, parameters=None):
     if file_path.endswith(".csv") or file_path.endswith(".mdl"):
         df = pd.read_csv(file_path, sep=sep, quotechar=quotechar)
         df.type = "succint"
+        df["event_timestamp"] = pd.to_datetime(df["event_timestamp"])
         return df
     elif file_path.endswith(".parquet"):
         df = parquet_importer.apply(file_path)
         df.type = "exploded"
+        df["event_timestamp"] = pd.to_datetime(df["event_timestamp"])
         return df
