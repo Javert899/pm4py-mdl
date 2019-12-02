@@ -9,9 +9,40 @@ from pm4py.algo.filtering.log.variants import variants_filter as variants_module
 from pm4py.algo.filtering.log.paths import paths_filter
 from pm4py.algo.filtering.log.variants import variants_filter
 from pm4py.algo.filtering.log.attributes import attributes_filter
+from pm4py.objects.petri.petrinet import PetriNet, Marking
+from pm4py.objects.petri.utils import add_arc_from_to
+from pm4py.objects.petri.utils import remove_place, remove_transition
 from copy import deepcopy
+import uuid
+
 
 PARAM_ACTIVITY_KEY = pm4py.util.constants.PARAMETER_CONSTANT_ACTIVITY_KEY
+
+
+def reduce_petri_net(net):
+    transes = set([x for x in net.transitions if x.label is None])
+    places = list(net.places)
+    i = 0
+    while i < len(places):
+        place = places[i]
+        source_transes = set([x.source for x in place.in_arcs])
+        target_transes = set([x.target for x in place.out_arcs])
+        if len(source_transes) == 1 and len(target_transes) == 1:
+            if source_transes.issubset(transes) and target_transes.issubset(transes):
+                source_trans = list(source_transes)[0]
+                target_trans = list(target_transes)[0]
+                if len(target_trans.out_arcs) == 1:
+                    target_place = list(target_trans.out_arcs)[0].target
+                    add_arc_from_to(source_trans, target_place, net)
+                    remove_place(net, place)
+                    remove_transition(net, target_trans)
+                    places = list(net.places)
+                    continue
+                    #print(source_trans, target_trans, target_place)
+        i = i + 1
+
+    return net
+
 
 def apply(df, parameters=None):
     if parameters is None:
@@ -57,6 +88,17 @@ def apply(df, parameters=None):
         print(persp,"got log")
 
         net, im, fm = inductive_miner.apply(filtered_log)
+
+        """if persp == "items":
+            trans_map = {t.label:t for t in net.transitions}
+            source_place_it = list(trans_map["item out of stock"].in_arcs)[0].source
+            target_place_re = list(trans_map["reorder item"].out_arcs)[0].target
+            skip_trans_1 = PetriNet.Transition(str(uuid.uuid4()), None)
+            net.transitions.add(skip_trans_1)
+            add_arc_from_to(source_place_it, skip_trans_1, net)
+            add_arc_from_to(skip_trans_1, target_place_re, net)"""
+
+        net = reduce_petri_net(net)
         #net, im, fm = alpha_miner.apply(filtered_log)
         print(persp,"got model")
 
@@ -64,7 +106,7 @@ def apply(df, parameters=None):
         print(persp,"got activ_count")
 
         variants_idx = variants_module.get_variants_from_log_trace_idx(log)
-        variants = variants_module.convert_variants_trace_idx_to_trace_obj(log, variants_idx)
+        #variants = variants_module.convert_variants_trace_idx_to_trace_obj(log, variants_idx)
         #parameters_tr = {PARAM_ACTIVITY_KEY: "concept:name", "variants": variants}
 
         print(persp,"got variants")
@@ -101,13 +143,13 @@ def apply(df, parameters=None):
 
         occurrences = {}
         for trans in transition_fitness_per_trace:
-            occurrences[trans.label] = []
+            occurrences[trans.label] = set()
             for trace in transition_fitness_per_trace[trans]["fit_traces"]:
                 if not trace in transition_fitness_per_trace[trans]["underfed_traces"]:
                     case_id = trace.attributes["concept:name"]
                     for event in trace:
                         if event["concept:name"] == trans.label:
-                            occurrences[trans.label].append([case_id, event["event_id"]])
+                            occurrences[trans.label].add((case_id, event["event_id"]))
             #print(transition_fitness_per_trace[trans])
 
 
