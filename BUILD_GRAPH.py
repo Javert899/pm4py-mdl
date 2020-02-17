@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.metrics import pairwise_distances
 from scipy.spatial.distance import cosine
 import networkx as nx
-from networkx.algorithms.community import greedy_modularity_communities
+from networkx.algorithms.community import asyn_lpa_communities
 from networkx.algorithms.community import quality
 
 log0 = mdl_importer.apply("example_logs/mdl/order_management.mdl")
@@ -54,11 +54,11 @@ while N < 20:
     for j in range(Mpow.shape[0]):
         for z in range(Mpow.shape[1]):
             if Mpow[j, z] > 0:
-                G.add_edge(j, z, weight=Mpow[j, z])
-    c = list(greedy_modularity_communities(G, weight="weight"))
+                G.add_edge(j, z, weight=Mpow[j, z]*summ[j]/overall_sum)
+    c = list(asyn_lpa_communities(G, weight="weight"))
     print(N, "modularity", quality.modularity(G, c))
     for j in range(Mpow.shape[0]):
-        vals = list(Mpow[j, :])
+        vals = list(Mpow[j, :]*summ[j]/overall_sum)
         vals = sorted([(i, vals[i]) for i in range(len(vals)) if vals[i] > 0], key=lambda x: x[1], reverse=True)
         idxs = []
         z = 0
