@@ -24,7 +24,7 @@ setup(
               'pm4pymdl.algo.mvp.gen_framework.edge_freq', 'pm4pymdl.algo.mvp.gen_framework.node_freq',
               'pm4pymdl.algo.mvp.gen_framework.rel_events', 'pm4pymdl.algo.mvp.gen_framework.rel_activities',
               'pm4pymdl.algo.mvp.get_logs_and_replay', 'pm4pymdl.algo.mvp.get_logs_and_replay.versions',
-              'pm4pymdl.objects', 'pm4pymdl.objects.mdl', 'pm4pymdl.objects.mdl.exporter',
+              'pm4pymdl.algo.bindings', 'pm4pymdl.objects', 'pm4pymdl.objects.mdl', 'pm4pymdl.objects.mdl.exporter',
               'pm4pymdl.objects.mdl.importer', 'pm4pymdl.objects.xoc', 'pm4pymdl.objects.xoc.exporter',
               'pm4pymdl.objects.xoc.exporter.versions', 'pm4pymdl.objects.xoc.importer',
               'pm4pymdl.objects.xoc.importer.versions', 'pm4pymdl.objects.openslex',
@@ -35,7 +35,7 @@ setup(
     url='http://www.pm4py.org',
     license='GPL 3.0',
     install_requires=[
-        "pm4py",
+        "pm4py==1.2.10",
         "pyarrow==0.15.1"
     ],
     project_urls={
