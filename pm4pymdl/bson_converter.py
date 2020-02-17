@@ -1,11 +1,11 @@
 import bson
 import json
 import pandas as pd
-from pm4py.objects.log.exporter.parquet import factory as parquet_exporter
 import os
 
 
 def convert(source_path, target_path):
+    from pm4py.objects.log.exporter.parquet import factory as parquet_exporter
     limit_length = 35
     codec_options = bson.CodecOptions(unicode_decode_error_handler='ignore')
     gen = bson.decode_file_iter(open(source_path, 'rb'), codec_options=codec_options)

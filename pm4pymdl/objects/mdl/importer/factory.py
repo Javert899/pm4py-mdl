@@ -1,4 +1,3 @@
-from pm4py.objects.log.importer.parquet import factory as parquet_importer
 import pandas as pd
 
 def apply(file_path, parameters=None):
@@ -14,6 +13,7 @@ def apply(file_path, parameters=None):
         df["event_timestamp"] = pd.to_datetime(df["event_timestamp"])
         return df
     elif file_path.endswith(".parquet"):
+        from pm4py.objects.log.importer.parquet import factory as parquet_importer
         df = parquet_importer.apply(file_path)
         df.type = "exploded"
         df["event_timestamp"] = pd.to_datetime(df["event_timestamp"])
