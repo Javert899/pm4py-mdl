@@ -1,5 +1,5 @@
 import pm4py
-from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl
+from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl, clean_frequency, clean_arc_frequency
 from pm4pymdl.algo.mvp.projection import factory
 from pm4py.algo.discovery.alpha import factory as alpha_miner
 from pm4py.algo.discovery.inductive import factory as inductive_miner
@@ -53,6 +53,12 @@ def apply(df, parameters=None):
     if df.type == "succint":
         df = succint_mdl_to_exploded_mdl.apply(df)
         df.type = "exploded"
+
+    min_node_freq = parameters["min_node_freq"] if "min_node_freq" in parameters else 0
+    min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 0
+
+    df = clean_frequency.apply(df, min_node_freq)
+    df = clean_arc_frequency.apply(df, min_edge_freq)
 
     persps = [x for x in df.columns if not x.startswith("event_")]
 

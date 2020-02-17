@@ -2,9 +2,15 @@ from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl
 
 
 def apply(df, persp, parameters=None):
-    if df.type == "succint":
-        df = succint_mdl_to_exploded_mdl(df)
-        df.type = "exploded"
+    if parameters is None:
+        parameters = {}
+
+    try:
+        if df.type == "succint":
+            df = succint_mdl_to_exploded_mdl(df)
+            df.type = "exploded"
+    except:
+        pass
 
     cols = [x for x in df.columns if x.startswith("event_") or x == persp]
     df = df[cols].dropna(subset=[persp])
