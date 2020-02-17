@@ -3,6 +3,7 @@ from pm4pymdl.algo.mvp.gen_framework.rel_events import factory as rel_ev_factory
 from pm4pymdl.algo.mvp.gen_framework.rel_activities import factory as rel_act_factory
 from pm4pymdl.algo.mvp.gen_framework.node_freq import factory as node_freq_factory
 from pm4pymdl.algo.mvp.gen_framework.edge_freq import factory as edge_freq_factory
+from pm4pymdl.algo.mvp.gen_framework import clean_objtypes
 from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl
 
 MODEL1 = model_factory.MODEL1
@@ -30,6 +31,8 @@ def apply(df, model_type_variant=MODEL1, rel_ev_variant=REL_DFG, node_freq_varia
 
     if conversion_needed:
         df = succint_mdl_to_exploded_mdl.apply(df)
+
+    df = clean_objtypes.perfom_cleaning(df, parameters=parameters)
 
     model = model_factory.apply(df, variant=model_type_variant)
     rel_ev = rel_ev_factory.apply(df, model, variant=rel_ev_variant)
