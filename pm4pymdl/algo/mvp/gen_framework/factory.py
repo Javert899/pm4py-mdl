@@ -3,8 +3,7 @@ from pm4pymdl.algo.mvp.gen_framework.rel_events import factory as rel_ev_factory
 from pm4pymdl.algo.mvp.gen_framework.rel_activities import factory as rel_act_factory
 from pm4pymdl.algo.mvp.gen_framework.node_freq import factory as node_freq_factory
 from pm4pymdl.algo.mvp.gen_framework.edge_freq import factory as edge_freq_factory
-from pm4pymdl.algo.mvp.gen_framework import clean_objtypes
-from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl
+from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl, clean_objtypes
 
 MODEL1 = model_factory.MODEL1
 MODEL2 = model_factory.MODEL2
