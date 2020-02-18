@@ -35,7 +35,7 @@ def apply(model, parameters=None):
         this_uuid = str(uuid.uuid4())
 
         if model.node_freq[activity] >= min_node_freq:
-            g.node(this_uuid, activity + "(" + str(model.node_freq[activity]) + ")")
+            g.node(this_uuid, activity + " (" + str(model.node_freq[activity]) + ")")
             nodes_map[activity] = this_uuid
 
             count_nodes = count_nodes + 1

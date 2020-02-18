@@ -45,7 +45,7 @@ def apply(model, parameters=None):
             for act in model.node_freq[p]:
                 if model.node_freq[p][act] >= min_node_freq:
                     this_uuid = str(uuid.uuid4())
-                    c.node(this_uuid, act + "(" + str(model.node_freq[p][act]) + ")", fillcolor=color, style="filled")
+                    c.node(this_uuid, act + " (" + str(model.node_freq[p][act]) + ")", fillcolor=color, style="filled")
                     cluster_acti_corr[p][act] = this_uuid
 
                     count_nodes = count_nodes + 1
