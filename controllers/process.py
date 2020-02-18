@@ -6,6 +6,7 @@ from pm4pymdl.algo.mvp.get_logs_and_replay import factory as petri_disc_factory
 from pm4pymdl.visualization.mvp.gen_framework import factory as mdfg_vis_factory
 from pm4pymdl.visualization.petrinet import factory as pn_vis_factory
 from pm4pymdl.algo.mvp.utils import get_activ_attrs_with_type, get_activ_otypes
+from pm4pymdl.algo.mvp.utils import filter_act_attr_val, filter_act_ot
 import base64
 import tempfile
 from copy import copy
@@ -40,16 +41,21 @@ class Process(object):
         if not session in self.session_objects:
             self.session_objects[session] = self
         obj = self.session_objects[session]
-        activities = list(obj.dataframe["event_activity"].unique())
+        obj.set_properties()
+
+        return obj
+
+    def set_properties(self):
+        activities = list(self.dataframe["event_activity"].unique())
         activities_attr_types = {}
         activities_object_types = {}
         for act in activities:
-            activities_attr_types[act] = [(x, y) for x, y in get_activ_attrs_with_type.get(obj.dataframe, act).items()]
-            activities_object_types[act] = get_activ_otypes.get(obj.dataframe, act)
+            activities_attr_types[act] = [(x, y) for x, y in get_activ_attrs_with_type.get(self.dataframe, act).items()]
+            activities_object_types[act] = get_activ_otypes.get(self.dataframe, act)
         cobject = {"activities": activities, "attr_types": activities_attr_types, "obj_types": activities_object_types}
-        obj.cobject = base64.b64encode(json.dumps(cobject).encode('utf-8')).decode('utf-8')
-        obj.get_visualization()
-        return obj
+        self.cobject = base64.b64encode(json.dumps(cobject).encode('utf-8')).decode('utf-8')
+        self.dataframe_length = len(self.dataframe)
+        self.get_visualization()
 
     def get_dfg_visualization(self):
         model = mdfg_disc_factory.apply(self.dataframe, model_type_variant=self.selected_model_type)
@@ -64,3 +70,8 @@ class Process(object):
 
     def get_petri_visualization(self):
         pass
+
+    def apply_float_filter(self, activity, attr_name, v1, v2):
+        self.dataframe = filter_act_attr_val.filter_float(self.dataframe, activity, attr_name, v1, v2)
+        self.set_properties()
+

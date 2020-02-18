@@ -5,15 +5,22 @@
     <link rel="stylesheet" href="../static/bootstrap.min.css">
 </head>
 <body>
-<div class="container">
-  <div class="col-1">
-      <h2>{{Process.name}}</h2>
-  </div>
-  <div class="col-11">
-      <div id="svgWithInnerHtml">
-
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-2" style="background-color: red;">
+          <div>
+              <h4>Process: {{Process.name}}</h4>
+          </div>
+          <div>
+              <h4>Events: {{Process.dataframe_length}}</h4>
+          </div>
       </div>
-  </div>
+      <div class="col-10">
+          <div id="svgWithInnerHtml">
+
+          </div>
+      </div>
+    </div>
 </div>
 <script type="text/javascript">
     var cobject = null;
@@ -33,13 +40,15 @@
     }
 
     function applyFloatFilter(activity, attr_name) {
-        console.log(activity);
-        console.log(attr_name);
+        let min_value = parseFloat(window.prompt("Insert the minimum float value allowed for activity="+activity+" and attr_name="+attr_name, "0"));
+        let max_value = parseFloat(window.prompt("Insert the maximum float value allowed for activity="+activity+" and attr_name="+attr_name, "1000000000"));
+        $.ajax({url: "/applyFloatFilter?activity="+activity+"&attr_name="+attr_name+"&min_value="+min_value+"&max_value="+max_value+"&process="+window.location.pathname.split("/").pop()}).done(function() { window.location.reload(); });
     }
 
     function applyObjTypesFilter(activity, ot) {
-        console.log(activity);
-        console.log(ot);
+        let min_value = parseFloat(window.prompt("Insert the minimum number of related objects allowed for activity="+activity+" and otype="+ot, "0"));
+        let max_value = parseFloat(window.prompt("Insert the minimum number of related objects allowed for activity="+activity+" and otype="+ot, "1000000000"));
+        $.ajax({url: "/applyObjTypesFilter?activity="+activity+"&ot="+ot+"&min_value="+min_value+"&max_value="+max_value+"&process="+window.location.pathname.split("/").pop()});
     }
 
     function click_listener(event) {

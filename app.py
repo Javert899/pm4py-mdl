@@ -20,6 +20,22 @@ def process_view(process=None):
         response.set_cookie('session', str(uuid.uuid4()))
     return response
 
+@app.route("/applyFloatFilter")
+def apply_float_filter():
+    session = request.cookies.get('session')
+    if session is None:
+        raise Exception()
+    activity = request.args.get('activity')
+    attr_name = request.args.get('attr_name')
+    min_value = float(request.args.get('min_value'))
+    max_value = float(request.args.get('max_value'))
+    process = request.args.get('process')
+
+    process = Shared.logs[process].get_controller(session)
+    process.apply_float_filter(activity, attr_name, min_value, max_value)
+
+    return ""
+
 
 def main():
     Shared.logs["orders"] = Process("orders", "example_logs/mdl/order_management.mdl")
