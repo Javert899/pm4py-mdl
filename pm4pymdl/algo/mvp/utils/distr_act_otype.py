@@ -5,7 +5,6 @@ def get(dataframe, activity, ot, parameters=None):
     if parameters is None:
         parameters = {}
 
-    ret = {}
     red_df = dataframe[dataframe["event_activity"] == activity]
     red_df = red_df.dropna(axis=1, how="all")
     red_df = red_df.dropna(subset=[ot])
