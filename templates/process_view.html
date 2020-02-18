@@ -16,31 +16,96 @@
   </div>
 </div>
 <script type="text/javascript">
-    var activity = "";
+    var cobject = null;
 
     function decode_utf8(s) {
       return decodeURIComponent(escape(s));
     }
 
+    function getCObject() {
+        cobject = JSON.parse(atob('{{ Process.cobject }}'));
+    }
+
     function fillMainView() {
         var pview = atob('{{ Process.model_view }}');
-        console.log(pview);
         document.getElementById("svgWithInnerHtml").innerHTML = pview;
         document.getElementById("svgWithInnerHtml").addEventListener("click", click_listener);
     }
 
+    function applyFloatFilter(activity, attr_name) {
+        console.log(activity);
+        console.log(attr_name);
+    }
+
+    function applyObjTypesFilter(activity, ot) {
+        console.log(activity);
+        console.log(ot);
+    }
+
     function click_listener(event) {
-        console.log(event.target.nodeName);
+        document.getElementById("dropDown").style.display = 'none';
         if (event.target.nodeName == "text") {
             let thisText = event.target.innerHTML;
              if (thisText.length > 0) {
-                console.log(thisText);
+                thisText = removeAfterLastSpace(thisText);
+                var i = 0;
+                while (i < cobject['activities'].length) {
+                    if (thisText === cobject['activities'][i]) {
+                        document.getElementById("dropDown").innerHTML = ""
+                        var x = document.createElement("div");
+                        x.innerHTML = "<b>Available filters</b>:<br />"
+                        document.getElementById("dropDown").appendChild(x);
+                        var j = 0;
+                        while (j < cobject['attr_types'][cobject['activities'][i]].length) {
+                            var attr_name = cobject['attr_types'][cobject['activities'][i]][j][0];
+                            var attr_type = cobject['attr_types'][cobject['activities'][i]][j][1];
+                            if (attr_type.startsWith("float")) {
+                                var x = document.createElement("div");
+                                x.innerHTML = "<a href=\"javascript:applyFloatFilter('"+cobject['activities'][i]+"', '"+attr_name+"')\">Float filter - "+attr_name+"<a>"
+                                document.getElementById("dropDown").appendChild(x);
+                            }
+                            j = j + 1;
+                        }
+                        var j = 0;
+                        while (j < cobject['obj_types'][cobject['activities'][i]].length) {
+                            var ot = cobject['obj_types'][cobject['activities'][i]][j];
+                            var x = document.createElement("div");
+                            x.innerHTML = "<a href=\"javascript:applyObjTypesFilter('"+cobject['activities'][i]+"', '"+ot+"')\">Object Type Filter - "+ot+"<a>"
+                            document.getElementById("dropDown").appendChild(x);
+                            j = j + 1;
+                        }
+                        document.getElementById("dropDown").style.display = '';
+                        document.getElementById("dropDown").style.left = event.clientX+"px";
+                        document.getElementById("dropDown").style.top = event.clientY+"px";
+                    }
+                    i++;
+                }
              }
         }
     }
 
+    function removeAfterLastSpace(oldString) {
+        let newString = "";
+        let oldStringSplit = oldString.split(" ");
+        if (oldStringSplit.length > 0 && oldStringSplit[oldStringSplit.length - 1].length > 0 && oldStringSplit[oldStringSplit.length - 1][0] == '(') {
+            let i = 0;
+            while (i < oldStringSplit.length - 1) {
+                newString = newString + oldStringSplit[i];
+                if (i < (oldStringSplit.length - 2)) {
+                    newString = newString + " ";
+                }
+                i++;
+            }
+            return newString;
+        }
+        return oldString;
+    }
+
+    getCObject();
     fillMainView();
 </script>
+<div id="dropDown" style="display: none; position: fixed; z-index: 10; background-color: #CCCCCC;">
+</div>
 </body>
 </html>
 

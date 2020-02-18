@@ -44,10 +44,10 @@ class Process(object):
         activities_attr_types = {}
         activities_object_types = {}
         for act in activities:
-            activities_attr_types[act] = get_activ_attrs_with_type.get(obj.dataframe, act)
+            activities_attr_types[act] = [(x, y) for x, y in get_activ_attrs_with_type.get(obj.dataframe, act).items()]
             activities_object_types[act] = get_activ_otypes.get(obj.dataframe, act)
         cobject = {"activities": activities, "attr_types": activities_attr_types, "obj_types": activities_object_types}
-        obj.cobject = json.dumps(cobject)
+        obj.cobject = base64.b64encode(json.dumps(cobject).encode('utf-8')).decode('utf-8')
         obj.get_visualization()
         return obj
 
