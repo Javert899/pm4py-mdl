@@ -6,12 +6,28 @@
 </head>
 <body>
 <div class="container">
-  <div class="row">
-      <div class="col-4">
-          <h2>{{Process.name}}</h2>
+  <div class="col-1">
+      <h2>{{Process.name}}</h2>
+  </div>
+  <div class="col-11">
+      <div id="svgWithInnerHtml">
+
       </div>
   </div>
 </div>
+<script type="text/javascript">
+    function decode_utf8(s) {
+      return decodeURIComponent(escape(s));
+    }
+
+    function fillMainView() {
+        var pview = atob('{{ Process.model_view }}');
+        console.log(pview);
+        document.getElementById("svgWithInnerHtml").innerHTML = pview;
+    }
+
+    fillMainView();
+</script>
 </body>
 </html>
 

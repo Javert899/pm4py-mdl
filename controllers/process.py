@@ -40,8 +40,9 @@ class Process(object):
                                                          "min_edge_count": self.selected_min_edge_freq_count, "format": "svg"})
         tfilepath = tempfile.NamedTemporaryFile(suffix='.svg')
         tfilepath.close()
+        tfilepath.name = "prova.svg"
         mdfg_vis_factory.save(gviz, tfilepath.name)
-        self.model_view = base64.b64encode(open(tfilepath.name, "rb").read())
+        self.model_view = base64.b64encode(open(tfilepath.name, "rb").read()).decode('utf-8')
 
 
     def get_petri_visualization(self):
