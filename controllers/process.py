@@ -7,6 +7,7 @@ from pm4pymdl.visualization.mvp.gen_framework import factory as mdfg_vis_factory
 from pm4pymdl.visualization.petrinet import factory as pn_vis_factory
 from pm4pymdl.algo.mvp.utils import get_activ_attrs_with_type, get_activ_otypes
 from pm4pymdl.algo.mvp.utils import filter_act_attr_val, filter_act_ot
+from pm4pymdl.algo.mvp.utils import distr_act_attrname, distr_act_otype
 import base64
 import tempfile
 from copy import copy
@@ -85,6 +86,16 @@ class Process(object):
         obj.dataframe = filter_act_ot.filter_ot(self.dataframe.copy(), activity, ot, v1, v2)
         obj.set_properties()
         self.session_objects[session] = obj
+
+
+    def get_float_attr_summary(self, session, activity, attr_name):
+        print(activity)
+        print(attr_name)
+        return distr_act_attrname.get(self.session_objects[session].dataframe, activity, attr_name)
+
+
+    def get_ot_distr_summary(self, session, activity, ot):
+        return distr_act_otype.get(self.session_objects[session].dataframe, activity, ot)
 
 
     def reset_filters(self, session):

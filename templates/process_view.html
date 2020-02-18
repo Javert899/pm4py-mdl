@@ -55,8 +55,15 @@
     }
 
     function resetFilters() {
-        console.log("resetting filters");
         $.ajax({url: "/resetFilters?process="+window.location.pathname.split("/").pop()}).done(function() { window.location.reload(); });
+    }
+
+    function getFloatAttrSummary(activity, attr_name) {
+        $.ajax({url: "/getFloatAttrSummary?activity="+activity+"&attr_name="+attr_name+"&process="+window.location.pathname.split("/").pop()}).done(function(data) { alert(JSON.stringify(data)); });
+    }
+
+    function getOtDistrSummary(activity, ot) {
+        $.ajax({url: "/getOtDistrSummary?activity="+activity+"&ot="+ot+"&process="+window.location.pathname.split("/").pop()}).done(function(data) { alert(JSON.stringify(data)); });
     }
 
     function click_listener(event) {
@@ -78,6 +85,9 @@
                             var attr_type = cobject['attr_types'][cobject['activities'][i]][j][1];
                             if (attr_type.startsWith("float")) {
                                 var x = document.createElement("div");
+                                x.innerHTML = "<a href=\"javascript:getFloatAttrSummary('"+cobject['activities'][i]+"', '"+attr_name+"')\">Values distribution - "+attr_name+"<a>"
+                                document.getElementById("dropDown").appendChild(x);
+                                var x = document.createElement("div");
                                 x.innerHTML = "<a href=\"javascript:applyFloatFilter('"+cobject['activities'][i]+"', '"+attr_name+"')\">Float filter - "+attr_name+"<a>"
                                 document.getElementById("dropDown").appendChild(x);
                             }
@@ -86,6 +96,9 @@
                         var j = 0;
                         while (j < cobject['obj_types'][cobject['activities'][i]].length) {
                             var ot = cobject['obj_types'][cobject['activities'][i]][j];
+                            var x = document.createElement("div");
+                            x.innerHTML = "<a href=\"javascript:getOtDistrSummary('"+cobject['activities'][i]+"', '"+ot+"')\">Number of related objects - "+ot+"<a>"
+                            document.getElementById("dropDown").appendChild(x);
                             var x = document.createElement("div");
                             x.innerHTML = "<a href=\"javascript:applyObjTypesFilter('"+cobject['activities'][i]+"', '"+ot+"')\">Object Type Filter - "+ot+"<a>"
                             document.getElementById("dropDown").appendChild(x);
