@@ -14,6 +14,7 @@ import json
 
 class Process(object):
     def __init__(self, name, mdl_path):
+        self.parent = self
         self.name = name
         self.mdl_path = mdl_path
         self.dataframe = mdl_importer.apply(self.mdl_path)
@@ -71,7 +72,20 @@ class Process(object):
     def get_petri_visualization(self):
         pass
 
-    def apply_float_filter(self, activity, attr_name, v1, v2):
-        self.dataframe = filter_act_attr_val.filter_float(self.dataframe, activity, attr_name, v1, v2)
-        self.set_properties()
 
+    def apply_float_filter(self, session, activity, attr_name, v1, v2):
+        obj = copy(self.session_objects[session])
+        obj.dataframe = filter_act_attr_val.filter_float(obj.dataframe, activity, attr_name, v1, v2)
+        obj.set_properties()
+        self.session_objects[session] = obj
+
+
+    def apply_ot_filter(self, session, activity, ot, v1, v2):
+        obj = copy(self.session_objects[session])
+        obj.dataframe = filter_act_ot.filter_ot(self.dataframe.copy(), activity, ot, v1, v2)
+        obj.set_properties()
+        self.session_objects[session] = obj
+
+
+    def reset_filters(self, session):
+        self.session_objects[session] = self.parent
