@@ -17,6 +17,10 @@
           <div>
               <button onclick="javascript:resetFilters()">Reset Filters</button>
           </div>
+          <div>
+              <a href="javascript:getTimestampDistribution()">Get Timestamp distribution</a><br />
+              <a href="javascript:filterByTimestamp()">Filter by Timestamp (keep events)</a>
+          </div>
       </div>
       <div class="col-10">
           <div id="svgWithInnerHtml">
@@ -27,6 +31,18 @@
 </div>
 <script type="text/javascript">
     var cobject = null;
+
+    function getTimestampDistribution() {
+           $.ajax({url: "/getTimestampDistribution?process="+window.location.pathname.split("/").pop()}).done(function(data) { alert(JSON.stringify(data)); });
+    }
+
+    function filterByTimestamp() {
+        let min_value = window.prompt("Insert the minimum allowed timestamp in the format yyyy-MM-dd hh:mm:ss (example 1970-01-01 01:00:00)");
+        let max_value = window.prompt("Insert the maximum allowed timestamp in the format yyyy-MM-dd hh:mm:ss (example 1971-01-01 01:00:00)");
+        var url0 = "/applyTimestampFilter?min_value="+min_value+"&max_value="+max_value+"&process="+window.location.pathname.split("/").pop();
+        console.log(url0);
+        $.ajax({url: url0}).done(function() { window.location.reload(); });
+    }
 
     function decode_utf8(s) {
       return decodeURIComponent(escape(s));

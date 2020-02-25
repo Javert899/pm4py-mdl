@@ -38,6 +38,34 @@ def apply_float_filter():
     return ""
 
 
+@app.route("/applyTimestampFilter")
+def apply_timestamp_filter():
+    session = request.cookies.get('session')
+    if session is None:
+        raise Exception()
+    process = request.args.get('process')
+    min_value = request.args.get('min_value')
+    max_value = request.args.get('max_value')
+
+    process = Shared.logs[process].get_controller(session)
+    process.apply_timestamp_filter(session, min_value, max_value)
+
+    return ""
+
+
+@app.route("/getTimestampDistribution")
+def get_timestamp_distribution():
+    session = request.cookies.get('session')
+    if session is None:
+        raise Exception()
+    process = request.args.get('process')
+
+    process = Shared.logs[process].get_controller(session)
+    ret = process.get_timestamp_summary(session)
+
+    return jsonify(ret)
+
+
 @app.route("/applyObjTypesFilter")
 def apply_obj_types_filter():
     session = request.cookies.get('session')

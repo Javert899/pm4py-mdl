@@ -6,8 +6,8 @@ from pm4pymdl.algo.mvp.get_logs_and_replay import factory as petri_disc_factory
 from pm4pymdl.visualization.mvp.gen_framework import factory as mdfg_vis_factory
 from pm4pymdl.visualization.petrinet import factory as pn_vis_factory
 from pm4pymdl.algo.mvp.utils import get_activ_attrs_with_type, get_activ_otypes
-from pm4pymdl.algo.mvp.utils import filter_act_attr_val, filter_act_ot
-from pm4pymdl.algo.mvp.utils import distr_act_attrname, distr_act_otype
+from pm4pymdl.algo.mvp.utils import filter_act_attr_val, filter_act_ot, filter_timestamp
+from pm4pymdl.algo.mvp.utils import distr_act_attrname, distr_act_otype, dist_timestamp
 import base64
 import tempfile
 from copy import copy
@@ -88,10 +88,19 @@ class Process(object):
         self.session_objects[session] = obj
 
 
+    def apply_timestamp_filter(self, session, dt1, dt2):
+        obj = copy(self.session_objects[session])
+        obj.dataframe = filter_timestamp.apply(obj.dataframe, dt1, dt2)
+        obj.set_properties()
+        self.session_objects[session] = obj
+
+
     def get_float_attr_summary(self, session, activity, attr_name):
-        print(activity)
-        print(attr_name)
         return distr_act_attrname.get(self.session_objects[session].dataframe, activity, attr_name)
+
+
+    def get_timestamp_summary(self, session):
+        return dist_timestamp.get(self.session_objects[session].dataframe)
 
 
     def get_ot_distr_summary(self, session, activity, ot):
