@@ -12,12 +12,24 @@ app = Flask(__name__)
 @app.route("/process_view/<process>")
 def process_view(process=None):
     session = request.cookies.get('session') if 'session' in request.cookies else uuid.uuid4()
+    min_acti_count = request.cookies.get('min_acti_count') if 'min_acti_count' in request.cookies else 0
+    min_paths_count = request.cookies.get('min_paths_count') if 'min_paths_count' in request.cookies else 0
+
+    min_acti_count = int(min_acti_count)
+    min_paths_count = int(min_paths_count)
+
     response = make_response(render_template(
         'process_view.html',
-        Process=Shared.logs[process].get_controller(session)
+        Process=Shared.logs[process].get_controller(session).get_visualization(min_acti_count=min_acti_count, min_paths_count=min_paths_count)
         ))
+
     if not request.cookies.get('session'):
         response.set_cookie('session', str(uuid.uuid4()))
+    if not request.cookies.get('min_acti_count'):
+        response.set_cookie('min_acti_count', str(min_acti_count))
+    if not request.cookies.get('min_paths_count'):
+        response.set_cookie('min_paths_count', str(min_paths_count))
+
     return response
 
 

@@ -18,6 +18,16 @@
               <button onclick="javascript:resetFilters()">Reset Filters</button>
           </div>
           <div>
+              Filter activities (min. occurrences):<br />
+              <input type="text" id="min_acti_count" />
+              <button onclick="javascript:formCookie()">Set</button>
+          </div>
+          <div>
+              Filter paths (min. occurrences):<br />
+              <input type="text" id="min_paths_count" />
+              <button onclick="javascript:formCookie()">Set</button>
+          </div>
+          <div>
               <a href="javascript:getTimestampDistribution()">Get Timestamp distribution</a><br />
               <a href="javascript:filterByTimestamp()">Filter by Timestamp (keep events)</a>
           </div>
@@ -31,6 +41,14 @@
 </div>
 <script type="text/javascript">
     var cobject = null;
+
+    if(typeof(String.prototype.trim) === "undefined")
+    {
+        String.prototype.trim = function()
+        {
+            return String(this).replace(/^\s+|\s+$/g, '');
+        };
+    }
 
     function getTimestampDistribution() {
            $.ajax({url: "/getTimestampDistribution?process="+window.location.pathname.split("/").pop()}).done(function(data) { alert(JSON.stringify(data)); });
@@ -147,6 +165,62 @@
         return oldString;
     }
 
+    function preliminary() {
+        var x = document.cookie.split(";");
+        var i = 0;
+        while (i < x.length) {
+            let cookie_name = x[i].split("=")[0].trim();
+            let cookie_value = x[i].split("=")[1];
+
+            if (cookie_name === "min_acti_count") {
+                document.getElementById("min_acti_count").value = cookie_value;
+            }
+            if (cookie_name === "min_paths_count") {
+                document.getElementById("min_paths_count").value = cookie_value;
+            }
+            i++;
+        }
+        console.log("x");
+        console.log(x);
+    }
+
+    function eraseCookie(name) {
+        document.cookie = name+'=; Max-Age=-99999999;';
+    }
+
+    function setCookie(name,value,days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+    }
+
+    function formCookie() {
+        var x = document.cookie.split(";");
+        var i = 0;
+        var new_cookie = "";
+        while (i < x.length) {
+            let cookie_name = x[i].split("=")[0].trim();
+            let cookie_value = x[i].split("=")[1];
+
+            eraseCookie(cookie_name);
+
+            if (cookie_name == "min_acti_count") {
+                setCookie(cookie_name, document.getElementById("min_acti_count").value, 1);
+            }
+            else if (cookie_name == "min_paths_count") {
+                setCookie(cookie_name, document.getElementById("min_paths_count").value, 1);
+            }
+            i++;
+        }
+        console.log(document.cookie);
+        window.location.reload();
+    }
+
+    preliminary();
     getCObject();
     fillMainView();
 </script>

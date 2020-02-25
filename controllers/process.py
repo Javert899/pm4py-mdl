@@ -31,13 +31,16 @@ class Process(object):
         self.selected_min_acti_count = 0
         self.selected_min_edge_freq_count = 0
         self.model_view = ""
-        self.get_visualization()
 
-    def get_visualization(self):
+    def get_visualization(self, min_acti_count=0, min_paths_count=0):
+        self.selected_min_acti_count = min_acti_count
+        self.selected_min_edge_freq_count = min_paths_count
+
         if self.selected_model_type.startswith("model"):
             self.get_dfg_visualization()
         else:
             self.get_petri_visualization()
+        return self
 
     def get_controller(self, session):
         if not session in self.session_objects:
@@ -61,8 +64,8 @@ class Process(object):
 
     def get_dfg_visualization(self):
         model = mdfg_disc_factory.apply(self.dataframe, model_type_variant=self.selected_model_type)
-        gviz = mdfg_vis_factory.apply(model, parameters={"min_acti_count": self.selected_min_acti_count,
-                                                         "min_edge_count": self.selected_min_edge_freq_count, "format": "svg"})
+        gviz = mdfg_vis_factory.apply(model, parameters={"min_node_freq": self.selected_min_acti_count,
+                                                         "min_edge_freq": self.selected_min_edge_freq_count, "format": "svg"})
         tfilepath = tempfile.NamedTemporaryFile(suffix='.svg')
         tfilepath.close()
         tfilepath.name = "prova.svg"
