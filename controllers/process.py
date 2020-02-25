@@ -32,9 +32,10 @@ class Process(object):
         self.selected_min_edge_freq_count = 0
         self.model_view = ""
 
-    def get_visualization(self, min_acti_count=0, min_paths_count=0):
+    def get_visualization(self, min_acti_count=0, min_paths_count=0, model_type="model1"):
         self.selected_min_acti_count = min_acti_count
         self.selected_min_edge_freq_count = min_paths_count
+        self.selected_model_type = model_type
 
         if self.selected_model_type.startswith("model"):
             self.get_dfg_visualization()
@@ -63,7 +64,12 @@ class Process(object):
         self.get_visualization()
 
     def get_dfg_visualization(self):
-        model = mdfg_disc_factory.apply(self.dataframe, model_type_variant=self.selected_model_type)
+        if self.selected_model_type == "model1":
+            model = mdfg_disc_factory.apply(self.dataframe, model_type_variant=self.selected_model_type, node_freq_variant="type1", edge_freq_variant="type11")
+        elif self.selected_model_type == "model2":
+            model = mdfg_disc_factory.apply(self.dataframe, model_type_variant=self.selected_model_type, node_freq_variant="type21", edge_freq_variant="type211")
+        elif self.selected_model_type == "model3":
+            model = mdfg_disc_factory.apply(self.dataframe, model_type_variant=self.selected_model_type, node_freq_variant="type31", edge_freq_variant="type11")
         gviz = mdfg_vis_factory.apply(model, parameters={"min_node_freq": self.selected_min_acti_count,
                                                          "min_edge_freq": self.selected_min_edge_freq_count, "format": "svg"})
         tfilepath = tempfile.NamedTemporaryFile(suffix='.svg')
