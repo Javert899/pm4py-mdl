@@ -14,7 +14,9 @@ from copy import copy
 import json
 
 class Process(object):
-    def __init__(self, name, mdl_path):
+    def __init__(self, name, mdl_path, shared_logs):
+        self.shared_logs = shared_logs
+        self.shared_logs_names = []
         self.parent = self
         self.name = name
         self.mdl_path = mdl_path
@@ -33,6 +35,7 @@ class Process(object):
         self.model_view = ""
 
     def get_visualization(self, min_acti_count=0, min_paths_count=0, model_type="model1"):
+        self.shared_logs_names = "@@@".join([x for x in self.shared_logs])
         self.selected_min_acti_count = min_acti_count
         self.selected_min_edge_freq_count = min_paths_count
         self.selected_model_type = model_type

@@ -18,7 +18,13 @@
               <button onclick="javascript:resetFilters()">Reset Filters</button>
           </div>
           <div>
-              Model type:
+              Change log:
+              <select id="logselector" name="logselector">
+              </select>
+              <button onclick="javascript:performLogChange()">Set</button>
+          </div>
+          <div>
+              Model:
               <select id="model_type" name="model_type">
                   <option value="model1">mDFG Type 1</option>
                   <option value="model2">mDFG Type 2</option>
@@ -50,6 +56,7 @@
     </div>
 </div>
 <script type="text/javascript">
+    var pnames = null;
     var cobject = null;
 
     if(typeof(String.prototype.trim) === "undefined")
@@ -177,8 +184,19 @@
 
     function preliminary() {
         document.getElementById("model_type").value = "model1";
+        pnames = '{{ Process.shared_logs_names }}'.split("@@@");
+        var log_selector = document.getElementById("logselector");
+        let i = 0;
+        while (i < pnames.length) {
+            var option = document.createElement("option");
+            option.text = pnames[i];
+            option.value = pnames[i];
+            log_selector.add(option);
+            i++;
+        }
+        console.log(pnames);
         var x = document.cookie.split(";");
-        var i = 0;
+        i = 0;
         while (i < x.length) {
             let cookie_name = x[i].split("=")[0].trim();
             let cookie_value = x[i].split("=")[1];
@@ -235,6 +253,11 @@
         }
         console.log(document.cookie);
         window.location.reload();
+    }
+
+    function performLogChange() {
+        var selected_log = document.getElementById("logselector").value;
+        window.location.href = "/process_view/"+selected_log;
     }
 
     preliminary();

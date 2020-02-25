@@ -153,7 +153,8 @@ def reset_filters():
     return ""
 
 def main():
-    Shared.logs["orders"] = Process("orders", "example_logs/mdl/order_management.mdl")
+    Shared.logs["orders"] = Process("orders", "example_logs/mdl/order_management.mdl", Shared.logs)
+    Shared.logs["orders2"] = Process("orders2", "example_logs/mdl/order_management.mdl", Shared.logs)
     app.run()
 
 
