@@ -13,6 +13,7 @@ import tempfile
 from copy import copy
 import json
 
+
 class Process(object):
     def __init__(self, name, mdl_path, shared_logs):
         self.shared_logs = shared_logs
@@ -68,23 +69,30 @@ class Process(object):
 
     def get_dfg_visualization(self):
         if self.selected_model_type == "model1":
-            model = mdfg_disc_factory.apply(self.dataframe, model_type_variant=self.selected_model_type, node_freq_variant="type1", edge_freq_variant="type11")
+            model = mdfg_disc_factory.apply(self.dataframe, model_type_variant=self.selected_model_type,
+                                            node_freq_variant="type1", edge_freq_variant="type11")
         elif self.selected_model_type == "model2":
-            model = mdfg_disc_factory.apply(self.dataframe, model_type_variant=self.selected_model_type, node_freq_variant="type21", edge_freq_variant="type211")
+            model = mdfg_disc_factory.apply(self.dataframe, model_type_variant=self.selected_model_type,
+                                            node_freq_variant="type21", edge_freq_variant="type211")
         elif self.selected_model_type == "model3":
-            model = mdfg_disc_factory.apply(self.dataframe, model_type_variant=self.selected_model_type, node_freq_variant="type31", edge_freq_variant="type11")
+            model = mdfg_disc_factory.apply(self.dataframe, model_type_variant=self.selected_model_type,
+                                            node_freq_variant="type31", edge_freq_variant="type11")
         gviz = mdfg_vis_factory.apply(model, parameters={"min_node_freq": self.selected_min_acti_count,
-                                                         "min_edge_freq": self.selected_min_edge_freq_count, "format": "svg"})
+                                                         "min_edge_freq": self.selected_min_edge_freq_count,
+                                                         "format": "svg"})
         tfilepath = tempfile.NamedTemporaryFile(suffix='.svg')
         tfilepath.close()
-        tfilepath.name = "prova.svg"
         mdfg_vis_factory.save(gviz, tfilepath.name)
         self.model_view = base64.b64encode(open(tfilepath.name, "rb").read()).decode('utf-8')
 
-
     def get_petri_visualization(self):
-        pass
-
+        model = petri_disc_factory.apply(self.dataframe, parameters={"min_node_freq": self.selected_min_acti_count,
+                                                                     "min_edge_freq": self.selected_min_edge_freq_count})
+        gviz = pn_vis_factory.apply(model, parameters={"format": "svg"})
+        tfilepath = tempfile.NamedTemporaryFile(suffix='.svg')
+        tfilepath.close()
+        mdfg_vis_factory.save(gviz, tfilepath.name)
+        self.model_view = base64.b64encode(open(tfilepath.name, "rb").read()).decode('utf-8')
 
     def apply_float_filter(self, session, activity, attr_name, v1, v2):
         obj = copy(self.session_objects[session])
@@ -92,13 +100,11 @@ class Process(object):
         obj.set_properties()
         self.session_objects[session] = obj
 
-
     def apply_ot_filter(self, session, activity, ot, v1, v2):
         obj = copy(self.session_objects[session])
         obj.dataframe = filter_act_ot.filter_ot(self.dataframe.copy(), activity, ot, v1, v2)
         obj.set_properties()
         self.session_objects[session] = obj
-
 
     def apply_timestamp_filter(self, session, dt1, dt2):
         obj = copy(self.session_objects[session])
@@ -106,18 +112,14 @@ class Process(object):
         obj.set_properties()
         self.session_objects[session] = obj
 
-
     def get_float_attr_summary(self, session, activity, attr_name):
         return distr_act_attrname.get(self.session_objects[session].dataframe, activity, attr_name)
-
 
     def get_timestamp_summary(self, session):
         return dist_timestamp.get(self.session_objects[session].dataframe)
 
-
     def get_ot_distr_summary(self, session, activity, ot):
         return distr_act_otype.get(self.session_objects[session].dataframe, activity, ot)
-
 
     def reset_filters(self, session):
         self.session_objects[session] = self.parent
