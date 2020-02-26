@@ -26,6 +26,8 @@
           <div>
               Model:
               <select id="model_type" name="model_type">
+                  <option value="mvp_frequency">MVP frequency</option>
+                  <option value="mvp_performance">MVP performance</option>
                   <option value="model1">mDFG Type 1</option>
                   <option value="model2">mDFG Type 2</option>
                   <option value="model3">mDFG Type 3</option>
@@ -182,7 +184,7 @@
     }
 
     function preliminary() {
-        document.getElementById("model_type").value = "model1";
+        document.getElementById("model_type").value = "mvp_frequency";
         pnames = '{{ Process.shared_logs_names }}'.split("@@@");
         var log_selector = document.getElementById("logselector");
         let i = 0;

@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, make_response, jsonify
 from pm4pymdl.objects.mdl.importer import factory as mdl_importer
 from controllers.process import Process
+from controllers import defaults
 import uuid
 
 class Shared:
@@ -14,7 +15,7 @@ def process_view(process=None):
     session = request.cookies.get('session') if 'session' in request.cookies else uuid.uuid4()
     min_acti_count = request.cookies.get('min_acti_count') if 'min_acti_count' in request.cookies else 0
     min_paths_count = request.cookies.get('min_paths_count') if 'min_paths_count' in request.cookies else 0
-    model_type = request.cookies.get('model_type') if 'model_type' in request.cookies else "model1"
+    model_type = request.cookies.get('model_type') if 'model_type' in request.cookies else defaults.DEFAULT_MODEL_TYPE
 
     min_acti_count = int(min_acti_count)
     min_paths_count = int(min_paths_count)
@@ -31,7 +32,7 @@ def process_view(process=None):
     if not request.cookies.get('min_paths_count'):
         response.set_cookie('min_paths_count', str(min_paths_count))
     if not request.cookies.get('model_type'):
-        response.set_cookie('model_type', 'model1')
+        response.set_cookie('model_type', model_type)
 
     return response
 

@@ -8,6 +8,9 @@ from pm4pymdl.visualization.petrinet import factory as pn_vis_factory
 from pm4pymdl.algo.mvp.utils import get_activ_attrs_with_type, get_activ_otypes
 from pm4pymdl.algo.mvp.utils import filter_act_attr_val, filter_act_ot, filter_timestamp
 from pm4pymdl.algo.mvp.utils import distr_act_attrname, distr_act_otype, dist_timestamp
+from pm4pymdl.algo.mvp.discovery import factory as mvp_discovery
+from pm4pymdl.visualization.mvp import factory as mvp_vis_factory
+from controllers import defaults
 import base64
 import tempfile
 from copy import copy
@@ -29,13 +32,14 @@ class Process(object):
             pass
         self.session_objects = {}
         self.possible_model_types = {"model1": "mDFGs type 1", "model2": "mDFGs type 2", "model3": "mDFGs type 3",
-                                     "petri": "Object-centric Petri net"}
-        self.selected_model_type = "model1"
+                                     "petri": "Object-centric Petri net", "mvp_frequency": "MVP frequency",
+                                     "mvp_performance": "MVP performance"}
+        self.selected_model_type = defaults.DEFAULT_MODEL_TYPE
         self.selected_min_acti_count = 0
         self.selected_min_edge_freq_count = 0
         self.model_view = ""
 
-    def get_visualization(self, min_acti_count=0, min_paths_count=0, model_type="model1"):
+    def get_visualization(self, min_acti_count=0, min_paths_count=0, model_type=defaults.DEFAULT_MODEL_TYPE):
         self.shared_logs_names = "@@@".join([x for x in self.shared_logs])
         self.selected_min_acti_count = min_acti_count
         self.selected_min_edge_freq_count = min_paths_count
@@ -43,8 +47,10 @@ class Process(object):
 
         if self.selected_model_type.startswith("model"):
             self.get_dfg_visualization()
-        else:
+        elif self.selected_model_type.startswith("petri"):
             self.get_petri_visualization()
+        else:
+            self.get_mvp_visualization()
         return self
 
     def get_controller(self, session):
@@ -92,6 +98,22 @@ class Process(object):
         tfilepath = tempfile.NamedTemporaryFile(suffix='.svg')
         tfilepath.close()
         mdfg_vis_factory.save(gviz, tfilepath.name)
+        self.model_view = base64.b64encode(open(tfilepath.name, "rb").read()).decode('utf-8')
+
+    def get_mvp_visualization(self):
+        parameters = {}
+        parameters["format"] = "svg"
+        parameters["min_act_count"] = self.selected_min_acti_count
+        parameters["min_dfg_occurrences"] = self.selected_min_edge_freq_count
+        if self.selected_model_type == "mvp_performance":
+            parameters["performance"] = True
+        else:
+            parameters["performance"] = False
+        model = mvp_discovery.apply(self.dataframe, parameters=parameters)
+        gviz = mvp_vis_factory.apply(model, parameters=parameters)
+        tfilepath = tempfile.NamedTemporaryFile(suffix='.svg')
+        tfilepath.close()
+        mvp_vis_factory.save(gviz, tfilepath.name)
         self.model_view = base64.b64encode(open(tfilepath.name, "rb").read()).decode('utf-8')
 
     def apply_float_filter(self, session, activity, attr_name, v1, v2):
