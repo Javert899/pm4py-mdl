@@ -87,14 +87,14 @@
     }
 
     function getTimestampDistribution() {
-           $.ajax({url: "/getTimestampDistribution?process="+window.location.pathname.split("/").pop()}).done(function(data) { alert(JSON.stringify(data)); });
+           $.ajax({url: "/getTimestampDistribution?process="+window.location.pathname.split("/").pop()}).done(function(data) { alert(JSON.stringify(data)); }).fail(function() { alert("Something went wrong!"); });
     }
 
     function filterByTimestamp() {
         let min_value = window.prompt("Insert the minimum allowed timestamp in the format yyyy-MM-dd hh:mm:ss (example 1970-01-01 01:00:00)");
         let max_value = window.prompt("Insert the maximum allowed timestamp in the format yyyy-MM-dd hh:mm:ss (example 1971-01-01 01:00:00)");
         var url0 = "/applyTimestampFilter?min_value="+min_value+"&max_value="+max_value+"&process="+window.location.pathname.split("/").pop();
-        $.ajax({url: url0}).done(function() { window.location.reload(); });
+        $.ajax({url: url0}).done(function() { window.location.reload(); }).fail(function() { alert("Something went wrong!"); });
     }
 
     function decode_utf8(s) {
@@ -112,31 +112,31 @@
     }
 
     function filterActivity(activity, positive) {
-            $.ajax({url: "/applyActivityFilter?activity="+activity+"&positive="+positive+"&process="+window.location.pathname.split("/").pop()}).done(function() { window.location.reload(); });
+            $.ajax({url: "/applyActivityFilter?activity="+activity+"&positive="+positive+"&process="+window.location.pathname.split("/").pop()}).done(function() { window.location.reload(); }).fail(function() { alert("Something went wrong!"); });
     }
 
     function applyFloatFilter(activity, attr_name) {
         let min_value = parseFloat(window.prompt("Insert the minimum float value allowed for activity="+activity+" and attr_name="+attr_name, "0"));
         let max_value = parseFloat(window.prompt("Insert the maximum float value allowed for activity="+activity+" and attr_name="+attr_name, "1000000000"));
-        $.ajax({url: "/applyFloatFilter?activity="+activity+"&attr_name="+attr_name+"&min_value="+min_value+"&max_value="+max_value+"&process="+window.location.pathname.split("/").pop()}).done(function() { window.location.reload(); });
+        $.ajax({url: "/applyFloatFilter?activity="+activity+"&attr_name="+attr_name+"&min_value="+min_value+"&max_value="+max_value+"&process="+window.location.pathname.split("/").pop()}).done(function() { window.location.reload(); }).fail(function() { alert("Something went wrong!"); });
     }
 
     function applyObjTypesFilter(activity, ot) {
         let min_value = parseFloat(window.prompt("Insert the minimum number of related objects allowed for activity="+activity+" and otype="+ot, "0"));
         let max_value = parseFloat(window.prompt("Insert the minimum number of related objects allowed for activity="+activity+" and otype="+ot, "1000000000"));
-        $.ajax({url: "/applyObjTypesFilter?activity="+activity+"&ot="+ot+"&min_value="+min_value+"&max_value="+max_value+"&process="+window.location.pathname.split("/").pop()}).done(function() { window.location.reload(); });
+        $.ajax({url: "/applyObjTypesFilter?activity="+activity+"&ot="+ot+"&min_value="+min_value+"&max_value="+max_value+"&process="+window.location.pathname.split("/").pop()}).done(function() { window.location.reload(); }).fail(function() { alert("Something went wrong!"); });
     }
 
     function resetFilters() {
-        $.ajax({url: "/resetFilters?process="+window.location.pathname.split("/").pop()}).done(function() { window.location.reload(); });
+        $.ajax({url: "/resetFilters?process="+window.location.pathname.split("/").pop()}).done(function() { window.location.reload(); }).fail(function() { alert("Something went wrong!"); });
     }
 
     function getFloatAttrSummary(activity, attr_name) {
-        $.ajax({url: "/getFloatAttrSummary?activity="+activity+"&attr_name="+attr_name+"&process="+window.location.pathname.split("/").pop()}).done(function(data) { alert(JSON.stringify(data)); });
+        $.ajax({url: "/getFloatAttrSummary?activity="+activity+"&attr_name="+attr_name+"&process="+window.location.pathname.split("/").pop()}).done(function(data) { alert(JSON.stringify(data)); }).fail(function() { alert("Something went wrong!"); });
     }
 
     function getOtDistrSummary(activity, ot) {
-        $.ajax({url: "/getOtDistrSummary?activity="+activity+"&ot="+ot+"&process="+window.location.pathname.split("/").pop()}).done(function(data) { alert(JSON.stringify(data)); });
+        $.ajax({url: "/getOtDistrSummary?activity="+activity+"&ot="+ot+"&process="+window.location.pathname.split("/").pop()}).done(function(data) { alert(JSON.stringify(data)); }).fail(function() { alert("Something went wrong!"); });
     }
 
     function click_listener(event) {

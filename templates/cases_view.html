@@ -85,15 +85,20 @@
                 td = document.createElement("td");
                 td.style = "text-align: center";
                 if (event[i].startsWith("%%")) {
-                    event[i] = event[i].substring(2, event[i].length).split("%%%");
-                    let new_eve = "";
-                    let z = 0;
-                    while (z < event[i].length) {
-                        new_eve = new_eve + "<a href=\"javascript:clickObjClass('"+event[i][z]+"', '"+columns[i]+"')\">"+event[i][z]+"</a>";
-                        new_eve = new_eve + "&nbsp;";
-                        z++;
+                    if (!columns[i].startsWith("event_")) {
+                        event[i] = event[i].substring(2, event[i].length).split("%%%");
+                        let new_eve = "";
+                        let z = 0;
+                        while (z < event[i].length) {
+                            new_eve = new_eve + "<a href=\"javascript:clickObjClass('"+event[i][z]+"', '"+columns[i]+"')\">"+event[i][z]+"</a>";
+                            new_eve = new_eve + "&nbsp;";
+                            z++;
+                        }
+                        event[i] = new_eve;
                     }
-                    event[i] = new_eve;
+                    else {
+                        event[i] = event[i].substring(2, event[i].length).split("%%%").join(" ");
+                    }
                 }
                 td.innerHTML = event[i];
                 tr.append(td);
