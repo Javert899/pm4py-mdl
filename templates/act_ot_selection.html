@@ -86,7 +86,7 @@ function populateTable() {
                 inp.disabled = true;
             }
             else {
-                if (!(selected_act_obj_types[activities[i]].includes(otypes[j]))) {
+                if (selected_act_obj_types[activities[i]] != null && !(selected_act_obj_types[activities[i]].includes(otypes[j]))) {
                     inp.checked = false;
                 }
                 else {

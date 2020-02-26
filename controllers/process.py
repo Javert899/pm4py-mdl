@@ -246,3 +246,4 @@ class Process(object):
 
     def reset_filters(self, session):
         self.session_objects[session] = self.parent
+        self.session_objects[session].selected_act_obj_types = self.session_objects[session].act_obj_types
