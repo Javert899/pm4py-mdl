@@ -16,7 +16,8 @@
           </div>
           <div>
               <button onclick="javascript:resetFilters()">Reset Filters</button><br />
-              <button id="goback" onclick="javascript:goToCasesView()">Go to Events View</button>
+              <button id="goback" onclick="javascript:goToCasesView()">Go to Events View</button><br />
+              <button id="activitysel" onclick="javascript:goToActOtSelection()">Act./Type Sel.</button><br /><br />
           </div>
           <div>
               Change log:
@@ -47,6 +48,7 @@
               <button onclick="javascript:formCookie()">Set</button>
           </div>
           <div>
+              <br /><br />
               <a href="javascript:getTimestampDistribution()">Get Timestamp distribution</a><br />
               <a href="javascript:filterByTimestamp()">Filter by Timestamp (keep events)</a>
           </div>
@@ -62,6 +64,7 @@
     var pnames = null;
     var cobject = null;
     var process = "{{ Process.name }}";
+    var expect_reload = false;
 
     if(typeof(String.prototype.trim) === "undefined")
     {
@@ -73,6 +76,14 @@
 
     function goToCasesView() {
         window.location.href = "/cases_view/"+process;
+    }
+
+    function goToActOtSelection() {
+          window.open("/act_ot_selection/"+process, '_blank');
+          //focus to that window
+          window.focus();
+          //reload current page
+          expect_reload = true;
     }
 
     function getTimestampDistribution() {
@@ -273,9 +284,19 @@
         window.location.href = "/process_view/"+selected_log;
     }
 
+    function onchange(event) {
+        if (expect_reload) {
+            if (document.visibilityState === 'visible') {
+                window.location.reload();
+            }
+        }
+    }
+
     preliminary();
     getCObject();
     fillMainView();
+
+    document.addEventListener("visibilitychange", onchange);
 </script>
 <div id="dropDown" style="display: none; position: fixed; z-index: 10; background-color: #CCCCCC;">
 </div>
