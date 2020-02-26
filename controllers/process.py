@@ -119,15 +119,17 @@ class Process(object):
         return activities_object_types
 
     def set_properties(self):
-        self.activities = list(self.dataframe["event_activity"].unique())
+        self.activities = sorted(list(self.dataframe["event_activity"].unique()))
         attr_types = self.get_act_attr_types(self.activities)
         act_obj_types = self.get_act_obj_types(self.activities)
         self.obj_types = set()
         for act in act_obj_types:
             self.obj_types = self.obj_types.union(set(act_obj_types[act]))
-        self.obj_types = list(self.obj_types)
+        self.obj_types = sorted(list(self.obj_types))
 
-        cobject = {"activities": self.activities, "attr_types": attr_types, "obj_types": act_obj_types}
+        cobject = {"activities": self.activities, "attr_types": attr_types, "obj_types": act_obj_types,
+                   "all_otypes": self.obj_types, "act_obj_types": self.act_obj_types,
+                   "selected_act_obj_types": self.selected_act_obj_types}
         self.cobject = base64.b64encode(json.dumps(cobject).encode('utf-8')).decode('utf-8')
         self.dataframe_length = len(self.dataframe)
 
