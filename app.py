@@ -1,14 +1,15 @@
 from flask import Flask, render_template, request, make_response, jsonify
+import base64
 from pm4pymdl.objects.mdl.importer import factory as mdl_importer
 from controllers.process import Process
 from controllers import defaults
 import uuid
+import json
 
 class Shared:
     logs = {}
 
 app = Flask(__name__)
-
 
 @app.route("/act_ot_selection/<process>")
 def act_ot_selection(process=None):
@@ -59,6 +60,20 @@ def process_view(process=None):
         response.set_cookie('model_type', model_type)
 
     return response
+
+
+@app.route("/saveActOtSelection/")
+def save_act_ot_selection():
+    session = request.cookies.get('session')
+    if session is None:
+        raise Exception()
+    process = request.args.get('process')
+    actotselection = json.loads(base64.b64decode(request.args.get('actotselection')).decode('utf-8'))
+
+    process = Shared.logs[process].get_controller(session)
+    process.selected_act_obj_types = actotselection
+
+    return ""
 
 
 @app.route("/getSpecObjTable")

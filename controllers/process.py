@@ -140,8 +140,17 @@ class Process(object):
         obj.selected_min_edge_freq_count = min_paths_count
         obj.selected_model_type = model_type
 
+        reversed_dict = {}
+        for ot in obj.obj_types:
+            reversed_dict[ot] = []
+        for act in obj.activities:
+            if act in obj.selected_act_obj_types:
+                for ot in obj.obj_types:
+                    if ot in obj.selected_act_obj_types[act]:
+                        reversed_dict[ot].append(act)
+
         param = {}
-        param["allowed_activities"] = self.selected_act_obj_types
+        param["allowed_activities"] = reversed_dict
         obj.dataframe = clean_objtypes.perfom_cleaning(obj.dataframe, parameters=param)
 
         if obj.selected_model_type.startswith("model"):

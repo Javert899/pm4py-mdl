@@ -38,7 +38,14 @@ function saveselection() {
         }
         i++;
     }
-    console.log(new_selection);
+    this.selected_act_obj_types = new_selection;
+    sendselection();
+}
+
+function sendselection() {
+   let selbase64 = btoa(JSON.stringify(this.selected_act_obj_types));
+
+   $.ajax({url: "/saveActOtSelection?actotselection="+selbase64+"&process="+window.location.pathname.split("/").pop()}).done(function() { window.close(); });
 }
 
 function getCObject() {
