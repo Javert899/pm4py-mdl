@@ -12,6 +12,6 @@ def perfom_cleaning(df, parameters=None):
             red_df = df.dropna(subset=[persp])
             if persp in allowed_activities:
                 red_df = red_df[red_df["event_activity"].isin(allowed_activities[persp])]
-            collation.append(red_df)
+                collation.append(red_df)
         df = pd.concat(collation)
     return df

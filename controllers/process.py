@@ -147,17 +147,20 @@ class Process(object):
         print(obj.selected_min_edge_freq_count)
 
         reversed_dict = {}
-        for ot in obj.obj_types:
-            reversed_dict[ot] = []
         for act in obj.activities:
             if act in obj.selected_act_obj_types:
                 for ot in obj.obj_types:
                     if ot in obj.selected_act_obj_types[act]:
+                        if not ot in reversed_dict:
+                            reversed_dict[ot] = []
                         reversed_dict[ot].append(act)
 
         param = {}
         param["allowed_activities"] = reversed_dict
         obj.dataframe = clean_objtypes.perfom_cleaning(obj.dataframe, parameters=param)
+        print(obj.dataframe.columns)
+        obj.dataframe = obj.dataframe.dropna(how="all", axis=1)
+        print(obj.dataframe.columns)
 
         if obj.selected_model_type.startswith("model"):
             obj.get_dfg_visualization()
