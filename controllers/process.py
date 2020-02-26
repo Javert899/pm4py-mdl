@@ -42,26 +42,35 @@ class Process(object):
     def events_list(self):
         obj = copy(self)
         succint_table = exploded_mdl_to_succint_mdl.apply(obj.dataframe)
-        obj.columns = [str(x) for x in succint_table.columns]
-        obj.columns = sorted([x for x in obj.columns if "Unnamed" not in x])
-        event_cols = [x for x in obj.columns if x.startswith("event_")]
-        obj_cols = [x for x in obj.columns if not x.startswith("event_")]
-        obj.columns = event_cols + obj_cols
-        stream = succint_table[obj.columns].to_dict('r')
-        obj.events = []
-        for ev in stream:
-            obj.events.append([])
-            for col in obj.columns:
-                evval = str(ev[col])
-                evalll = evval.lower()
-                if evalll == "nan" or evalll == "nat":
-                    evval = " "
-                obj.events[-1].append(evval)
-            obj.events[-1] = "@@@".join(obj.events[-1])
-        obj.events = "###".join(obj.events)
-        obj.events = base64.b64encode(obj.events.encode('utf-8')).decode('utf-8')
-        obj.columns = "@@@".join(obj.columns)
+        obj.events, obj.columns = self.get_columns_events(succint_table)
         return obj
+
+    def get_columns_events(self, table):
+        columns = [str(x) for x in table.columns]
+        columns = sorted([x for x in columns if "Unnamed" not in x])
+        event_cols = [x for x in columns if x.startswith("event_")]
+        obj_cols = [x for x in columns if not x.startswith("event_")]
+        columns = event_cols + obj_cols
+        stream = table[columns].to_dict('r')
+        events = []
+        for ev in stream:
+            events.append([])
+            for col in columns:
+                evval = str(ev[col])
+                try:
+                    val_evval = eval(evval)
+                    evval = "%%" + "%%%".join(val_evval)
+                except:
+                    evalll = evval.lower()
+                    if evalll == "nan" or evalll == "nat":
+                        evval = " "
+                events[-1].append(evval)
+            events[-1] = "@@@".join(events[-1])
+        events = "###".join(events)
+        events = base64.b64encode(events.encode('utf-8')).decode('utf-8')
+        columns = "@@@".join(columns)
+
+        return events, columns
 
     def get_visualization(self, min_acti_count=0, min_paths_count=0, model_type=defaults.DEFAULT_MODEL_TYPE):
         obj = copy(self)

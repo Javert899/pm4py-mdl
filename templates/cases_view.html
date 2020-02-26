@@ -12,51 +12,78 @@
 <body>
 <div class="container-fluid">
 <div class="row" style="height: 100%">
-<div id="bigtable" class="h-100 col-9" style="background-color: #DDDDDD; height: 99%; overflow: auto">
+<div id="bigtable0" class="h-100 col-7" style="background-color: #DDDDDD; height: 99%; overflow: auto">
+    <div id="bigtable" style="width: 300%">
 
+    </div>
 </div>
-    <div id="rightpanel" class="h-100 col-3" style="background-color: #BBBBBB; height: 99%; overflow: auto">
+<div id="rightpanel0" class="h-100 col-5" style="background-color: #BBBBBB; height: 99%; overflow: auto">
 
 </div>
 </div>
 </div>
 <script type="text/javascript">
-    var columns = '{{ Process.columns }}'.split("@@@");
-    var events = atob('{{ Process.events }}').split("###");
-    var tbl = document.createElement("table");
-    var tblHead = document.createElement("thead");
-    var tblBody = document.createElement("tbody");
-    var tr = null;
-    var th = null;
-    var td = null;
-    tr = document.createElement("tr");
-    let i = 0;
-    while (i < columns.length) {
-        th = document.createElement("th");
-        th.innerHTML = columns[i];
-        tr.append(th);
-        i++;
+    function clickObjClass(objId, objClass) {
     }
-    tblHead.append(tr);
-    let j = 0;
-    while (j < events.length) {
-        let event = events[j].split("@@@");
+
+    function populate(columns, events, target) {
+        var tbl = document.createElement("table");
+        tbl.style = "font-size: 9pt";
+        var tblHead = document.createElement("thead");
+        var tblBody = document.createElement("tbody");
+        var tr = null;
+        var th = null;
+        var td = null;
         tr = document.createElement("tr");
-        i = 0;
+        th = document.createElement("th");
+        th.innerHTML = " ";
+        tr.append(th);
+        let i = 0;
         while (i < columns.length) {
-            td = document.createElement("td");
-            td.style = "text-align: center";
-            td.innerHTML = event[i];
-            tr.append(td);
+            th = document.createElement("th");
+            th.innerHTML = columns[i];
+            tr.append(th);
             i++;
         }
-        tblBody.append(tr);
-        j++;
+        tblHead.append(tr);
+        let j = 0;
+        while (j < events.length) {
+            let event = events[j].split("@@@");
+            tr = document.createElement("tr");
+            td = document.createElement("td");
+            td.style = "text-align: center";
+            td.innerHTML = " ";
+            tr.append(td);
+            i = 0;
+            while (i < columns.length) {
+                td = document.createElement("td");
+                td.style = "text-align: center";
+                if (event[i].startsWith("%%")) {
+                    event[i] = event[i].substring(2, event[i].length).split("%%%");
+                    let new_eve = "";
+                    let z = 0;
+                    while (z < event[i].length) {
+                        new_eve = new_eve + "<a href=\"javascript:clickObjClass('"+event[i][z]+"', '"+columns[i]+"')\">"+event[i][z]+"</a>";
+                        new_eve = new_eve + "&nbsp;";
+                        z++;
+                    }
+                    event[i] = new_eve;
+                }
+                td.innerHTML = event[i];
+                tr.append(td);
+                i++;
+            }
+            tblBody.append(tr);
+            j++;
+        }
+        tbl.append(tblHead);
+        tbl.append(tblBody);
+        document.getElementById(target).append(tbl);
     }
-    tbl.append(tblHead);
-    tbl.append(tblBody);
-    document.getElementById("bigtable").append(tbl);
-    console.log(events);
+
+    var columns = '{{ Process.columns }}'.split("@@@");
+    var events = atob('{{ Process.events }}').split("###");
+    populate(columns, events, "bigtable");
 </script>
 </body>
 </html>
