@@ -106,6 +106,16 @@ class Process(object):
         self.act_obj_types = activities_object_types
         if self.selected_act_obj_types is None:
             self.selected_act_obj_types = activities_object_types
+        else:
+            act_keys = list(self.selected_act_obj_types.keys())
+            for key in act_keys:
+                if key not in self.act_obj_types:
+                    del self.selected_act_obj_types[key]
+                else:
+                    obj_keys = list(self.selected_act_obj_types[key])
+                    for ot in obj_keys:
+                        if ot not in self.act_obj_types[key]:
+                            del self.selected_act_obj_types[key][self.selected_act_obj_types[key].index(ot)]
         return activities_object_types
 
     def set_properties(self):
