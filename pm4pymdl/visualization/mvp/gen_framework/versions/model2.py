@@ -44,7 +44,7 @@ def apply(model, parameters=None):
                 another_uuid = str(uuid.uuid4())
                 g.node(another_uuid, str(act_class), fillcolor=act_color, style="filled", shape="box")
                 all_persp[act_index] = another_uuid
-            g.node(this_uuid, activity + " (" + str(act_class) + ", " + str(model.node_freq[activity]) + ")", fillcolor=act_color, style="filled")
+            g.node(this_uuid, activity + " (" + str(act_class) + "," + str(model.node_freq[activity]) + ")", fillcolor=act_color, style="filled")
             nodes_map[activity] = this_uuid
             g.edge(all_persp[act_index], this_uuid, "", color=act_color)
 
