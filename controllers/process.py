@@ -136,9 +136,13 @@ class Process(object):
         self.cobject = base64.b64encode(json.dumps(cobject).encode('utf-8')).decode('utf-8')
         self.dataframe_length = len(self.dataframe)
 
+    def get_names(self):
+        self.shared_logs_names = "@@@".join([x for x in self.shared_logs])
+        return self
+
     def get_visualization(self, min_acti_count=0, min_paths_count=0, model_type=defaults.DEFAULT_MODEL_TYPE):
         obj = copy(self)
-        obj.shared_logs_names = "@@@".join([x for x in obj.shared_logs])
+        obj.get_names()
         obj.selected_min_acti_count = min_acti_count
         obj.selected_min_edge_freq_count = min_paths_count
         obj.selected_model_type = model_type

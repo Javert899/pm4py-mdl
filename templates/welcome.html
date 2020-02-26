@@ -1,0 +1,46 @@
+<html>
+<head>
+    <script style="text/javascript" src="../static/jquery.min.js"></script>
+    <script style="text/javascript" src="../static/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../static/bootstrap.min.css">
+</head>
+<body style="background-color: #EEEEEE">
+<div class="jumbotron text-center">
+  <h1>PM4Py-MDL Web Interface</h1>
+  <p><b>Multi-Dimensional Process Mining through your Browser!</b></p>
+</div>
+<h5>Select the process of interest to see the model and/or the list of events:</h5><br /><br />
+<table id="conttable">
+
+</table>
+<script type="text/javascript">
+    var names = '{{ Process.shared_logs_names }}'.split("@@@");
+
+    let i = 0;
+    while (i < names.length) {
+        let tr = document.createElement("tr");
+        let td1 = document.createElement("td");
+        let td2 = document.createElement("td");
+        let td3 = document.createElement("td");
+        td1.innerHTML = "<h4>"+names[i]+"&nbsp;&nbsp;&nbsp;</h4>";
+        td2.innerHTML = "<button onclick=\"openModel('"+names[i]+"')\">Open the Model</button>&nbsp;";
+        td3.innerHTML = "<button onclick=\"openEvents('"+names[i]+"')\">Open the Events</button>&nbsp;";
+        tr.append(td1);
+        tr.append(td2);
+        tr.append(td3);
+        document.getElementById("conttable").append(tr);
+        i++;
+    }
+
+    function openModel(proc) {
+        window.location.href = "/process_view/"+proc;
+    }
+
+    function openEvents(proc) {
+        window.location.href = "/cases_view/"+proc;
+    }
+
+    console.log(names);
+</script>
+</body>
+</html>

@@ -11,6 +11,19 @@ class Shared:
 
 app = Flask(__name__)
 
+
+@app.route("/welcome")
+def welcome():
+    session = request.cookies.get('session') if 'session' in request.cookies else uuid.uuid4()
+    response = make_response(render_template(
+        'welcome.html',
+        Process=Shared.logs[list(Shared.logs.keys())[0]].get_names()
+        ))
+    if not request.cookies.get('session'):
+        response.set_cookie('session', str(uuid.uuid4()))
+    return response
+
+
 @app.route("/act_ot_selection/<process>")
 def act_ot_selection(process=None):
     session = request.cookies.get('session') if 'session' in request.cookies else uuid.uuid4()
