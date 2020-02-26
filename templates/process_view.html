@@ -211,7 +211,9 @@
     }
 
     function preliminary() {
-        document.getElementById("model_type").value = "mvp_frequency";
+        document.getElementById("model_type").value = "{{ Process.selected_model_type }}";
+        document.getElementById("min_acti_count").value = "{{ Process.selected_min_acti_count }}";
+        document.getElementById("min_paths_count").value = "{{ Process.selected_min_edge_freq_count }}";
         pnames = '{{ Process.shared_logs_names }}'.split("@@@");
         var log_selector = document.getElementById("logselector");
         let i = 0;
@@ -222,6 +224,7 @@
             log_selector.add(option);
             i++;
         }
+        document.getElementById("logselector").value = "{{ Process.name }}";
         var x = document.cookie.split(";");
         i = 0;
         while (i < x.length) {

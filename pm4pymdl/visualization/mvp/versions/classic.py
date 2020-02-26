@@ -172,7 +172,6 @@ def apply_vis_heu(heu_net, parameters=None):
                                                fontcolor=edge.repr_color, penwidth=this_pen_width)
 
                     graph.add_edge(e)
-                    print(node.node_name, other_node.node_name, e, id(e))
 
     for index, sa_list in enumerate(heu_net.start_activities):
         effective_sa_list = [n for n in sa_list if n in corr_nodes_names]

@@ -39,8 +39,8 @@ class Process(object):
                                      "petri": "Object-centric Petri net", "mvp_frequency": "MVP frequency",
                                      "mvp_performance": "MVP performance"}
         self.selected_model_type = defaults.DEFAULT_MODEL_TYPE
-        self.selected_min_acti_count = 0
-        self.selected_min_edge_freq_count = 0
+        self.selected_min_acti_count = 5
+        self.selected_min_edge_freq_count = 4
         self.model_view = ""
 
     def events_list(self):
@@ -139,6 +139,9 @@ class Process(object):
         obj.selected_min_acti_count = min_acti_count
         obj.selected_min_edge_freq_count = min_paths_count
         obj.selected_model_type = model_type
+
+        print(obj.selected_min_acti_count)
+        print(obj.selected_min_edge_freq_count)
 
         reversed_dict = {}
         for ot in obj.obj_types:
