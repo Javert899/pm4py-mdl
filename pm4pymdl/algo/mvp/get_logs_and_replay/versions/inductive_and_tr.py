@@ -50,9 +50,12 @@ def apply(df, parameters=None):
 
     allowed_activities = parameters["allowed_activities"] if "allowed_activities" in parameters else None
 
-    if df.type == "succint":
-        df = succint_mdl_to_exploded_mdl.apply(df)
-        df.type = "exploded"
+    try:
+        if df.type == "succint":
+            df = succint_mdl_to_exploded_mdl.apply(df)
+            df.type = "exploded"
+    except:
+        pass
 
     min_node_freq = parameters["min_node_freq"] if "min_node_freq" in parameters else 0
     min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 0
