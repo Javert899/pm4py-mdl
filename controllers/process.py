@@ -1,5 +1,5 @@
 from pm4pymdl.objects.mdl.importer import factory as mdl_importer
-from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl
+from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl, exploded_mdl_to_succint_mdl
 from pm4py.algo.discovery.dfg.adapters.pandas import df_statistics
 from pm4pymdl.algo.mvp.gen_framework import factory as mdfg_disc_factory
 from pm4pymdl.algo.mvp.get_logs_and_replay import factory as petri_disc_factory
@@ -39,19 +39,44 @@ class Process(object):
         self.selected_min_edge_freq_count = 0
         self.model_view = ""
 
-    def get_visualization(self, min_acti_count=0, min_paths_count=0, model_type=defaults.DEFAULT_MODEL_TYPE):
-        self.shared_logs_names = "@@@".join([x for x in self.shared_logs])
-        self.selected_min_acti_count = min_acti_count
-        self.selected_min_edge_freq_count = min_paths_count
-        self.selected_model_type = model_type
+    def events_list(self):
+        obj = copy(self)
+        succint_table = exploded_mdl_to_succint_mdl.apply(obj.dataframe)
+        obj.columns = [str(x) for x in succint_table.columns]
+        obj.columns = sorted([x for x in obj.columns if "Unnamed" not in x])
+        event_cols = [x for x in obj.columns if x.startswith("event_")]
+        obj_cols = [x for x in obj.columns if not x.startswith("event_")]
+        obj.columns = event_cols + obj_cols
+        stream = succint_table[obj.columns].to_dict('r')
+        obj.events = []
+        for ev in stream:
+            obj.events.append([])
+            for col in obj.columns:
+                evval = str(ev[col])
+                evalll = evval.lower()
+                if evalll == "nan" or evalll == "nat":
+                    evval = " "
+                obj.events[-1].append(evval)
+            obj.events[-1] = "@@@".join(obj.events[-1])
+        obj.events = "###".join(obj.events)
+        obj.events = base64.b64encode(obj.events.encode('utf-8')).decode('utf-8')
+        obj.columns = "@@@".join(obj.columns)
+        return obj
 
-        if self.selected_model_type.startswith("model"):
-            self.get_dfg_visualization()
-        elif self.selected_model_type.startswith("petri"):
-            self.get_petri_visualization()
+    def get_visualization(self, min_acti_count=0, min_paths_count=0, model_type=defaults.DEFAULT_MODEL_TYPE):
+        obj = copy(self)
+        obj.shared_logs_names = "@@@".join([x for x in obj.shared_logs])
+        obj.selected_min_acti_count = min_acti_count
+        obj.selected_min_edge_freq_count = min_paths_count
+        obj.selected_model_type = model_type
+
+        if obj.selected_model_type.startswith("model"):
+            obj.get_dfg_visualization()
+        elif obj.selected_model_type.startswith("petri"):
+            obj.get_petri_visualization()
         else:
-            self.get_mvp_visualization()
-        return self
+            obj.get_mvp_visualization()
+        return obj
 
     def get_controller(self, session):
         if not session in self.session_objects:
@@ -71,7 +96,7 @@ class Process(object):
         cobject = {"activities": activities, "attr_types": activities_attr_types, "obj_types": activities_object_types}
         self.cobject = base64.b64encode(json.dumps(cobject).encode('utf-8')).decode('utf-8')
         self.dataframe_length = len(self.dataframe)
-        self.get_visualization()
+        #self.get_visualization()
 
     def get_dfg_visualization(self):
         if self.selected_model_type == "model1":

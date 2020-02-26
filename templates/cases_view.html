@@ -1,0 +1,62 @@
+<html>
+<head>
+    <script style="text/javascript" src="../static/jquery.min.js"></script>
+    <script style="text/javascript" src="../static/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../static/bootstrap.min.css">
+    <style>
+    table, th, td {
+      border: 1px solid black;
+    }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+<div class="row" style="height: 100%">
+<div id="bigtable" class="h-100 col-9" style="background-color: #DDDDDD; height: 99%; overflow: auto">
+
+</div>
+    <div id="rightpanel" class="h-100 col-3" style="background-color: #BBBBBB; height: 99%; overflow: auto">
+
+</div>
+</div>
+</div>
+<script type="text/javascript">
+    var columns = '{{ Process.columns }}'.split("@@@");
+    var events = atob('{{ Process.events }}').split("###");
+    var tbl = document.createElement("table");
+    var tblHead = document.createElement("thead");
+    var tblBody = document.createElement("tbody");
+    var tr = null;
+    var th = null;
+    var td = null;
+    tr = document.createElement("tr");
+    let i = 0;
+    while (i < columns.length) {
+        th = document.createElement("th");
+        th.innerHTML = columns[i];
+        tr.append(th);
+        i++;
+    }
+    tblHead.append(tr);
+    let j = 0;
+    while (j < events.length) {
+        let event = events[j].split("@@@");
+        tr = document.createElement("tr");
+        i = 0;
+        while (i < columns.length) {
+            td = document.createElement("td");
+            td.style = "text-align: center";
+            td.innerHTML = event[i];
+            tr.append(td);
+            i++;
+        }
+        tblBody.append(tr);
+        j++;
+    }
+    tbl.append(tblHead);
+    tbl.append(tblBody);
+    document.getElementById("bigtable").append(tbl);
+    console.log(events);
+</script>
+</body>
+</html>

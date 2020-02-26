@@ -10,6 +10,18 @@ class Shared:
 app = Flask(__name__)
 
 
+@app.route("/cases_view/<process>")
+def cases_view(process=None):
+    session = request.cookies.get('session') if 'session' in request.cookies else uuid.uuid4()
+    response = make_response(render_template(
+        'cases_view.html',
+        Process=Shared.logs[process].get_controller(session).events_list()
+        ))
+    if not request.cookies.get('session'):
+        response.set_cookie('session', str(uuid.uuid4()))
+    return response
+
+
 @app.route("/process_view/<process>")
 def process_view(process=None):
     session = request.cookies.get('session') if 'session' in request.cookies else uuid.uuid4()
