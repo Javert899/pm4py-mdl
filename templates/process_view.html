@@ -100,6 +100,10 @@
         document.getElementById("svgWithInnerHtml").addEventListener("click", click_listener);
     }
 
+    function filterActivity(activity, positive) {
+            $.ajax({url: "/applyActivityFilter?activity="+activity+"&positive="+positive+"&process="+window.location.pathname.split("/").pop()}).done(function() { window.location.reload(); });
+    }
+
     function applyFloatFilter(activity, attr_name) {
         let min_value = parseFloat(window.prompt("Insert the minimum float value allowed for activity="+activity+" and attr_name="+attr_name, "0"));
         let max_value = parseFloat(window.prompt("Insert the maximum float value allowed for activity="+activity+" and attr_name="+attr_name, "1000000000"));
@@ -137,16 +141,22 @@
                         var x = document.createElement("div");
                         x.innerHTML = "<b>Available filters</b>:<br />"
                         document.getElementById("dropDown").appendChild(x);
+                        var x = document.createElement("div");
+                        x.innerHTML = "<a href=\"javascript:filterActivity('"+cobject['activities'][i]+"', '1')\">Filter activity (keep)</a>";
+                        document.getElementById("dropDown").appendChild(x);
+                        var x = document.createElement("div");
+                        x.innerHTML = "<a href=\"javascript:filterActivity('"+cobject['activities'][i]+"', '0')\">Filter activity (remove)</a>";
+                        document.getElementById("dropDown").appendChild(x);
                         var j = 0;
                         while (j < cobject['attr_types'][cobject['activities'][i]].length) {
                             var attr_name = cobject['attr_types'][cobject['activities'][i]][j][0];
                             var attr_type = cobject['attr_types'][cobject['activities'][i]][j][1];
                             if (attr_type.startsWith("float")) {
                                 var x = document.createElement("div");
-                                x.innerHTML = "<a href=\"javascript:getFloatAttrSummary('"+cobject['activities'][i]+"', '"+attr_name+"')\">Values distribution - "+attr_name+"<a>"
+                                x.innerHTML = "<a href=\"javascript:getFloatAttrSummary('"+cobject['activities'][i]+"', '"+attr_name+"')\">Values distribution - "+attr_name+"</a>"
                                 document.getElementById("dropDown").appendChild(x);
                                 var x = document.createElement("div");
-                                x.innerHTML = "<a href=\"javascript:applyFloatFilter('"+cobject['activities'][i]+"', '"+attr_name+"')\">Float filter - "+attr_name+"<a>"
+                                x.innerHTML = "<a href=\"javascript:applyFloatFilter('"+cobject['activities'][i]+"', '"+attr_name+"')\">Float filter - "+attr_name+"</a>"
                                 document.getElementById("dropDown").appendChild(x);
                             }
                             j = j + 1;
@@ -155,10 +165,10 @@
                         while (j < cobject['obj_types'][cobject['activities'][i]].length) {
                             var ot = cobject['obj_types'][cobject['activities'][i]][j];
                             var x = document.createElement("div");
-                            x.innerHTML = "<a href=\"javascript:getOtDistrSummary('"+cobject['activities'][i]+"', '"+ot+"')\">Number of related objects - "+ot+"<a>"
+                            x.innerHTML = "<a href=\"javascript:getOtDistrSummary('"+cobject['activities'][i]+"', '"+ot+"')\">Number of related objects - "+ot+"</a>"
                             document.getElementById("dropDown").appendChild(x);
                             var x = document.createElement("div");
-                            x.innerHTML = "<a href=\"javascript:applyObjTypesFilter('"+cobject['activities'][i]+"', '"+ot+"')\">Object Type Filter - "+ot+"<a>"
+                            x.innerHTML = "<a href=\"javascript:applyObjTypesFilter('"+cobject['activities'][i]+"', '"+ot+"')\">Object Type Filter - "+ot+"</a>"
                             document.getElementById("dropDown").appendChild(x);
                             j = j + 1;
                         }

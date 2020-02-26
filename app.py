@@ -62,6 +62,22 @@ def get_spec_obj_table():
 
     return jsonify(process.events_list_spec_objt(objid, objtype))
 
+
+@app.route("/applyActivityFilter")
+def apply_activity_filter():
+    session = request.cookies.get('session')
+    if session is None:
+        raise Exception()
+    process = request.args.get('process')
+    activity = request.args.get('activity')
+    positive = request.args.get('positive')
+
+    process = Shared.logs[process].get_controller(session)
+    process.apply_activity_filter(session, activity, positive)
+
+    return ""
+
+
 @app.route("/applyFloatFilter")
 def apply_float_filter():
     session = request.cookies.get('session')

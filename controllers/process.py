@@ -159,6 +159,16 @@ class Process(object):
         mvp_vis_factory.save(gviz, tfilepath.name)
         self.model_view = base64.b64encode(open(tfilepath.name, "rb").read()).decode('utf-8')
 
+    def apply_activity_filter(self, session, activity, positive):
+        obj = copy(self.session_objects[session])
+        fd0 = obj.dataframe[obj.dataframe["event_activity"] == activity]
+        if positive == "1":
+            obj.dataframe = filter_metaclass.do_filtering(obj.dataframe, fd0)
+        else:
+            obj.dataframe = filter_metaclass.do_negative_filtering(obj.dataframe, fd0)
+        obj.set_properties()
+        self.session_objects[session] = obj
+
     def apply_float_filter(self, session, activity, attr_name, v1, v2):
         obj = copy(self.session_objects[session])
         obj.dataframe = filter_act_attr_val.filter_float(obj.dataframe, activity, attr_name, v1, v2)
