@@ -12,12 +12,20 @@
 <body>
 <div class="container-fluid">
 <div class="row" style="height: 100%">
-<div id="bigtable0" class="h-100 col-7" style="background-color: #DDDDDD; height: 99%; overflow: auto">
+<div id="bigtable0" class="h-100 col-7" style="background-color: #EEEEEE; height: 99%; overflow: auto">
+    <h4>Events of the process: {{ Process.name }}</h4>
+    <button id="goback" onclick="javascript:goToProcessView()">Go to Process View</button><br />
+    Displayed events: <span id="displayedEventsLeft" style="font-weight: bold">0</span><br />
     <div id="bigtable" style="width: 300%">
 
     </div>
 </div>
-<div id="rightpanel0" class="h-100 col-5" style="background-color: #BBBBBB; height: 99%; overflow: auto">
+<div id="rightpanel0" class="h-100 col-5" style="background-color: #DDDDDD; height: 99%; overflow: auto">
+    <h4>Specific view</h4>
+    Displayed events: <span id="displayedEventsRight" style="font-weight: bold">0</span><br />
+    Selected object class: <span id="selectedObjectClass" style="font-weight: bold"> </span><br />
+    Selected object ID: <span id="selectedObjectId" style="font-weight: bold"> </span><br />
+
     <div id="rightpanel" style="width: 300%">
 
     </div>
@@ -25,11 +33,26 @@
 </div>
 </div>
 <script type="text/javascript">
+    var no_events_left = 0;
+    var no_events_right = 0;
+    var sel_obj_id = "";
+    var sel_obj_class = "";
+    var process = "{{ Process.name }}";
+
+    function goToProcessView() {
+        window.location.href = "/process_view/"+process;
+    }
+
     function clickObjClass(objId, objClass) {
-        $.ajax({url: "/getSpecObjTable?objid="+objId+"&objtype="+objClass+"&process="+window.location.pathname.split("/").pop()}).done(function(data) { populate(data.columns.split("@@@"), atob(data.events).split("###"), "rightpanel"); });
+        $.ajax({url: "/getSpecObjTable?objid="+objId+"&objtype="+objClass+"&process="+window.location.pathname.split("/").pop()}).done(function(data) { sel_obj_id = objId; sel_obj_class = objClass; var columns = data.columns.split("@@@"); var events = atob(data.events).split("###"); no_events_right = events.length; populate(columns, events, "rightpanel"); });
     }
 
     function populate(columns, events, target) {
+        document.getElementById("displayedEventsLeft").innerHTML = ""+no_events_left;
+        document.getElementById("displayedEventsRight").innerHTML = ""+no_events_right;
+        document.getElementById("selectedObjectClass").innerHTML = ""+sel_obj_class;
+        document.getElementById("selectedObjectId").innerHTML = ""+sel_obj_id;
+
         var tbl = document.createElement("table");
         tbl.style = "font-size: 9pt";
         var tblHead = document.createElement("thead");
@@ -87,6 +110,7 @@
 
     var columns = '{{ Process.columns }}'.split("@@@");
     var events = atob('{{ Process.events }}').split("###");
+    no_events_left = events.length;
     populate(columns, events, "bigtable");
 </script>
 </body>

@@ -7,7 +7,7 @@
 <body>
 <div class="container-fluid">
     <div class="row" style="height: 100%">
-      <div class="h-100 col-2" style="background-color: red;">
+      <div class="h-100 col-2" style="background-color: #DDDDDD;">
           <div>
               <h4>Process: {{Process.name}}</h4>
           </div>
@@ -15,7 +15,8 @@
               <h4>Events: {{Process.dataframe_length}}</h4>
           </div>
           <div>
-              <button onclick="javascript:resetFilters()">Reset Filters</button>
+              <button onclick="javascript:resetFilters()">Reset Filters</button><br />
+              <button id="goback" onclick="javascript:goToCasesView()">Go to Events View</button>
           </div>
           <div>
               Change log:
@@ -51,7 +52,7 @@
           </div>
       </div>
       <div class="h-100 col-10">
-          <div id="svgWithInnerHtml" style="height: 100%; overflow: auto">
+          <div id="svgWithInnerHtml" style="height: 100%; overflow: auto; background-color: #FBFBFB;">
 
           </div>
       </div>
@@ -60,6 +61,7 @@
 <script type="text/javascript">
     var pnames = null;
     var cobject = null;
+    var process = "{{ Process.name }}";
 
     if(typeof(String.prototype.trim) === "undefined")
     {
@@ -67,6 +69,10 @@
         {
             return String(this).replace(/^\s+|\s+$/g, '');
         };
+    }
+
+    function goToCasesView() {
+        window.location.href = "/cases_view/"+process;
     }
 
     function getTimestampDistribution() {
