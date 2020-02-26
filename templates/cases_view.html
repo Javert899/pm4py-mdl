@@ -18,12 +18,15 @@
     </div>
 </div>
 <div id="rightpanel0" class="h-100 col-5" style="background-color: #BBBBBB; height: 99%; overflow: auto">
+    <div id="rightpanel" style="width: 300%">
 
+    </div>
 </div>
 </div>
 </div>
 <script type="text/javascript">
     function clickObjClass(objId, objClass) {
+        $.ajax({url: "/getSpecObjTable?objid="+objId+"&objtype="+objClass+"&process="+window.location.pathname.split("/").pop()}).done(function(data) { populate(data.columns.split("@@@"), atob(data.events).split("###"), "rightpanel"); });
     }
 
     function populate(columns, events, target) {
@@ -78,6 +81,7 @@
         }
         tbl.append(tblHead);
         tbl.append(tblBody);
+        document.getElementById(target).innerHTML = "";
         document.getElementById(target).append(tbl);
     }
 

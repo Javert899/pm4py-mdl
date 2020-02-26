@@ -6,7 +6,7 @@ from pm4pymdl.algo.mvp.get_logs_and_replay import factory as petri_disc_factory
 from pm4pymdl.visualization.mvp.gen_framework import factory as mdfg_vis_factory
 from pm4pymdl.visualization.petrinet import factory as pn_vis_factory
 from pm4pymdl.algo.mvp.utils import get_activ_attrs_with_type, get_activ_otypes
-from pm4pymdl.algo.mvp.utils import filter_act_attr_val, filter_act_ot, filter_timestamp
+from pm4pymdl.algo.mvp.utils import filter_act_attr_val, filter_act_ot, filter_timestamp, filter_metaclass
 from pm4pymdl.algo.mvp.utils import distr_act_attrname, distr_act_otype, dist_timestamp
 from pm4pymdl.algo.mvp.discovery import factory as mvp_discovery
 from pm4pymdl.visualization.mvp import factory as mvp_vis_factory
@@ -44,6 +44,15 @@ class Process(object):
         succint_table = exploded_mdl_to_succint_mdl.apply(obj.dataframe)
         obj.events, obj.columns = self.get_columns_events(succint_table)
         return obj
+
+    def events_list_spec_objt(self, obj_id, obj_type):
+        obj = copy(self)
+        filtered_df = obj.dataframe[obj.dataframe[obj_type] == obj_id]
+        considered_df = filter_metaclass.do_filtering(obj.dataframe, filtered_df)
+        succint_table = exploded_mdl_to_succint_mdl.apply(considered_df)
+        events, columns = self.get_columns_events(succint_table)
+        ret = {"events": events, "columns": columns}
+        return ret
 
     def get_columns_events(self, table):
         columns = [str(x) for x in table.columns]

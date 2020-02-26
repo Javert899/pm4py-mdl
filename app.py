@@ -49,6 +49,19 @@ def process_view(process=None):
     return response
 
 
+@app.route("/getSpecObjTable")
+def get_spec_obj_table():
+    session = request.cookies.get('session')
+    if session is None:
+        raise Exception()
+    process = request.args.get('process')
+    objtype = request.args.get('objtype')
+    objid = request.args.get('objid')
+
+    process = Shared.logs[process].get_controller(session)
+
+    return jsonify(process.events_list_spec_objt(objid, objtype))
+
 @app.route("/applyFloatFilter")
 def apply_float_filter():
     session = request.cookies.get('session')
