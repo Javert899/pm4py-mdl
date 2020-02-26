@@ -23,6 +23,7 @@ class Process(object):
         self.shared_logs_names = []
         self.parent = self
         self.act_obj_types = None
+        self.initial_act_obj_types = None
         self.activities = []
         self.obj_types = []
         self.selected_act_obj_types = None
@@ -104,8 +105,10 @@ class Process(object):
         for act in activities:
             activities_object_types[act] = get_activ_otypes.get(self.dataframe, act)
         self.act_obj_types = activities_object_types
+        if self.initial_act_obj_types is None:
+            self.initial_act_obj_types = activities_object_types
         if self.selected_act_obj_types is None:
-            self.selected_act_obj_types = activities_object_types
+            self.selected_act_obj_types = self.initial_act_obj_types
         else:
             act_keys = list(self.selected_act_obj_types.keys())
             for key in act_keys:
@@ -246,4 +249,4 @@ class Process(object):
 
     def reset_filters(self, session):
         self.session_objects[session] = self.parent
-        self.session_objects[session].selected_act_obj_types = self.session_objects[session].act_obj_types
+        self.session_objects[session].selected_act_obj_types = self.session_objects[session].initial_act_obj_types

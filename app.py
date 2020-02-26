@@ -230,6 +230,20 @@ def main():
     elif defaults.CONFIGURATION == 2:
         Shared.logs["bkpf"] = Process("bkpf", "sap/bkpf_bseg.mdl", Shared.logs)
         Shared.logs["cdhdr"] = Process("cdhdr", "sap/sap_withTrial.mdl", Shared.logs)
+    elif defaults.CONFIGURATION == 3:
+        Shared.logs["runningexample"] = Process("runningexample", "example_logs/mdl/mdl-running-example.mdl", Shared.logs)
+        Shared.logs["orders"] = Process("orders", "example_logs/mdl/order_management.mdl", Shared.logs)
+        Shared.logs["runningexample"].initial_act_obj_types = {"place order": ["orders", "items"],
+                                                               "confirm order": ["orders", "items"],
+                                                               "pay order": ["orders"],
+                                                               "payment reminder": ["orders"],
+                                                               "create package": ["packages", "itemss"],
+                                                               "send package": ["packages", "items"],
+                                                               "failed delivery": ["packages", "items"],
+                                                               "package delivered": ["packages", "items"],
+                                                               "pick item": ["items"],
+                                                               "reorder item": ["items"],
+                                                               "item out of stock": ["items"]}
     app.run()
 
 
