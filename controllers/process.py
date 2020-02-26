@@ -7,7 +7,7 @@ from pm4pymdl.visualization.mvp.gen_framework import factory as mdfg_vis_factory
 from pm4pymdl.visualization.petrinet import factory as pn_vis_factory
 from pm4pymdl.algo.mvp.utils import get_activ_attrs_with_type, get_activ_otypes
 from pm4pymdl.algo.mvp.utils import filter_act_attr_val, filter_act_ot, filter_timestamp, filter_metaclass
-from pm4pymdl.algo.mvp.utils import distr_act_attrname, distr_act_otype, dist_timestamp
+from pm4pymdl.algo.mvp.utils import distr_act_attrname, distr_act_otype, dist_timestamp, clean_objtypes
 from pm4pymdl.algo.mvp.discovery import factory as mvp_discovery
 from pm4pymdl.visualization.mvp import factory as mvp_vis_factory
 from controllers import defaults
@@ -22,6 +22,8 @@ class Process(object):
         self.shared_logs = shared_logs
         self.shared_logs_names = []
         self.parent = self
+        self.act_obj_types = None
+        self.selected_act_obj_types = None
         self.name = name
         self.mdl_path = mdl_path
         self.dataframe = mdl_importer.apply(self.mdl_path)
@@ -81,21 +83,6 @@ class Process(object):
 
         return events, columns
 
-    def get_visualization(self, min_acti_count=0, min_paths_count=0, model_type=defaults.DEFAULT_MODEL_TYPE):
-        obj = copy(self)
-        obj.shared_logs_names = "@@@".join([x for x in obj.shared_logs])
-        obj.selected_min_acti_count = min_acti_count
-        obj.selected_min_edge_freq_count = min_paths_count
-        obj.selected_model_type = model_type
-
-        if obj.selected_model_type.startswith("model"):
-            obj.get_dfg_visualization()
-        elif obj.selected_model_type.startswith("petri"):
-            obj.get_petri_visualization()
-        else:
-            obj.get_mvp_visualization()
-        return obj
-
     def get_controller(self, session):
         if not session in self.session_objects:
             self.session_objects[session] = self
@@ -104,17 +91,45 @@ class Process(object):
 
         return obj
 
-    def set_properties(self):
-        activities = list(self.dataframe["event_activity"].unique())
+    def get_act_attr_types(self, activities):
         activities_attr_types = {}
-        activities_object_types = {}
         for act in activities:
             activities_attr_types[act] = [(x, y) for x, y in get_activ_attrs_with_type.get(self.dataframe, act).items()]
+        return activities_attr_types
+
+    def get_act_obj_types(self, activities):
+        activities_object_types = {}
+        for act in activities:
             activities_object_types[act] = get_activ_otypes.get(self.dataframe, act)
-        cobject = {"activities": activities, "attr_types": activities_attr_types, "obj_types": activities_object_types}
+        self.act_obj_types = activities_object_types
+        if self.selected_act_obj_types is None:
+            self.selected_act_obj_types = activities_object_types
+        return activities_object_types
+
+    def set_properties(self):
+        activities = list(self.dataframe["event_activity"].unique())
+        cobject = {"activities": activities, "attr_types": self.get_act_attr_types(activities), "obj_types": self.get_act_obj_types(activities)}
         self.cobject = base64.b64encode(json.dumps(cobject).encode('utf-8')).decode('utf-8')
         self.dataframe_length = len(self.dataframe)
-        #self.get_visualization()
+
+    def get_visualization(self, min_acti_count=0, min_paths_count=0, model_type=defaults.DEFAULT_MODEL_TYPE):
+        obj = copy(self)
+        obj.shared_logs_names = "@@@".join([x for x in obj.shared_logs])
+        obj.selected_min_acti_count = min_acti_count
+        obj.selected_min_edge_freq_count = min_paths_count
+        obj.selected_model_type = model_type
+
+        param = {}
+        param["allowed_activities"] = self.selected_act_obj_types
+        obj.dataframe = clean_objtypes.perfom_cleaning(obj.dataframe, parameters=param)
+
+        if obj.selected_model_type.startswith("model"):
+            obj.get_dfg_visualization()
+        elif obj.selected_model_type.startswith("petri"):
+            obj.get_petri_visualization()
+        else:
+            obj.get_mvp_visualization()
+        return obj
 
     def get_dfg_visualization(self):
         if self.selected_model_type == "model1":
