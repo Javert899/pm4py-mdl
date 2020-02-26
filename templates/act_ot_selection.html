@@ -1,0 +1,105 @@
+<html>
+<head>
+    <script style="text/javascript" src="../static/jquery.min.js"></script>
+    <script style="text/javascript" src="../static/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../static/bootstrap.min.css">
+</head>
+<body>
+<div class="container-fluid">
+<div class="row" style="height: 100%">
+    <div id="bigtable0" class="h-100 col-7">
+        Select the interesting object types per activity:<br />
+        <button id="saveselection" onclick="javascript:saveselection()">
+            Save selection
+        </button><br />
+        <table id="seltable">
+
+        </table>
+</div></div></div>
+<script type="text/javascript">
+var cobject = null;
+var activities = null;
+var otypes = null;
+var act_obj_types = null;
+var selected_act_obj_types = null;
+
+function saveselection() {
+    let new_selection = {};
+    let i = 0;
+    while (i < activities.length) {
+        new_selection[activities[i]] = [];
+        let j = 0;
+        while (j < act_obj_types[activities[i]].length) {
+            let is_checked = document.getElementById("checkb_"+activities[i]+"_"+act_obj_types[activities[i]][j]).checked;
+            if (is_checked) {
+                new_selection[activities[i]].push(act_obj_types[activities[i]][j]);
+            }
+            j++;
+        }
+        i++;
+    }
+    console.log(new_selection);
+}
+
+function getCObject() {
+    cobject = JSON.parse(atob('{{ Process.cobject }}'));
+    activities = cobject["activities"];
+    otypes = cobject["all_otypes"];
+    act_obj_types = cobject["act_obj_types"];
+    selected_act_obj_types = cobject["selected_act_obj_types"];
+}
+
+function populateTable() {
+    let thead = document.createElement("thead");
+    let tbody = document.createElement("tbody");
+    let tr = document.createElement("tr");
+    let td = document.createElement("td");
+    td.innerHTML = "Act./Obj Type";
+    tr.append(td);
+    let j = 0;
+    while (j < otypes.length) {
+        let td = document.createElement("td");
+        td.innerHTML = otypes[j];
+        tr.append(td);
+        j++;
+    }
+    let i = 0;
+    while (i < activities.length) {
+        let tr = document.createElement("tr");
+        let td = document.createElement("td");
+        td.innerHTML = activities[i];
+        tr.append(td);
+        let j = 0;
+        while (j < otypes.length) {
+            let td = document.createElement("td");
+            let inp = document.createElement("input");
+            inp.type = "checkbox";
+            inp.id = "checkb_"+activities[i]+"_"+otypes[j];
+            if (!(act_obj_types[activities[i]].includes(otypes[j]))) {
+                inp.disabled = true;
+            }
+            else {
+                if (!(selected_act_obj_types[activities[i]].includes(otypes[j]))) {
+                    inp.checked = false;
+                }
+                else {
+                    inp.checked = true;
+                }
+            }
+            td.append(inp);
+            tr.append(td);
+            j++;
+        }
+        tbody.append(tr);
+        i++;
+    }
+    thead.append(tr);
+    document.getElementById("seltable").append(thead);
+    document.getElementById("seltable").append(tbody);
+}
+
+getCObject();
+populateTable();
+</script>
+</body>
+</html>
