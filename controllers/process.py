@@ -6,7 +6,7 @@ from pm4pymdl.algo.mvp.get_logs_and_replay import factory as petri_disc_factory
 from pm4pymdl.visualization.mvp.gen_framework import factory as mdfg_vis_factory
 from pm4pymdl.visualization.petrinet import factory as pn_vis_factory
 from pm4pymdl.algo.mvp.utils import get_activ_attrs_with_type, get_activ_otypes
-from pm4pymdl.algo.mvp.utils import filter_act_attr_val, filter_act_ot, filter_timestamp, filter_metaclass
+from pm4pymdl.algo.mvp.utils import filter_act_attr_val, filter_act_ot, filter_timestamp, filter_metaclass, filter_specific_path
 from pm4pymdl.algo.mvp.utils import distr_act_attrname, distr_act_otype, dist_timestamp, clean_objtypes
 from pm4pymdl.algo.mvp.discovery import factory as mvp_discovery
 from pm4pymdl.visualization.mvp import factory as mvp_vis_factory
@@ -216,6 +216,12 @@ class Process(object):
         tfilepath.close()
         mvp_vis_factory.save(gviz, tfilepath.name)
         self.model_view = base64.b64encode(open(tfilepath.name, "rb").read()).decode('utf-8')
+
+    def apply_spec_path_filter(self, session, obytype, act1, act2):
+        obj = copy(self.session_objects[session])
+        obj.dataframe = filter_specific_path.apply(obj.dataframe, obytype, act1, act2)
+        obj.set_properties()
+        self.session_objects[session] = obj
 
     def apply_activity_filter(self, session, activity, positive):
         obj = copy(self.session_objects[session])

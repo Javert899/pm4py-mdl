@@ -52,6 +52,10 @@
               <a href="javascript:getTimestampDistribution()">Get Timestamp distribution</a><br />
               <a href="javascript:filterByTimestamp()">Filter by Timestamp (keep events)</a>
           </div>
+          <div>
+              <br />
+              <a href="javascript:applySpecPathFilter()">Apply Paths filter</a>
+          </div>
       </div>
       <div class="h-100 col-10">
           <div id="svgWithInnerHtml" style="height: 100%; overflow: auto; background-color: #FBFBFB;">
@@ -88,6 +92,14 @@
 
     function getTimestampDistribution() {
            $.ajax({url: "/getTimestampDistribution?process="+window.location.pathname.split("/").pop()}).done(function(data) { alert(JSON.stringify(data)); }).fail(function() { alert("Something went wrong!"); });
+    }
+
+    function applySpecPathFilter() {
+        let objtype = window.prompt("Insert the object type that should be the target of the filter");
+        let act1 = window.prompt("Insert the source activity of the path");
+        let act2 = window.prompt("Insert the target activity of the path");
+        var url0 = "/applySpecPathFilter?objtype="+objtype+"&act1="+act1+"&act2="+act2+"&process="+window.location.pathname.split("/").pop();
+        $.ajax({url: url0}).done(function() { window.location.reload(); }).fail(function() { alert("Something went wrong!"); });
     }
 
     function filterByTimestamp() {
