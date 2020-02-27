@@ -36,7 +36,10 @@ setup(
     license='GPL 3.0',
     install_requires=[
         "pm4py==1.2.11",
-        "pyarrow==0.15.1"
+        "pyarrow==0.15.1",
+        "Flask",
+        "flask-cors",
+        "setuptools"
     ],
     project_urls={
         'Documentation': 'http://pm4py.pads.rwth-aachen.de/documentation/',

@@ -1,2 +1,5 @@
 pm4py==1.2.11
 pyarrow==0.15.1
+Flask
+flask-cors
+setuptools
