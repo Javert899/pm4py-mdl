@@ -273,7 +273,7 @@ def main():
                                                                "pick item": ["items"],
                                                                "reorder item": ["items"],
                                                                "item out of stock": ["items"]}
-    app.run()
+    app.run(host='0.0.0.0')
 
 
 if __name__ == "__main__":
