@@ -21,13 +21,18 @@
     </div>
 </div>
 <div id="rightpanel0" class="h-100 col-5" style="background-color: #DDDDDD; height: 99%; overflow: auto">
-    <h4>Specific view</h4>
-    Displayed events: <span id="displayedEventsRight" style="font-weight: bold">0</span><br />
-    Selected object class: <span id="selectedObjectClass" style="font-weight: bold"> </span><br />
-    Selected object ID: <span id="selectedObjectId" style="font-weight: bold"> </span><br />
+    <div id="rightpanel1" style="display: none">
+            <h4>Specific view</h4>
+            Displayed events: <span id="displayedEventsRight" style="font-weight: bold">0</span><br />
+            Selected object class: <span id="selectedObjectClass" style="font-weight: bold"> </span><br />
+            Selected object ID: <span id="selectedObjectId" style="font-weight: bold"> </span><br />
 
-    <div id="rightpanel" style="width: 300%">
+            <div id="rightpanel" style="width: 300%">
 
+            </div>
+    </div>
+    <div id="correlatedevents" style="display: none">
+        Correlated events:
     </div>
 </div>
 </div>
@@ -43,8 +48,13 @@
         window.location.href = "/process_view/"+process;
     }
 
+    function openCorrelatedEvents(eve) {
+        document.getElementById("rightpanel1").style.display='none';
+        document.getElementById("correlatedevents").style.display = '';
+    }
+
     function clickObjClass(objId, objClass) {
-        $.ajax({url: "/getSpecObjTable?objid="+objId+"&objtype="+objClass+"&process="+window.location.pathname.split("/").pop()}).done(function(data) { sel_obj_id = objId; sel_obj_class = objClass; var columns = data.columns.split("@@@"); var events = atob(data.events).split("###"); no_events_right = events.length; populate(columns, events, "rightpanel"); });
+        $.ajax({url: "/getSpecObjTable?objid="+objId+"&objtype="+objClass+"&process="+window.location.pathname.split("/").pop()}).done(function(data) { sel_obj_id = objId; sel_obj_class = objClass; var columns = data.columns.split("@@@"); var events = atob(data.events).split("###"); no_events_right = events.length; document.getElementById("correlatedevents").style.display = 'none'; document.getElementById("rightpanel1").style.display=''; populate(columns, events, "rightpanel"); });
     }
 
     function populate(columns, events, target) {
@@ -78,7 +88,7 @@
             tr = document.createElement("tr");
             td = document.createElement("td");
             td.style = "text-align: center";
-            td.innerHTML = " ";
+            td.innerHTML = "<a href='javascript:openCorrelatedEvents(\""+event[columns.indexOf("event_id")]+"\")'>AA</a>";
             tr.append(td);
             i = 0;
             while (i < columns.length) {
