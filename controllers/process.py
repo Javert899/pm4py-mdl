@@ -34,8 +34,8 @@ class Process(object):
         self.initial_act_obj_types = None
         self.activities = []
         self.obj_types = []
-        self.clusters = {"DEFAULT": []}
-        self.clustersrepr = "DEFAULT"
+        self.clusters = {}
+        self.clustersrepr = ""
         self.clusterid = str(id(self))
         self.stream = None
         self.nodes = None
@@ -151,7 +151,7 @@ class Process(object):
         return self.nodes, self.events_corr, self.matrix
 
     def do_clustering(self):
-        if len(self.clusters) == 1 or self.clusterid != str(id(self)):
+        if len(self.clusters) == 0 or self.clusterid != str(id(self)):
             self.clusterid = str(id(self))
             self.build_nx_graph()
             clusters = list(asyn_lpa_communities(self.graph, weight="weight"))
@@ -163,7 +163,7 @@ class Process(object):
                         new_clusters[-1].append(self.events_corr_inv[self.nodes_inv[el]])
                 if len(new_clusters[-1]) == 0:
                     del new_clusters[-1]
-            self.clusters = {"DEFAULT": []}
+            self.clusters = {}
             for i in range(len(new_clusters)):
                 self.clusters["Cluster "+str(i+1)] = new_clusters[i]
             clusters_keys = sorted(list(self.clusters.keys()))
