@@ -11,6 +11,7 @@ from pm4pymdl.algo.mvp.utils import distr_act_attrname, distr_act_otype, dist_ti
 from pm4pymdl.algo.mvp.discovery import factory as mvp_discovery
 from pm4pymdl.visualization.mvp import factory as mvp_vis_factory
 from controllers import defaults
+import numpy as np
 import base64
 import tempfile
 from copy import copy
@@ -26,6 +27,10 @@ class Process(object):
         self.initial_act_obj_types = None
         self.activities = []
         self.obj_types = []
+        self.stream = None
+        self.nodes = None
+        self.events_corr = None
+        self.matrix = None
         self.selected_act_obj_types = None
         self.name = name
         self.mdl_path = mdl_path
@@ -43,6 +48,60 @@ class Process(object):
         self.selected_min_acti_count = 5
         self.selected_min_edge_freq_count = 4
         self.model_view = ""
+
+    def get_stream(self):
+        if self.stream is None:
+            self.stream = self.dataframe.to_dict('r')
+        return self.stream
+
+    def build_nodes(self):
+        if self.nodes is None:
+            self.get_stream()
+            self.nodes = dict()
+            self.events_corr = {}
+            for ev in self.stream:
+                ev2 = {x: y for x, y in ev.items() if str(y) != "nan"}
+                id = "event_id=" + str(ev2["event_id"])
+                activity = "event_activity=" + ev2["event_activity"]
+                if id not in self.nodes:
+                    self.nodes[id] = len(self.nodes)
+                if activity not in self.nodes:
+                    self.nodes[activity] = len(self.nodes)
+                self.events_corr = {ev2["event_id"]: id}
+                for col in ev2:
+                    if not col.startswith("event_"):
+                        val = ev2[col]
+                        oid = "object_id=" + str(val)
+                        cla = "class=" + str(col)
+                        if oid not in self.nodes:
+                            self.nodes[oid] = len(self.nodes)
+                        if cla not in self.nodes:
+                            self.nodes[cla] = len(self.nodes)
+        return self.nodes, self.events_corr
+
+    def build_matrix(self):
+        self.build_nodes()
+        self.matrix = np.zeros((len(self.nodes), len(self.nodes)))
+        for ev in self.stream:
+            ev2 = {x: y for x, y in ev.items() if str(y) != "nan"}
+            id = "event_id=" + str(ev2["event_id"])
+            activity = "event_activity=" + ev2["event_activity"]
+            self.matrix[self.nodes[id], self.nodes[activity]] = 1
+            self.matrix[self.nodes[activity], self.nodes[id]] = 1
+            for col in ev2:
+                if not col.startswith("event_"):
+                    val = ev2[col]
+                    self.matrix[self.nodes["object_id=" + str(val)], self.nodes["class=" + str(col)]] = 1
+                    self.matrix[self.nodes["class=" + str(col)], self.nodes["object_id=" + str(val)]] = 1
+                    self.matrix[self.nodes[id], self.nodes["object_id=" + str(val)]] = 1
+                    self.matrix[self.nodes["object_id=" + str(val)], self.nodes[id]] = 1
+        return self.nodes, self.events_corr, self.matrix
+
+    def get_graph(self):
+        if self.matrix is None:
+            self.build_nodes()
+            self.build_matrix()
+        return self.nodes, self.events_corr, self.matrix
 
     def events_list(self):
         obj = copy(self)
@@ -122,6 +181,11 @@ class Process(object):
         return activities_object_types
 
     def set_properties(self):
+        self.stream = None
+        self.nodes = None
+        self.events_corr = None
+        self.matrix = None
+        self.get_graph()
         self.activities = sorted(list(self.dataframe["event_activity"].unique()))
         attr_types = self.get_act_attr_types(self.activities)
         act_obj_types = self.get_act_obj_types(self.activities)
@@ -146,10 +210,6 @@ class Process(object):
         obj.selected_min_acti_count = min_acti_count
         obj.selected_min_edge_freq_count = min_paths_count
         obj.selected_model_type = model_type
-
-        print(obj.selected_min_acti_count)
-        print(obj.selected_min_edge_freq_count)
-
         reversed_dict = {}
         for act in obj.activities:
             if act in obj.selected_act_obj_types:
@@ -162,9 +222,7 @@ class Process(object):
         param = {}
         param["allowed_activities"] = reversed_dict
         obj.dataframe = clean_objtypes.perfom_cleaning(obj.dataframe, parameters=param)
-        print(obj.dataframe.columns)
         obj.dataframe = obj.dataframe.dropna(how="all", axis=1)
-        print(obj.dataframe.columns)
 
         if obj.selected_model_type.startswith("model"):
             obj.get_dfg_visualization()
