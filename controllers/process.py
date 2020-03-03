@@ -34,6 +34,9 @@ class Process(object):
         self.initial_act_obj_types = None
         self.activities = []
         self.obj_types = []
+        self.clusters = {"DEFAULT": []}
+        self.clustersrepr = "DEFAULT"
+        self.clusterid = str(id(self))
         self.stream = None
         self.nodes = None
         self.events_corr = None
@@ -147,6 +150,25 @@ class Process(object):
         self.matrix = self.matrix / self.row_sum[:, np.newaxis]
         return self.nodes, self.events_corr, self.matrix
 
+    def do_clustering(self):
+        if len(self.clusters) == 1 or self.clusterid != str(id(self)):
+            self.clusterid = str(id(self))
+            self.build_nx_graph()
+            clusters = list(asyn_lpa_communities(self.graph, weight="weight"))
+            new_clusters = []
+            for c in clusters:
+                new_clusters.append([])
+                for el in c:
+                    if self.nodes_inv[el].startswith("event_id="):
+                        new_clusters[-1].append(self.events_corr_inv[self.nodes_inv[el]])
+                if len(new_clusters[-1]) == 0:
+                    del new_clusters[-1]
+            self.clusters = {"DEFAULT": []}
+            for i in range(len(new_clusters)):
+                self.clusters["Cluster "+str(i+1)] = new_clusters[i]
+            clusters_keys = sorted(list(self.clusters.keys()))
+            self.clustersrepr = "@@@".join(clusters_keys)
+
     def build_nx_graph(self):
         if self.graph is None:
             self.graph = nx.convert_matrix.from_numpy_matrix(self.powered_matrix)
@@ -254,7 +276,7 @@ class Process(object):
                             del self.selected_act_obj_types[key][self.selected_act_obj_types[key].index(ot)]
         return activities_object_types
 
-    def set_properties(self):
+    def reset_properties(self):
         self.stream = None
         self.nodes = None
         self.events_corr = None
@@ -264,8 +286,11 @@ class Process(object):
         self.overall_sum = 0
         self.powered_matrix = None
         self.graph = None
-        if len(self.dataframe) < 100:
+
+    def set_properties(self):
+        if len(self.dataframe) < 200:
             self.get_graph()
+            self.do_clustering()
         self.activities = sorted(list(self.dataframe["event_activity"].unique()))
         attr_types = self.get_act_attr_types(self.activities)
         act_obj_types = self.get_act_obj_types(self.activities)
@@ -358,6 +383,7 @@ class Process(object):
     def apply_spec_path_filter(self, session, obytype, act1, act2):
         obj = copy(self.session_objects[session])
         obj.dataframe = filter_specific_path.apply(obj.dataframe, obytype, act1, act2)
+        obj.reset_properties()
         obj.set_properties()
         self.session_objects[session] = obj
 
@@ -368,24 +394,28 @@ class Process(object):
             obj.dataframe = filter_metaclass.do_filtering(obj.dataframe, fd0)
         else:
             obj.dataframe = filter_metaclass.do_negative_filtering(obj.dataframe, fd0)
+        obj.reset_properties()
         obj.set_properties()
         self.session_objects[session] = obj
 
     def apply_float_filter(self, session, activity, attr_name, v1, v2):
         obj = copy(self.session_objects[session])
         obj.dataframe = filter_act_attr_val.filter_float(obj.dataframe, activity, attr_name, v1, v2)
+        obj.reset_properties()
         obj.set_properties()
         self.session_objects[session] = obj
 
     def apply_ot_filter(self, session, activity, ot, v1, v2):
         obj = copy(self.session_objects[session])
         obj.dataframe = filter_act_ot.filter_ot(self.dataframe.copy(), activity, ot, v1, v2)
+        obj.reset_properties()
         obj.set_properties()
         self.session_objects[session] = obj
 
     def apply_timestamp_filter(self, session, dt1, dt2):
         obj = copy(self.session_objects[session])
         obj.dataframe = filter_timestamp.apply(obj.dataframe, dt1, dt2)
+        obj.reset_properties()
         obj.set_properties()
         self.session_objects[session] = obj
 
