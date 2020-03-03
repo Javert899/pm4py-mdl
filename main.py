@@ -140,6 +140,19 @@ def apply_spec_path_filter():
     return ""
 
 
+@app.route("/applyClusterFilter")
+def apply_cluster_filter():
+    session = request.cookies.get('session')
+    if session is None:
+        raise Exception()
+    process = request.args.get('process')
+    cluster = request.args.get('cluster')
+
+    process = Shared.logs[process].get_controller(session)
+    process.filter_on_cluster(session, cluster)
+
+    return ""
+
 @app.route("/applyActivityFilter")
 def apply_activity_filter():
     session = request.cookies.get('session')

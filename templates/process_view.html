@@ -56,6 +56,12 @@
               <br />
               <a href="javascript:applySpecPathFilter()">Apply Paths filter</a>
           </div>
+          <div style="display: none">
+              Cluster:
+              <select id="clusterselector" name="clusterselector">
+              </select>
+              <button onclick="javascript:performLogChange()">Set</button>
+          </div>
       </div>
       <div class="h-100 col-10">
           <div id="svgWithInnerHtml" style="height: 100%; overflow: auto; background-color: #FBFBFB;">
@@ -67,6 +73,7 @@
 <script type="text/javascript">
     var pnames = null;
     var cobject = null;
+    var clusters = null;
     var process = "{{ Process.name }}";
     var expect_reload = false;
 
@@ -227,6 +234,7 @@
         document.getElementById("min_acti_count").value = "{{ Process.selected_min_acti_count }}";
         document.getElementById("min_paths_count").value = "{{ Process.selected_min_edge_freq_count }}";
         pnames = '{{ Process.shared_logs_names }}'.split("@@@");
+        clusters = '{{ Process.clustersrepr }}'.split("@@@");
         var log_selector = document.getElementById("logselector");
         let i = 0;
         while (i < pnames.length) {

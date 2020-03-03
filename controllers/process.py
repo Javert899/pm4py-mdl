@@ -419,6 +419,13 @@ class Process(object):
         obj.set_properties()
         self.session_objects[session] = obj
 
+    def filter_on_cluster(self, session, cluster):
+        obj = copy(self.session_objects[session])
+        obj.dataframe = obj.dataframe[obj.dataframe["event_id"].isin(self.clusters[cluster])]
+        obj.reset_properties()
+        obj.set_properties()
+        self.session_objects[session] = obj
+
     def get_float_attr_summary(self, session, activity, attr_name):
         return distr_act_attrname.get(self.session_objects[session].dataframe, activity, attr_name)
 
