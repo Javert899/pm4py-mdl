@@ -262,6 +262,8 @@ class Process(object):
         self.overall_sum = 0
         self.powered_matrix = None
         self.graph = None
+        if self.dataframe.length < 100:
+            self.get_graph()
         self.activities = sorted(list(self.dataframe["event_activity"].unique()))
         attr_types = self.get_act_attr_types(self.activities)
         act_obj_types = self.get_act_obj_types(self.activities)
