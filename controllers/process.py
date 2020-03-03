@@ -109,20 +109,12 @@ class Process(object):
         self.matrix = self.matrix / self.row_sum[:, np.newaxis]
         return self.nodes, self.events_corr, self.matrix
 
-    def build_nx_graph(self, threshold=0.03):
+    def build_nx_graph(self):
         if self.graph is None:
-            self.graph = nx.Graph()
-            for j in range(self.powered_matrix.shape[0]):
-                self.graph.add_node(j)
-            for j in range(self.powered_matrix.shape[0]):
-                vec = self.powered_matrix[j, :]
-                max_vec = max(vec)
-                for z in range(self.powered_matrix.shape[1]):
-                    if self.powered_matrix[j, z] > max_vec * threshold:
-                        self.graph.add_edge(j, z, weight=self.powered_matrix[j, z] * self.row_sum[j] / self.overall_sum)
+            self.graph = nx.convert_matrix.from_numpy_matrix(self.powered_matrix)
         return self.graph
 
-    def get_graph(self, exponent=None):
+    def get_full_matrix(self, exponent=None):
         import time
         if exponent is None:
             exponent = self.default_exponent
@@ -133,11 +125,16 @@ class Process(object):
         if self.powered_matrix is None:
             print("2", time.time())
             self.matrix_power(exponent)
+        return self.nodes, self.events_corr, self.matrix, self.powered_matrix
+
+    def get_graph(self, exponent=None):
+        import time
+        self.get_full_matrix(exponent=exponent)
         if self.graph is None:
             print("3", time.time())
             self.build_nx_graph()
         print("4", time.time())
-        return self.nodes, self.events_corr, self.matrix, self.graph
+        return self.nodes, self.events_corr, self.matrix, self.powered_matrix, self.graph
 
     def matrix_power(self, N):
         if self.powered_matrix is None:

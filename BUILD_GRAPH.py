@@ -11,50 +11,60 @@ from networkx.algorithms.community import quality
 log0 = mdl_importer.apply("example_logs/mdl/order_management.mdl")
 log = succint_mdl_to_exploded_mdl.apply(log0)
 stream = log.to_dict('r')
-nodes = set()
+nodes = dict()
 for ev in stream:
     ev2 = {x: y for x, y in ev.items() if str(y) != "nan"}
     id = "event_id="+str(ev2["event_id"])
     activity = "event_activity="+ev2["event_activity"]
-    nodes.add(id)
-    nodes.add(activity)
+    if id not in nodes:
+        nodes[id] = len(nodes)
+    if activity not in nodes:
+        nodes[activity] = len(nodes)
     for col in ev2:
         if not col.startswith("event_"):
             val = ev2[col]
             oid = "object_id="+str(val)
             cla = "class="+str(col)
-            nodes.add(oid)
-            nodes.add(cla)
-nodes = list(nodes)
-A = np.zeros((len(nodes), len(nodes)))
+            if oid not in nodes:
+                nodes[oid] = len(nodes)
+            if cla not in nodes:
+                nodes[cla] = len(nodes)
+A = np.zeros((len(nodes), len(nodes)), dtype=np.float32)
 for ev in stream:
     ev2 = {x: y for x, y in ev.items() if str(y) != "nan"}
     id = "event_id="+str(ev2["event_id"])
     activity = "event_activity="+ev2["event_activity"]
-    A[nodes.index(id), nodes.index(activity)] = 1
-    A[nodes.index(activity), nodes.index(id)] = 1
+    A[nodes[id], nodes[activity]] = 1
+    A[nodes[activity], nodes[id]] = 1
     for col in ev2:
         if not col.startswith("event_"):
             val = ev2[col]
-            A[nodes.index("object_id=" + str(val)), nodes.index("class=" + str(col))] = 1
-            A[nodes.index("class=" + str(col)), nodes.index("object_id=" + str(val))] = 1
-            A[nodes.index(id), nodes.index("object_id=" + str(val))] = 1
-            A[nodes.index("object_id=" + str(val)), nodes.index(id)] = 1
+            A[nodes["object_id=" + str(val)], nodes["class=" + str(col)]] = 1
+            A[nodes["class=" + str(col)], nodes["object_id=" + str(val)]] = 1
+            A[nodes[id], nodes["object_id=" + str(val)]] = 1
+            A[nodes["object_id=" + str(val)], nodes[id]] = 1
 overall_sum = np.sum(A)
 summ = np.sum(A, axis = 1)
 R = A / summ[:, np.newaxis]
 N = 1
 K = 3
+threshold = 0.03
 while N < 20:
     sum_cos_sim = 0.0
     Mpow = np.linalg.matrix_power(R, N)
+    G = nx.convert_matrix.from_numpy_matrix(Mpow)
+    """
     G = nx.Graph()
     for j in range(Mpow.shape[0]):
         G.add_node(j)
     for j in range(Mpow.shape[0]):
-        for z in range(Mpow.shape[1]):
-            if Mpow[j, z] > 0:
-                G.add_edge(j, z, weight=Mpow[j, z]*summ[j]/overall_sum)
+        vec = list(Mpow[j, :])
+        thresh = max(vec) * threshold
+        multt = summ[j]/overall_sum
+        veci = [z for z in range(len(vec)) if vec[z] > thresh]
+        for z in veci:
+            G.add_edge(j, z, weight=vec[z]*multt)
+    """
     c = list(asyn_lpa_communities(G, weight="weight"))
     print(N, "modularity", quality.modularity(G, c))
     for j in range(Mpow.shape[0]):
