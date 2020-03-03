@@ -66,9 +66,11 @@ class Process(object):
             self.stream = self.dataframe.to_dict('r')
         return self.stream
 
-    def get_most_similar(self, id):
+    def get_most_similar(self, id, exponent=None):
+        if exponent is None:
+            exponent = self.default_exponent
         if self.matrix is None:
-            self.get_full_matrix()
+            self.get_full_matrix(exponent=exponent)
         cid = self.events_corr[id]
         j = self.nodes[cid]
         idxs = []
@@ -81,11 +83,11 @@ class Process(object):
         dataframe = self.dataframe[self.dataframe["event_id"].isin([x["event_id"] for x in idxs])]
         dataframe = dataframe.set_index('event_id')
         dataframe2 = pd.DataFrame(idxs).set_index('event_id')
-        dataframe["event_@@distance"] = dataframe2["@@distance"]
+        dataframe["event_ZZdistance"] = dataframe2["@@distance"]
         dataframe = dataframe.reset_index()
         dataframe.type = "exploded"
         succint_table = exploded_mdl_to_succint_mdl.apply(dataframe)
-        succint_table = succint_table.sort_values("event_ZZdistance", ascending=False)
+        succint_table = succint_table.sort_values("event_ZZdistance", ascending=True)
         events, columns = self.get_columns_events(succint_table)
         ret = {"events": events, "columns": columns}
         return ret

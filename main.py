@@ -72,6 +72,8 @@ def process_view(process=None):
         response.set_cookie('min_paths_count', str(min_paths_count))
     if not request.cookies.get('model_type'):
         response.set_cookie('model_type', model_type)
+    if not request.cookies.get('exponent'):
+        response.set_cookie('exponent', "9")
 
     return response
 
@@ -88,6 +90,20 @@ def save_act_ot_selection():
     process.selected_act_obj_types = actotselection
 
     return ""
+
+
+@app.route("/getMostSimilar")
+def get_most_similar():
+    session = request.cookies.get('session')
+    if session is None:
+        raise Exception()
+    process = request.args.get('process')
+    eid = request.args.get('eid')
+    exponent = int(request.cookies.get('exponent')) if 'exponent' in request.cookies else 9
+
+    process = Shared.logs[process].get_controller(session)
+
+    return jsonify(process.get_most_similar(eid, exponent=exponent))
 
 
 @app.route("/getSpecObjTable")

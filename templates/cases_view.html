@@ -32,7 +32,10 @@
             </div>
     </div>
     <div id="correlatedevents" style="display: none">
-        Correlated events:
+        Correlated events:<br />
+        <div id="rightpanelcorrelated" style="width: 300%">
+
+        </div>
     </div>
 </div>
 </div>
@@ -49,8 +52,7 @@
     }
 
     function openCorrelatedEvents(eve) {
-        document.getElementById("rightpanel1").style.display='none';
-        document.getElementById("correlatedevents").style.display = '';
+        $.ajax({url: "/getMostSimilar?eid="+eve+"&process="+window.location.pathname.split("/").pop()}).done(function(data) { document.getElementById("rightpanel1").style.display='none'; document.getElementById("correlatedevents").style.display = ''; var columns = data.columns.split("@@@"); var events = atob(data.events).split("###"); no_events_right = events.length; populate(columns, events, "rightpanelcorrelated"); });
     }
 
     function clickObjClass(objId, objClass) {
