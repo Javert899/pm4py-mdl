@@ -16,6 +16,10 @@ import base64
 import tempfile
 from copy import copy
 import json
+import networkx as nx
+from networkx.algorithms.community import asyn_lpa_communities
+from networkx.algorithms.community import quality
+from scipy.linalg.blas import sgemm
 
 
 class Process(object):
@@ -31,6 +35,11 @@ class Process(object):
         self.nodes = None
         self.events_corr = None
         self.matrix = None
+        self.powered_matrix = None
+        self.graph = None
+        self.row_sum = None
+        self.overall_sum = 0
+        self.default_exponent = 3
         self.selected_act_obj_types = None
         self.name = name
         self.mdl_path = mdl_path
@@ -81,7 +90,7 @@ class Process(object):
 
     def build_matrix(self):
         self.build_nodes()
-        self.matrix = np.zeros((len(self.nodes), len(self.nodes)))
+        self.matrix = np.zeros((len(self.nodes), len(self.nodes)), dtype=np.float32)
         for ev in self.stream:
             ev2 = {x: y for x, y in ev.items() if str(y) != "nan"}
             id = "event_id=" + str(ev2["event_id"])
@@ -95,13 +104,45 @@ class Process(object):
                     self.matrix[self.nodes["class=" + str(col)], self.nodes["object_id=" + str(val)]] = 1
                     self.matrix[self.nodes[id], self.nodes["object_id=" + str(val)]] = 1
                     self.matrix[self.nodes["object_id=" + str(val)], self.nodes[id]] = 1
+        self.overall_sum = np.sum(self.matrix)
+        self.row_sum = np.sum(self.matrix, axis=1)
+        self.matrix = self.matrix / self.row_sum[:, np.newaxis]
         return self.nodes, self.events_corr, self.matrix
 
-    def get_graph(self):
+    def build_nx_graph(self, threshold=0.03):
+        if self.graph is None:
+            self.graph = nx.Graph()
+            for j in range(self.powered_matrix.shape[0]):
+                self.graph.add_node(j)
+            for j in range(self.powered_matrix.shape[0]):
+                vec = self.powered_matrix[j, :]
+                max_vec = max(vec)
+                for z in range(self.powered_matrix.shape[1]):
+                    if self.powered_matrix[j, z] > max_vec * threshold:
+                        self.graph.add_edge(j, z, weight=self.powered_matrix[j, z] * self.row_sum[j] / self.overall_sum)
+        return self.graph
+
+    def get_graph(self, exponent=None):
+        import time
+        if exponent is None:
+            exponent = self.default_exponent
         if self.matrix is None:
             self.build_nodes()
+            print("1", time.time())
             self.build_matrix()
-        return self.nodes, self.events_corr, self.matrix
+        if self.powered_matrix is None:
+            print("2", time.time())
+            self.matrix_power(exponent)
+        if self.graph is None:
+            print("3", time.time())
+            self.build_nx_graph()
+        print("4", time.time())
+        return self.nodes, self.events_corr, self.matrix, self.graph
+
+    def matrix_power(self, N):
+        if self.powered_matrix is None:
+            self.powered_matrix = np.linalg.matrix_power(self.matrix, N)
+        return self.powered_matrix
 
     def events_list(self):
         obj = copy(self)
@@ -185,6 +226,10 @@ class Process(object):
         self.nodes = None
         self.events_corr = None
         self.matrix = None
+        self.row_sum = None
+        self.overall_sum = 0
+        self.powered_matrix = None
+        self.graph = None
         self.get_graph()
         self.activities = sorted(list(self.dataframe["event_activity"].unique()))
         attr_types = self.get_act_attr_types(self.activities)
