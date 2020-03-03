@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, make_response, jsonify
 import base64
 from pm4pymdl.objects.mdl.importer import factory as mdl_importer
+from controllers import process as pc_controller
 from controllers.process import Process
 from controllers import defaults
 import uuid
@@ -39,12 +40,16 @@ def act_ot_selection(process=None):
 @app.route("/cases_view/<process>")
 def cases_view(process=None):
     session = request.cookies.get('session') if 'session' in request.cookies else uuid.uuid4()
+    if 'exponent' in request.cookies:
+        pc_controller.DEFAULT_EXPONENT = int(request.cookies['exponent'])
     response = make_response(render_template(
         'cases_view.html',
         Process=Shared.logs[process].get_controller(session).events_list()
         ))
     if not request.cookies.get('session'):
         response.set_cookie('session', str(uuid.uuid4()))
+    if not request.cookies.get('exponent'):
+        response.set_cookie('exponent', str(pc_controller.DEFAULT_EXPONENT))
     return response
 
 
@@ -55,10 +60,10 @@ def process_view(process=None):
     min_acti_count = request.cookies.get('min_acti_count') if 'min_acti_count' in request.cookies else process.selected_min_acti_count
     min_paths_count = request.cookies.get('min_paths_count') if 'min_paths_count' in request.cookies else process.selected_min_edge_freq_count
     model_type = request.cookies.get('model_type') if 'model_type' in request.cookies else defaults.DEFAULT_MODEL_TYPE
-
+    if 'exponent' in request.cookies:
+        pc_controller.DEFAULT_EXPONENT = int(request.cookies['exponent'])
     min_acti_count = int(min_acti_count)
     min_paths_count = int(min_paths_count)
-
     response = make_response(render_template(
         'process_view.html',
         Process=process.get_visualization(min_acti_count=min_acti_count, min_paths_count=min_paths_count, model_type=model_type)
@@ -73,8 +78,7 @@ def process_view(process=None):
     if not request.cookies.get('model_type'):
         response.set_cookie('model_type', model_type)
     if not request.cookies.get('exponent'):
-        response.set_cookie('exponent', "9")
-
+        response.set_cookie('exponent', str(pc_controller.DEFAULT_EXPONENT))
     return response
 
 
@@ -99,7 +103,7 @@ def get_most_similar():
         raise Exception()
     process = request.args.get('process')
     eid = request.args.get('eid')
-    exponent = int(request.cookies.get('exponent')) if 'exponent' in request.cookies else 9
+    exponent = int(request.cookies.get('exponent')) if 'exponent' in request.cookies else pc_controller.DEFAULT_EXPONENT
 
     process = Shared.logs[process].get_controller(session)
 

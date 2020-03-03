@@ -23,6 +23,7 @@ from networkx.algorithms.community import quality
 from scipy.linalg.blas import sgemm
 from scipy import spatial
 
+DEFAULT_EXPONENT = 9
 
 class Process(object):
     def __init__(self, name, mdl_path, shared_logs):
@@ -42,7 +43,6 @@ class Process(object):
         self.graph = None
         self.row_sum = None
         self.overall_sum = 0
-        self.default_exponent = 7
         self.selected_act_obj_types = None
         self.name = name
         self.mdl_path = mdl_path
@@ -68,9 +68,11 @@ class Process(object):
 
     def get_most_similar(self, id, exponent=None):
         if exponent is None:
-            exponent = self.default_exponent
+            exponent = DEFAULT_EXPONENT
         if self.matrix is None:
-            self.get_full_matrix(exponent=exponent)
+            self.build_matrix()
+        if exponent != DEFAULT_EXPONENT or self.powered_matrix is None:
+            self.matrix_power(exponent)
         cid = self.events_corr[id]
         j = self.nodes[cid]
         idxs = []
@@ -153,7 +155,7 @@ class Process(object):
     def get_full_matrix(self, exponent=None):
         import time
         if exponent is None:
-            exponent = self.default_exponent
+            exponent = DEFAULT_EXPONENT
         if self.matrix is None:
             self.build_nodes()
             self.build_matrix()
@@ -262,7 +264,7 @@ class Process(object):
         self.overall_sum = 0
         self.powered_matrix = None
         self.graph = None
-        if self.dataframe.length < 100:
+        if len(self.dataframe) < 100:
             self.get_graph()
         self.activities = sorted(list(self.dataframe["event_activity"].unique()))
         attr_types = self.get_act_attr_types(self.activities)
