@@ -12,6 +12,7 @@ from pm4pymdl.algo.mvp.discovery import factory as mvp_discovery
 from pm4pymdl.visualization.mvp import factory as mvp_vis_factory
 from controllers import defaults
 import numpy as np
+import pandas as pd
 import base64
 import tempfile
 from copy import copy
@@ -20,6 +21,7 @@ import networkx as nx
 from networkx.algorithms.community import asyn_lpa_communities
 from networkx.algorithms.community import quality
 from scipy.linalg.blas import sgemm
+from scipy import spatial
 
 
 class Process(object):
@@ -34,12 +36,13 @@ class Process(object):
         self.stream = None
         self.nodes = None
         self.events_corr = None
+        self.events_corr2 = None
         self.matrix = None
         self.powered_matrix = None
         self.graph = None
         self.row_sum = None
         self.overall_sum = 0
-        self.default_exponent = 3
+        self.default_exponent = 7
         self.selected_act_obj_types = None
         self.name = name
         self.mdl_path = mdl_path
@@ -63,11 +66,38 @@ class Process(object):
             self.stream = self.dataframe.to_dict('r')
         return self.stream
 
+    def get_most_similar(self, id):
+        if self.matrix is None:
+            self.get_full_matrix()
+        cid = self.events_corr[id]
+        j = self.nodes[cid]
+        idxs = []
+        jvec = list(self.powered_matrix[j, :] * self.row_sum[j] / self.overall_sum)
+        for i in range(self.powered_matrix.shape[0]):
+            if not i == j:
+                if self.nodes_inv[i].startswith("event_id="):
+                    ivec = list(self.powered_matrix[i, :] * self.row_sum[i] / self.overall_sum)
+                    idxs.append({"event_id": self.events_corr_inv[self.nodes_inv[i]], "@@distance": spatial.distance.cosine(jvec, ivec)})
+        dataframe = self.dataframe[self.dataframe["event_id"].isin([x["event_id"] for x in idxs])]
+        dataframe = dataframe.set_index('event_id')
+        dataframe2 = pd.DataFrame(idxs).set_index('event_id')
+        dataframe["event_@@distance"] = dataframe2["@@distance"]
+        dataframe = dataframe.reset_index()
+        dataframe.type = "exploded"
+        succint_table = exploded_mdl_to_succint_mdl.apply(dataframe)
+        succint_table = succint_table.sort_values("event_ZZdistance", ascending=False)
+        events, columns = self.get_columns_events(succint_table)
+        ret = {"events": events, "columns": columns}
+        return ret
+
     def build_nodes(self):
         if self.nodes is None:
             self.get_stream()
             self.nodes = dict()
+            self.nodes_inv = dict()
             self.events_corr = {}
+            self.events_corr2 = {}
+            self.events_corr_inv = {}
             for ev in self.stream:
                 ev2 = {x: y for x, y in ev.items() if str(y) != "nan"}
                 id = "event_id=" + str(ev2["event_id"])
@@ -76,7 +106,9 @@ class Process(object):
                     self.nodes[id] = len(self.nodes)
                 if activity not in self.nodes:
                     self.nodes[activity] = len(self.nodes)
-                self.events_corr = {ev2["event_id"]: id}
+                self.events_corr[ev2["event_id"]] = id
+                self.events_corr2[ev2["event_id"]] = ev
+                self.events_corr_inv[id] = ev2["event_id"]
                 for col in ev2:
                     if not col.startswith("event_"):
                         val = ev2[col]
@@ -86,6 +118,8 @@ class Process(object):
                             self.nodes[oid] = len(self.nodes)
                         if cla not in self.nodes:
                             self.nodes[cla] = len(self.nodes)
+        for k in self.nodes:
+            self.nodes_inv[self.nodes[k]] = k
         return self.nodes, self.events_corr
 
     def build_matrix(self):
@@ -100,8 +134,8 @@ class Process(object):
             for col in ev2:
                 if not col.startswith("event_"):
                     val = ev2[col]
-                    self.matrix[self.nodes["object_id=" + str(val)], self.nodes["class=" + str(col)]] = 1
-                    self.matrix[self.nodes["class=" + str(col)], self.nodes["object_id=" + str(val)]] = 1
+                    self.matrix[self.nodes["object_id=" + str(val)], self.nodes["class=" + str(col)]] += 1
+                    self.matrix[self.nodes["class=" + str(col)], self.nodes["object_id=" + str(val)]] += 1
                     self.matrix[self.nodes[id], self.nodes["object_id=" + str(val)]] = 1
                     self.matrix[self.nodes["object_id=" + str(val)], self.nodes[id]] = 1
         self.overall_sum = np.sum(self.matrix)
@@ -120,10 +154,8 @@ class Process(object):
             exponent = self.default_exponent
         if self.matrix is None:
             self.build_nodes()
-            print("1", time.time())
             self.build_matrix()
         if self.powered_matrix is None:
-            print("2", time.time())
             self.matrix_power(exponent)
         return self.nodes, self.events_corr, self.matrix, self.powered_matrix
 
@@ -131,9 +163,7 @@ class Process(object):
         import time
         self.get_full_matrix(exponent=exponent)
         if self.graph is None:
-            print("3", time.time())
             self.build_nx_graph()
-        print("4", time.time())
         return self.nodes, self.events_corr, self.matrix, self.powered_matrix, self.graph
 
     def matrix_power(self, N):
@@ -141,9 +171,11 @@ class Process(object):
             self.powered_matrix = np.linalg.matrix_power(self.matrix, N)
         return self.powered_matrix
 
-    def events_list(self):
+    def events_list(self, dataframe=None):
         obj = copy(self)
-        succint_table = exploded_mdl_to_succint_mdl.apply(obj.dataframe)
+        if dataframe is None:
+            dataframe = obj.dataframe
+        succint_table = exploded_mdl_to_succint_mdl.apply(dataframe)
         obj.events, obj.columns = self.get_columns_events(succint_table)
         return obj
 
@@ -222,12 +254,12 @@ class Process(object):
         self.stream = None
         self.nodes = None
         self.events_corr = None
+        self.events_corr2 = None
         self.matrix = None
         self.row_sum = None
         self.overall_sum = 0
         self.powered_matrix = None
         self.graph = None
-        self.get_graph()
         self.activities = sorted(list(self.dataframe["event_activity"].unique()))
         attr_types = self.get_act_attr_types(self.activities)
         act_obj_types = self.get_act_obj_types(self.activities)
