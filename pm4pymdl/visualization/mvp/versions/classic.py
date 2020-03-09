@@ -244,6 +244,23 @@ def apply_vis_heu(heu_net, parameters=None):
     return file_name
 
 
+def get_empty(parameters=None):
+    if parameters is None:
+        parameters = {}
+
+    image_format = parameters["format"] if "format" in parameters else "png"
+
+    graph = pydotplus.Dot(strict=False)
+    graph.obj_dict['attributes']['bgcolor'] = 'transparent'
+
+    print("n. edges MVP",len(graph.get_edge_list()))
+    file_name = tempfile.NamedTemporaryFile(suffix='.' + image_format)
+    file_name.close()
+    graph.write(file_name.name, format=image_format)
+
+    return file_name
+
+
 def apply(model, parameters=None):
     """
     Visualize StarStar models
@@ -272,4 +289,4 @@ def apply(model, parameters=None):
             overall_heu = overall_heu + persp
     if overall_heu is not None:
         return apply_vis_heu(overall_heu, parameters=parameters)
-    return None
+    return get_empty(parameters=parameters)

@@ -20,7 +20,12 @@ def do_filtering(dataframe, fd0, parameters=None):
         cols_values[c] = list(fd1.dropna(subset=[c])[c].unique())
         collation.append(dataframe[dataframe[c].isin(cols_values[c])])
 
-    return pd.concat(collation)
+    if collation:
+        df2 = pd.concat(collation)
+    else:
+        df2 = pd.DataFrame()
+
+    return df2
 
 
 def do_negative_filtering(dataframe, fd0, parameters=None):
@@ -41,7 +46,10 @@ def do_negative_filtering(dataframe, fd0, parameters=None):
         cols_values[c] = list(fd1.dropna(subset=[c])[c].unique())
         collation.append(dataframe[dataframe[c].isin(cols_values[c])])
 
-    df2 = pd.concat(collation)
+    if collation:
+        df2 = pd.concat(collation)
+    else:
+        df2 = pd.DataFrame()
 
     i1 = dataframe.index
     i2 = df2.index

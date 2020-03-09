@@ -2,6 +2,8 @@ import os
 import shutil
 import subprocess
 import sys
+import traceback
+
 
 from pm4pymdl.visualization.mvp.versions import classic
 
@@ -84,5 +86,6 @@ def save(figure, output_file_path):
     except AttributeError:
         # continue without problems, a proper path has been provided
         pass
+        traceback.print_exc()
 
     shutil.copyfile(figure, output_file_path)

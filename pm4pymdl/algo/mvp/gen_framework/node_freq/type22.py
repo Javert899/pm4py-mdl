@@ -14,6 +14,9 @@ def apply(df, model, rel_ev, rel_act, parameters=None):
         proj_df = proj_df.groupby(["event_id", persp]).first()
         df_list.append(proj_df)
 
-    concat_df = pd.concat(df_list)
+    if df_list:
+        concat_df = pd.concat(df_list)
+    else:
+        concat_df = pd.DataFrame()
 
     return dict(concat_df["event_activity"].value_counts())
