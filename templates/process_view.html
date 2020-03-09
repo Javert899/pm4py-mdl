@@ -56,11 +56,11 @@
               <br />
               <a href="javascript:applySpecPathFilter()">Apply Paths filter</a>
           </div>
-          <div style="display: none">
+          <div style="display: none" id="clustersdiv">
               Cluster:
               <select id="clusterselector" name="clusterselector">
               </select>
-              <button onclick="javascript:performLogChange()">Set</button>
+              <button onclick="javascript:performClusterChange()">Set</button>
           </div>
       </div>
       <div class="h-100 col-10">
@@ -235,6 +235,19 @@
         document.getElementById("min_paths_count").value = "{{ Process.selected_min_edge_freq_count }}";
         pnames = '{{ Process.shared_logs_names }}'.split("@@@");
         clusters = '{{ Process.clustersrepr }}'.split("@@@");
+        if (clusters.length > 0) {
+            var cluster_div = document.getElementById("clustersdiv");
+            var cluster_selector = document.getElementById("clusterselector");
+            let i = 0;
+            while (i < clusters.length) {
+                var option = document.createElement("option");
+                option.text = clusters[i];
+                option.value = clusters[i];
+                cluster_selector.add(option);
+                i++;
+            }
+            cluster_div.style.display = '';
+        }
         var log_selector = document.getElementById("logselector");
         let i = 0;
         while (i < pnames.length) {
@@ -300,6 +313,12 @@
             i++;
         }
         window.location.reload();
+    }
+
+    function performClusterChange() {
+        var selected_log = document.getElementById("clusterselector").value;
+        // applyClusterFilter
+        $.ajax({url: "/applyClusterFilter?cluster="+selected_log+"&process="+window.location.pathname.split("/").pop()}).done(function(data) { window.location.reload(); }).fail(function() { alert("Something went wrong!"); });
     }
 
     function performLogChange() {

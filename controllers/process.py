@@ -167,6 +167,7 @@ class Process(object):
                         new_clusters[-1].append(self.events_corr_inv[self.nodes_inv[el]])
                 if len(new_clusters[-1]) == 0:
                     del new_clusters[-1]
+            new_clusters = sorted(new_clusters, key=lambda x: len(x), reverse=True)
             self.clusters = {}
             for i in range(len(new_clusters)):
                 self.clusters["Cluster " + str(i + 1)] = new_clusters[i]
