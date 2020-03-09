@@ -8,7 +8,7 @@ import networkx as nx
 from networkx.algorithms.community import asyn_lpa_communities
 from networkx.algorithms.community import quality
 
-log0 = mdl_importer.apply("example_logs/mdl/order_management.mdl")
+log0 = mdl_importer.apply("example_logs/mdl/log_opp_red.mdl")
 log = succint_mdl_to_exploded_mdl.apply(log0)
 stream = log.to_dict('r')
 nodes = dict()
