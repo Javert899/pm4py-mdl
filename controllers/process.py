@@ -19,7 +19,7 @@ import tempfile
 from copy import copy, deepcopy
 import json
 import networkx as nx
-from networkx.algorithms.community import asyn_lpa_communities
+from networkx.algorithms.community import asyn_lpa_communities, greedy_modularity_communities
 from networkx.algorithms.community import quality
 from scipy.linalg.blas import sgemm
 from scipy import spatial
@@ -154,6 +154,11 @@ class Process(object):
         self.matrix = self.matrix / self.row_sum[:, np.newaxis]
         return self.nodes, self.events_corr, self.matrix
 
+    def fill_string(self, stru):
+        if len(stru) < 2:
+            stru = "0" + stru
+        return stru
+
     def do_clustering(self):
         if len(self.clusters) == 0 or self.clusterid != str(id(self)):
             self.clusterid = str(id(self))
@@ -170,7 +175,7 @@ class Process(object):
             new_clusters = sorted(new_clusters, key=lambda x: len(x), reverse=True)
             self.clusters = {}
             for i in range(len(new_clusters)):
-                self.clusters["Cluster " + str(i + 1)] = new_clusters[i]
+                self.clusters["Cluster " + self.fill_string(str(i + 1))+" ("+str(len(new_clusters[i]))+")"] = new_clusters[i]
             clusters_keys = sorted(list(self.clusters.keys()))
             self.clustersrepr = "@@@".join(clusters_keys)
 
