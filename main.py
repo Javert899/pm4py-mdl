@@ -15,31 +15,31 @@ app = Flask(__name__)
 
 @app.route("/welcome")
 def welcome():
-    session = request.cookies.get('session') if 'session' in request.cookies else uuid.uuid4()
+    session = request.cookies.get('session') if 'session' in request.cookies else str(uuid.uuid4())
     response = make_response(render_template(
         'welcome.html',
         Process=Shared.logs[list(Shared.logs.keys())[0]].get_names()
         ))
     if not request.cookies.get('session'):
-        response.set_cookie('session', str(uuid.uuid4()))
+        response.set_cookie('session', session)
     return response
 
 
 @app.route("/act_ot_selection/<process>")
 def act_ot_selection(process=None):
-    session = request.cookies.get('session') if 'session' in request.cookies else uuid.uuid4()
+    session = request.cookies.get('session') if 'session' in request.cookies else str(uuid.uuid4())
     response = make_response(render_template(
         'act_ot_selection.html',
         Process=Shared.logs[process].get_controller(session)
         ))
     if not request.cookies.get('session'):
-        response.set_cookie('session', str(uuid.uuid4()))
+        response.set_cookie('session', session)
     return response
 
 
 @app.route("/cases_view/<process>")
 def cases_view(process=None):
-    session = request.cookies.get('session') if 'session' in request.cookies else uuid.uuid4()
+    session = request.cookies.get('session') if 'session' in request.cookies else str(uuid.uuid4())
     if 'exponent' in request.cookies:
         pc_controller.DEFAULT_EXPONENT = int(request.cookies['exponent'])
     response = make_response(render_template(
@@ -47,7 +47,7 @@ def cases_view(process=None):
         Process=Shared.logs[process].get_controller(session).events_list()
         ))
     if not request.cookies.get('session'):
-        response.set_cookie('session', str(uuid.uuid4()))
+        response.set_cookie('session', session)
     if not request.cookies.get('exponent'):
         response.set_cookie('exponent', str(pc_controller.DEFAULT_EXPONENT))
     return response
@@ -55,7 +55,7 @@ def cases_view(process=None):
 
 @app.route("/process_view/<process>")
 def process_view(process=None):
-    session = request.cookies.get('session') if 'session' in request.cookies else uuid.uuid4()
+    session = request.cookies.get('session') if 'session' in request.cookies else str(uuid.uuid4())
     process = Shared.logs[process].get_controller(session)
     min_acti_count = request.cookies.get('min_acti_count') if 'min_acti_count' in request.cookies else process.selected_min_acti_count
     min_paths_count = request.cookies.get('min_paths_count') if 'min_paths_count' in request.cookies else process.selected_min_edge_freq_count
@@ -70,7 +70,7 @@ def process_view(process=None):
         ))
 
     if not request.cookies.get('session'):
-        response.set_cookie('session', str(uuid.uuid4()))
+        response.set_cookie('session', session)
     if not request.cookies.get('min_acti_count'):
         response.set_cookie('min_acti_count', str(min_acti_count))
     if not request.cookies.get('min_paths_count'):
@@ -292,7 +292,7 @@ def main():
     elif defaults.CONFIGURATION == 2:
         Shared.logs["bkpf"] = Process("bkpf", "sap/bkpf_bseg.mdl", Shared.logs)
         Shared.logs["cdhdr"] = Process("cdhdr", "sap/sap_withTrial.mdl", Shared.logs)
-        Shared.logs["opportunities"] = Process("cdhdr", "example_logs/mdl/log_opp_red.mdl", Shared.logs)
+        Shared.logs["opportunities"] = Process("opportunities", "example_logs/mdl/log_opp_red.mdl", Shared.logs)
     elif defaults.CONFIGURATION == 3:
         Shared.logs["runningexample"] = Process("runningexample", "example_logs/mdl/mdl-running-example.mdl", Shared.logs)
         Shared.logs["orders"] = Process("orders", "example_logs/mdl/order_management.mdl", Shared.logs)

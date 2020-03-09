@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 import base64
 import tempfile
-from copy import copy
+from copy import copy, deepcopy
 import json
 import networkx as nx
 from networkx.algorithms.community import asyn_lpa_communities
@@ -269,9 +269,9 @@ class Process(object):
             activities_object_types[act] = get_activ_otypes.get(self.dataframe, act)
         self.act_obj_types = activities_object_types
         if self.initial_act_obj_types is None:
-            self.initial_act_obj_types = activities_object_types
+            self.initial_act_obj_types = deepcopy(activities_object_types)
         if self.selected_act_obj_types is None:
-            self.selected_act_obj_types = self.initial_act_obj_types
+            self.selected_act_obj_types = deepcopy(self.initial_act_obj_types)
         else:
             act_keys = list(self.selected_act_obj_types.keys())
             for key in act_keys:
@@ -335,6 +335,7 @@ class Process(object):
 
         param = {}
         param["allowed_activities"] = reversed_dict
+
         obj.dataframe = clean_objtypes.perfom_cleaning(obj.dataframe, parameters=param)
         obj.dataframe = obj.dataframe.dropna(how="all", axis=1)
 
@@ -446,4 +447,6 @@ class Process(object):
 
     def reset_filters(self, session):
         self.session_objects[session] = self.parent
-        self.session_objects[session].selected_act_obj_types = self.session_objects[session].initial_act_obj_types
+        self.session_objects[session].selected_act_obj_types = deepcopy(self.session_objects[session].initial_act_obj_types)
+        self.session_objects[session].set_properties()
+
