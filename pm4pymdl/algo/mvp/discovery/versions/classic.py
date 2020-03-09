@@ -9,6 +9,8 @@ from pm4py.algo.filtering.pandas.start_activities import start_activities_filter
 from pm4py.objects.heuristics_net import defaults
 from pm4py.objects.heuristics_net.net import HeuristicsNet
 from pm4py.util import constants
+import pandas as pd
+
 
 DEPENDENCY_THRESH = "dependency_thresh"
 AND_MEASURE_THRESH = "and_measure_thresh"
@@ -78,6 +80,9 @@ def apply(df, parameters=None):
 
     if parameters is None:
         parameters = {}
+
+    if len(df) == 0:
+        df = pd.DataFrame({"event_id": [], "event_activity": []})
 
     dependency_thresh = parameters[
         DEPENDENCY_THRESH] if DEPENDENCY_THRESH in parameters else defaults.DEFAULT_DEPENDENCY_THRESH

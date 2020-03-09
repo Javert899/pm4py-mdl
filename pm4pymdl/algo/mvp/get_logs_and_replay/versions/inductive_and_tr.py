@@ -14,7 +14,7 @@ from pm4py.objects.petri.utils import add_arc_from_to
 from pm4py.objects.petri.utils import remove_place, remove_transition
 from copy import deepcopy
 import uuid
-
+import pandas as pd
 
 PARAM_ACTIVITY_KEY = pm4py.util.constants.PARAMETER_CONSTANT_ACTIVITY_KEY
 
@@ -57,11 +57,17 @@ def apply(df, parameters=None):
     except:
         pass
 
+    if len(df) == 0:
+        df = pd.DataFrame({"event_id": [], "event_activity": []})
+
     min_node_freq = parameters["min_node_freq"] if "min_node_freq" in parameters else 0
     min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 0
 
     df = clean_frequency.apply(df, min_node_freq)
     df = clean_arc_frequency.apply(df, min_edge_freq)
+
+    if len(df) == 0:
+        df = pd.DataFrame({"event_id": [], "event_activity": []})
 
     persps = [x for x in df.columns if not x.startswith("event_")]
 

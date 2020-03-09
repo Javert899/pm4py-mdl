@@ -4,6 +4,8 @@ from pm4pymdl.algo.mvp.gen_framework.rel_activities import factory as rel_act_fa
 from pm4pymdl.algo.mvp.gen_framework.node_freq import factory as node_freq_factory
 from pm4pymdl.algo.mvp.gen_framework.edge_freq import factory as edge_freq_factory
 from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl, clean_objtypes
+import pandas as pd
+
 
 MODEL1 = model_factory.MODEL1
 MODEL2 = model_factory.MODEL2
@@ -28,10 +30,16 @@ def apply(df, model_type_variant=MODEL1, rel_ev_variant=REL_DFG, node_freq_varia
     except:
         pass
 
+    if len(df) == 0:
+        df = pd.DataFrame({"event_id": [], "event_activity": []})
+
     if conversion_needed:
         df = succint_mdl_to_exploded_mdl.apply(df)
 
     df = clean_objtypes.perfom_cleaning(df, parameters=parameters)
+
+    if len(df) == 0:
+        df = pd.DataFrame({"event_id": [], "event_activity": []})
 
     model = model_factory.apply(df, variant=model_type_variant)
     rel_ev = rel_ev_factory.apply(df, model, variant=rel_ev_variant)
