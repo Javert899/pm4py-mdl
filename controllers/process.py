@@ -6,7 +6,8 @@ from pm4pymdl.algo.mvp.get_logs_and_replay import factory as petri_disc_factory
 from pm4pymdl.visualization.mvp.gen_framework import factory as mdfg_vis_factory
 from pm4pymdl.visualization.petrinet import factory as pn_vis_factory
 from pm4pymdl.algo.mvp.utils import get_activ_attrs_with_type, get_activ_otypes
-from pm4pymdl.algo.mvp.utils import filter_act_attr_val, filter_act_ot, filter_timestamp, filter_metaclass, filter_specific_path
+from pm4pymdl.algo.mvp.utils import filter_act_attr_val, filter_act_ot, filter_timestamp, filter_metaclass, \
+    filter_specific_path
 from pm4pymdl.algo.mvp.utils import distr_act_attrname, distr_act_otype, dist_timestamp, clean_objtypes
 from pm4pymdl.algo.mvp.discovery import factory as mvp_discovery
 from pm4pymdl.visualization.mvp import factory as mvp_vis_factory
@@ -24,6 +25,7 @@ from scipy.linalg.blas import sgemm
 from scipy import spatial
 
 DEFAULT_EXPONENT = 9
+
 
 class Process(object):
     def __init__(self, name, mdl_path, shared_logs):
@@ -43,6 +45,7 @@ class Process(object):
         self.events_corr2 = None
         self.matrix = None
         self.powered_matrix = None
+        self.powered_matrix_2 = None
         self.graph = None
         self.row_sum = None
         self.overall_sum = 0
@@ -84,7 +87,8 @@ class Process(object):
             if not i == j:
                 if self.nodes_inv[i].startswith("event_id="):
                     ivec = list(self.powered_matrix[i, :] * self.row_sum[i] / self.overall_sum)
-                    idxs.append({"event_id": self.events_corr_inv[self.nodes_inv[i]], "@@distance": spatial.distance.cosine(jvec, ivec)})
+                    idxs.append({"event_id": self.events_corr_inv[self.nodes_inv[i]],
+                                 "@@distance": spatial.distance.cosine(jvec, ivec)})
         dataframe = self.dataframe[self.dataframe["event_id"].isin([x["event_id"] for x in idxs])]
         dataframe = dataframe.set_index('event_id')
         dataframe2 = pd.DataFrame(idxs).set_index('event_id')
@@ -165,7 +169,7 @@ class Process(object):
                     del new_clusters[-1]
             self.clusters = {}
             for i in range(len(new_clusters)):
-                self.clusters["Cluster "+str(i+1)] = new_clusters[i]
+                self.clusters["Cluster " + str(i + 1)] = new_clusters[i]
             clusters_keys = sorted(list(self.clusters.keys()))
             self.clustersrepr = "@@@".join(clusters_keys)
 
@@ -195,6 +199,9 @@ class Process(object):
     def matrix_power(self, N):
         if self.powered_matrix is None:
             self.powered_matrix = np.linalg.matrix_power(self.matrix, N)
+            self.powered_matrix_2 = np.matmul(self.powered_matrix,
+                                              np.diag(list(self.row_sum[j] / self.overall_sum for j in
+                                                           range(self.powered_matrix.shape[0]))))
         return self.powered_matrix
 
     def events_list(self, dataframe=None):
@@ -285,6 +292,7 @@ class Process(object):
         self.row_sum = None
         self.overall_sum = 0
         self.powered_matrix = None
+        self.powered_matrix_2 = None
         self.graph = None
 
     def set_properties(self):

@@ -52,7 +52,8 @@ threshold = 0.03
 while N < 20:
     sum_cos_sim = 0.0
     Mpow = np.linalg.matrix_power(R, N)
-    G = nx.convert_matrix.from_numpy_matrix(Mpow)
+    Mpow2 = np.matmul(Mpow, np.diag(list(summ[j]/overall_sum for j in range(Mpow.shape[0]))))
+    G = nx.convert_matrix.from_numpy_matrix(Mpow2)
     """
     G = nx.Graph()
     for j in range(Mpow.shape[0]):
@@ -66,29 +67,30 @@ while N < 20:
             G.add_edge(j, z, weight=vec[z]*multt)
     """
     c = list(asyn_lpa_communities(G, weight="weight"))
-    print(N, "modularity", quality.modularity(G, c))
-    for j in range(Mpow.shape[0]):
-        vals = list(Mpow[j, :]*summ[j]/overall_sum)
-        vals = sorted([(i, vals[i]) for i in range(len(vals)) if vals[i] > 0], key=lambda x: x[1], reverse=True)
-        idxs = []
-        z = 0
-        while z < min(K, len(vals)):
-            idxs.append(vals[z][0])
-            z = z + 1
-        idxs.append(j)
-        #Mpow_red = np.take(Mpow, [idxs, idxs])
-        Mpow_red = np.zeros((len(idxs), len(idxs)))
-        z = 0
-        while z < len(idxs):
-            k = 0
-            while k < len(idxs):
-                Mpow_red[z, k] = Mpow[idxs[z], idxs[k]]
-                k = k + 1
-            z = z + 1
-        dist_out = np.matrix.mean(np.asmatrix(1 - pairwise_distances(Mpow_red, metric="cosine")))
-        #print(N, j, dist_out)
-        sum_cos_sim = sum_cos_sim + dist_out
-    avg_cos_sim = sum_cos_sim / Mpow.shape[0]
-    print(N, "cosine_similarity", avg_cos_sim)
+    print(N, "modularity", quality.modularity(G, c), len(c))
+    if False:
+        for j in range(Mpow.shape[0]):
+            vals = list(Mpow[j, :]*summ[j]/overall_sum)
+            vals = sorted([(i, vals[i]) for i in range(len(vals)) if vals[i] > 0], key=lambda x: x[1], reverse=True)
+            idxs = []
+            z = 0
+            while z < min(K, len(vals)):
+                idxs.append(vals[z][0])
+                z = z + 1
+            idxs.append(j)
+            #Mpow_red = np.take(Mpow, [idxs, idxs])
+            Mpow_red = np.zeros((len(idxs), len(idxs)))
+            z = 0
+            while z < len(idxs):
+                k = 0
+                while k < len(idxs):
+                    Mpow_red[z, k] = Mpow[idxs[z], idxs[k]]
+                    k = k + 1
+                z = z + 1
+            dist_out = np.matrix.mean(np.asmatrix(1 - pairwise_distances(Mpow_red, metric="cosine")))
+            #print(N, j, dist_out)
+            sum_cos_sim = sum_cos_sim + dist_out
+        avg_cos_sim = sum_cos_sim / Mpow.shape[0]
+        print(N, "cosine_similarity", avg_cos_sim)
     N = N + 1
 print(np.linalg.matrix_power(R, 10))
