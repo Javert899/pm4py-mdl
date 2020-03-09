@@ -296,7 +296,7 @@ class Process(object):
         self.graph = None
 
     def set_properties(self):
-        if len(self.dataframe) < 200:
+        if len(self.dataframe) < 505:
             self.get_graph()
             self.do_clustering()
         self.activities = sorted(list(self.dataframe["event_activity"].unique()))
@@ -311,7 +311,7 @@ class Process(object):
                    "all_otypes": self.obj_types, "act_obj_types": self.act_obj_types,
                    "selected_act_obj_types": self.selected_act_obj_types}
         self.cobject = base64.b64encode(json.dumps(cobject).encode('utf-8')).decode('utf-8')
-        self.dataframe_length = len(self.dataframe)
+        self.dataframe_length = self.dataframe["event_id"].nunique()
 
     def get_names(self):
         self.shared_logs_names = "@@@".join([x for x in self.shared_logs])
