@@ -15,6 +15,7 @@ from pm4py.objects.petri.utils import remove_place, remove_transition
 from copy import deepcopy
 import uuid
 import pandas as pd
+import time
 
 PARAM_ACTIVITY_KEY = pm4py.util.constants.PARAMETER_CONSTANT_ACTIVITY_KEY
 
@@ -38,7 +39,7 @@ def reduce_petri_net(net):
                     remove_transition(net, target_trans)
                     places = list(net.places)
                     continue
-                    #print(source_trans, target_trans, target_place)
+                    # print(source_trans, target_trans, target_place)
         i = i + 1
 
     return net
@@ -86,11 +87,17 @@ def apply(df, parameters=None):
     ret["aggregated_statistics_performance_median"] = {}
     ret["aggregated_statistics_performance_mean"] = {}
 
+    diff_log = 0
+    diff_model = 0
+    diff_token_replay = 0
+    diff_performance_annotation = 0
+    diff_basic_stats = 0
+
     for persp in persps:
-        print(persp,"getting log")
+        aa = time.time()
+        print(persp, "getting log")
         log = factory.apply(df, persp, parameters=parameters)
         print(len(log))
-
 
         if allowed_activities is not None:
             if persp not in allowed_activities:
@@ -98,12 +105,16 @@ def apply(df, parameters=None):
             filtered_log = attributes_filter.apply_events(log, allowed_activities[persp])
         else:
             filtered_log = log
+        bb = time.time()
+
+        diff_log += (bb - aa)
 
         # filtered_log = variants_filter.apply_auto_filter(deepcopy(filtered_log), parameters={"decreasingFactor": 0.5})
 
         print(len(log))
-        print(persp,"got log")
+        print(persp, "got log")
 
+        cc = time.time()
         net, im, fm = inductive_miner.apply(filtered_log)
 
         """if persp == "items":
@@ -116,47 +127,69 @@ def apply(df, parameters=None):
             add_arc_from_to(skip_trans_1, target_place_re, net)"""
 
         net = reduce_petri_net(net)
-        #net, im, fm = alpha_miner.apply(filtered_log)
-        print(persp,"got model")
+        dd = time.time()
+
+        diff_model += (dd - cc)
+
+        # net, im, fm = alpha_miner.apply(filtered_log)
+        print(persp, "got model")
 
         activ_count = factory.apply(df, persp, variant="activity_occurrence", parameters=parameters)
-        print(persp,"got activ_count")
+        print(persp, "got activ_count")
 
         variants_idx = variants_module.get_variants_from_log_trace_idx(log)
-        #variants = variants_module.convert_variants_trace_idx_to_trace_obj(log, variants_idx)
-        #parameters_tr = {PARAM_ACTIVITY_KEY: "concept:name", "variants": variants}
+        # variants = variants_module.convert_variants_trace_idx_to_trace_obj(log, variants_idx)
+        # parameters_tr = {PARAM_ACTIVITY_KEY: "concept:name", "variants": variants}
 
-        print(persp,"got variants")
+        print(persp, "got variants")
 
+        ee = time.time()
+        aligned_traces, place_fitness_per_trace, transition_fitness_per_trace, notexisting_activities_in_model = tr_factory.apply(
+            log, net, im, fm, parameters={"enable_place_fitness": True, "disable_variants": True})
 
-        aligned_traces, place_fitness_per_trace, transition_fitness_per_trace, notexisting_activities_in_model = tr_factory.apply(log, net, im, fm, parameters={"enable_place_fitness": True, "disable_variants": True})
-
-        print(persp,"done tbr")
+        print(persp, "done tbr")
 
         element_statistics = performance_map.single_element_statistics(log, net, im,
                                                                        aligned_traces, variants_idx)
 
-        print(persp,"done element_statistics")
+        print(persp, "done element_statistics")
+        ff = time.time()
+
+        diff_token_replay += (ff - ee)
 
         aggregated_statistics = performance_map.aggregate_statistics(element_statistics)
 
-        print(persp,"done aggregated_statistics")
+        print(persp, "done aggregated_statistics")
 
         element_statistics_performance = performance_map.single_element_statistics(log, net, im,
-                                                                       aligned_traces, variants_idx)
+                                                                                   aligned_traces, variants_idx)
 
-        print(persp,"done element_statistics_performance")
+        print(persp, "done element_statistics_performance")
 
-        aggregated_statistics_performance_min = performance_map.aggregate_statistics(element_statistics_performance, measure="performance", aggregation_measure="min")
-        aggregated_statistics_performance_max = performance_map.aggregate_statistics(element_statistics_performance, measure="performance", aggregation_measure="max")
-        aggregated_statistics_performance_median = performance_map.aggregate_statistics(element_statistics_performance, measure="performance", aggregation_measure="median")
-        aggregated_statistics_performance_mean = performance_map.aggregate_statistics(element_statistics_performance, measure="performance", aggregation_measure="mean")
+        gg = time.time()
 
-        print(persp,"done aggregated_statistics_performance")
+        aggregated_statistics_performance_min = performance_map.aggregate_statistics(element_statistics_performance,
+                                                                                     measure="performance",
+                                                                                     aggregation_measure="min")
+        aggregated_statistics_performance_max = performance_map.aggregate_statistics(element_statistics_performance,
+                                                                                     measure="performance",
+                                                                                     aggregation_measure="max")
+        aggregated_statistics_performance_median = performance_map.aggregate_statistics(element_statistics_performance,
+                                                                                        measure="performance",
+                                                                                        aggregation_measure="median")
+        aggregated_statistics_performance_mean = performance_map.aggregate_statistics(element_statistics_performance,
+                                                                                      measure="performance",
+                                                                                      aggregation_measure="mean")
+
+        hh = time.time()
+
+        diff_performance_annotation += (hh - ee)
+
+        print(persp, "done aggregated_statistics_performance")
 
         group_size_hist = factory.apply(df, persp, variant="group_size_hist", parameters=parameters)
 
-        print(persp,"done group_size_hist")
+        print(persp, "done group_size_hist")
 
         occurrences = {}
         for trans in transition_fitness_per_trace:
@@ -167,8 +200,7 @@ def apply(df, parameters=None):
                     for event in trace:
                         if event["concept:name"] == trans.label:
                             occurrences[trans.label].add((case_id, event["event_id"]))
-            #print(transition_fitness_per_trace[trans])
-
+            # print(transition_fitness_per_trace[trans])
 
         len_different_ids = {}
         for act in occurrences:
@@ -182,6 +214,10 @@ def apply(df, parameters=None):
                     eid_acti_count[act][x[0]] = 0
                 eid_acti_count[act][x[0]] = eid_acti_count[act][x[0]] + 1
             eid_acti_count[act] = sorted(list(eid_acti_count[act].values()))
+
+        ii = time.time()
+
+        diff_basic_stats += (ii - hh)
 
         ret["nets"][persp] = [net, im, fm]
         ret["act_count"][persp] = activ_count
@@ -198,8 +234,9 @@ def apply(df, parameters=None):
         ret["act_count_replay"][persp] = len_different_ids
         ret["group_size_hist_replay"][persp] = eid_acti_count
 
-        #print(ret["act_count"])
-        #print(ret["act_count_replay"])
-
+    ret["computation_statistics"] = {"diff_log": diff_log, "diff_model": diff_model,
+                                     "diff_token_replay": diff_token_replay,
+                                     "diff_performance_annotation": diff_performance_annotation,
+                                     "diff_basic_stats": diff_basic_stats}
 
     return ret
