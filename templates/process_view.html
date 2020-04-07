@@ -2,6 +2,7 @@
 <head>
     <script style="text/javascript" src="../static/jquery.min.js"></script>
     <script style="text/javascript" src="../static/bootstrap.min.js"></script>
+    <script style="text/javascript" src="../static/Filesaver.min.js"></script>
     <link rel="stylesheet" href="../static/bootstrap.min.css">
 </head>
 <body>
@@ -56,6 +57,13 @@
               <br />
               <a href="javascript:applySpecPathFilter()">Apply Paths filter</a>
           </div>
+          <div>
+              <p>Download log for type:</p>
+              <select id="object_type_sel" name="object_type_sel">
+
+              </select>
+              <button onclick="javascript:getLogObjectType()">Download</button>
+          </div>
           <div style="display: none" id="clustersdiv">
               Cluster:
               <select id="clusterselector" name="clusterselector">
@@ -74,6 +82,7 @@
     var pnames = null;
     var cobject = null;
     var clusters = null;
+    var objtypes = null;
     var process = "{{ Process.name }}";
     var expect_reload = false;
 
@@ -229,12 +238,25 @@
         return oldString;
     }
 
+    function getLogObjectType() {
+        var object_type_sel = document.getElementById("object_type_sel").value;
+        $.ajax({url: "/getLogObjectType?objtype="+object_type_sel+"&process="+window.location.pathname.split("/").pop()}).done(function(data) {
+            data["log"] = atob(data["log"]);
+            console.log(data["log"]);
+            var blob = new Blob([data["log"]], {type: "text/xml;charset=utf-8"});
+            filename = data["name"]+".xml";
+            saveAs(blob, filename);
+        }).fail(function() { alert("Something went wrong!"); });
+    }
+
     function preliminary() {
         document.getElementById("model_type").value = "{{ Process.selected_model_type }}";
         document.getElementById("min_acti_count").value = "{{ Process.selected_min_acti_count }}";
         document.getElementById("min_paths_count").value = "{{ Process.selected_min_edge_freq_count }}";
         pnames = '{{ Process.shared_logs_names }}'.split("@@@");
         clusters = '{{ Process.clustersrepr }}'.split("@@@");
+        objtypes = '{{ Process.obj_types_str }}';
+        objtypes = objtypes.split("@@@");
         if (clusters.length > 0) {
             var cluster_div = document.getElementById("clustersdiv");
             var cluster_selector = document.getElementById("clusterselector");
@@ -258,6 +280,17 @@
             i++;
         }
         document.getElementById("logselector").value = "{{ Process.name }}";
+        var object_type_sel = document.getElementById("object_type_sel");
+        console.log("objtypes");
+        console.log(objtypes);
+        i = 0;
+        while (i < objtypes.length) {
+            var option = document.createElement("option");
+            option.text = objtypes[i];
+            option.value = objtypes[i];
+            object_type_sel.add(option);
+            i++;
+        }
         var x = document.cookie.split(";");
         i = 0;
         while (i < x.length) {

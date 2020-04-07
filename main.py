@@ -110,6 +110,19 @@ def get_most_similar():
     return jsonify(process.get_most_similar(eid, exponent=exponent))
 
 
+@app.route("/getLogObjectType")
+def get_log_object_type():
+    session = request.cookies.get('session')
+    if session is None:
+        raise Exception()
+    process = request.args.get('process')
+    objtype = request.args.get('objtype')
+
+    process = Shared.logs[process].get_controller(session)
+    name, type, log = process.get_log_obj_type(objtype)
+
+    return jsonify({"name": name, "type": type, "log": log})
+
 @app.route("/getSpecObjTable")
 def get_spec_obj_table():
     session = request.cookies.get('session')

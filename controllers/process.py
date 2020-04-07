@@ -23,6 +23,10 @@ from networkx.algorithms.community import asyn_lpa_communities, greedy_modularit
 from networkx.algorithms.community import quality
 from scipy.linalg.blas import sgemm
 from scipy import spatial
+from pm4py.objects.log.log import EventStream
+from pm4py.objects.conversion.log import factory as log_conv_factory
+from pm4py.objects.log.exporter.xes import factory as xes_exporter
+from pm4py.objects.log.util import sorting
 
 DEFAULT_EXPONENT = 9
 
@@ -32,6 +36,7 @@ class Process(object):
         self.shared_logs = shared_logs
         self.shared_logs_names = []
         self.parent = self
+        self.obj_types_str = None
         self.act_obj_types = None
         self.initial_act_obj_types = None
         self.activities = []
@@ -71,6 +76,16 @@ class Process(object):
         if self.stream is None:
             self.stream = self.dataframe.to_dict('r')
         return self.stream
+
+    def get_log_obj_type(self, objtype):
+        columns = [x for x in self.dataframe.columns if x.startswith("event_")] + [objtype]
+        dataframe = self.dataframe[columns].dropna(how="any", subset=[objtype])
+        dataframe = dataframe.rename(columns={"event_activity": "concept:name", "event_timestamp": "time:timestamp", objtype: "case:concept:name"})
+        stream = EventStream(dataframe.to_dict('r'))
+        log = log_conv_factory.apply(stream)
+        log = sorting.sort_timestamp(log, "time:timestamp")
+        exported_log = base64.b64encode(xes_exporter.export_log_as_string(log)).decode("utf-8")
+        return self.name+"_"+objtype, "xes", exported_log
 
     def get_most_similar(self, id, exponent=None):
         if exponent is None:
@@ -175,7 +190,8 @@ class Process(object):
             new_clusters = sorted(new_clusters, key=lambda x: len(x), reverse=True)
             self.clusters = {}
             for i in range(len(new_clusters)):
-                self.clusters["Cluster " + self.fill_string(str(i + 1))+" ("+str(len(new_clusters[i]))+")"] = new_clusters[i]
+                self.clusters["Cluster " + self.fill_string(str(i + 1)) + " (" + str(len(new_clusters[i])) + ")"] = \
+                new_clusters[i]
             clusters_keys = sorted(list(self.clusters.keys()))
             self.clustersrepr = "@@@".join(clusters_keys)
 
@@ -273,6 +289,7 @@ class Process(object):
         for act in activities:
             activities_object_types[act] = get_activ_otypes.get(self.dataframe, act)
         self.act_obj_types = activities_object_types
+        self.obj_types_str = "@@@".join([x for x in self.dataframe.columns if not x.startswith("event_")])
         if self.initial_act_obj_types is None:
             self.initial_act_obj_types = deepcopy(activities_object_types)
         if self.selected_act_obj_types is None:
@@ -452,6 +469,6 @@ class Process(object):
 
     def reset_filters(self, session):
         self.session_objects[session] = self.parent
-        self.session_objects[session].selected_act_obj_types = deepcopy(self.session_objects[session].initial_act_obj_types)
+        self.session_objects[session].selected_act_obj_types = deepcopy(
+            self.session_objects[session].initial_act_obj_types)
         self.session_objects[session].set_properties()
-

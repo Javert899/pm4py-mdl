@@ -50,6 +50,7 @@ def apply(df, parameters=None):
         parameters = {}
 
     allowed_activities = parameters["allowed_activities"] if "allowed_activities" in parameters else None
+    debug = parameters["debug"] if "debug" in parameters else True
 
     try:
         if df.type == "succint":
@@ -95,9 +96,11 @@ def apply(df, parameters=None):
 
     for persp in persps:
         aa = time.time()
-        print(persp, "getting log")
+        if debug:
+            print(persp, "getting log")
         log = factory.apply(df, persp, parameters=parameters)
-        print(len(log))
+        if debug:
+            print(len(log))
 
         if allowed_activities is not None:
             if persp not in allowed_activities:
@@ -111,8 +114,9 @@ def apply(df, parameters=None):
 
         # filtered_log = variants_filter.apply_auto_filter(deepcopy(filtered_log), parameters={"decreasingFactor": 0.5})
 
-        print(len(log))
-        print(persp, "got log")
+        if debug:
+            print(len(log))
+            print(persp, "got log")
 
         cc = time.time()
         net, im, fm = inductive_miner.apply(filtered_log)
@@ -132,39 +136,48 @@ def apply(df, parameters=None):
         diff_model += (dd - cc)
 
         # net, im, fm = alpha_miner.apply(filtered_log)
-        print(persp, "got model")
+        if debug:
+            print(persp, "got model")
 
+        xx1 = time.time()
         activ_count = factory.apply(df, persp, variant="activity_occurrence", parameters=parameters)
-        print(persp, "got activ_count")
+        if debug:
+            print(persp, "got activ_count")
+        xx2 = time.time()
 
+        ee = time.time()
         variants_idx = variants_module.get_variants_from_log_trace_idx(log)
         # variants = variants_module.convert_variants_trace_idx_to_trace_obj(log, variants_idx)
         # parameters_tr = {PARAM_ACTIVITY_KEY: "concept:name", "variants": variants}
 
-        print(persp, "got variants")
+        if debug:
+            print(persp, "got variants")
 
-        ee = time.time()
         aligned_traces, place_fitness_per_trace, transition_fitness_per_trace, notexisting_activities_in_model = tr_factory.apply(
             log, net, im, fm, parameters={"enable_place_fitness": True, "disable_variants": True})
 
-        print(persp, "done tbr")
+        if debug:
+            print(persp, "done tbr")
 
         element_statistics = performance_map.single_element_statistics(log, net, im,
                                                                        aligned_traces, variants_idx)
 
-        print(persp, "done element_statistics")
+        if debug:
+            print(persp, "done element_statistics")
         ff = time.time()
 
         diff_token_replay += (ff - ee)
 
         aggregated_statistics = performance_map.aggregate_statistics(element_statistics)
 
-        print(persp, "done aggregated_statistics")
+        if debug:
+            print(persp, "done aggregated_statistics")
 
         element_statistics_performance = performance_map.single_element_statistics(log, net, im,
                                                                                    aligned_traces, variants_idx)
 
-        print(persp, "done element_statistics_performance")
+        if debug:
+            print(persp, "done element_statistics_performance")
 
         gg = time.time()
 
@@ -185,11 +198,13 @@ def apply(df, parameters=None):
 
         diff_performance_annotation += (hh - ee)
 
-        print(persp, "done aggregated_statistics_performance")
+        if debug:
+            print(persp, "done aggregated_statistics_performance")
 
         group_size_hist = factory.apply(df, persp, variant="group_size_hist", parameters=parameters)
 
-        print(persp, "done group_size_hist")
+        if debug:
+            print(persp, "done group_size_hist")
 
         occurrences = {}
         for trans in transition_fitness_per_trace:
@@ -217,7 +232,7 @@ def apply(df, parameters=None):
 
         ii = time.time()
 
-        diff_basic_stats += (ii - hh)
+        diff_basic_stats += (ii - hh) + (xx2-xx1)
 
         ret["nets"][persp] = [net, im, fm]
         ret["act_count"][persp] = activ_count
