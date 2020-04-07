@@ -80,6 +80,7 @@ class Process(object):
     def get_log_obj_type(self, objtype):
         columns = [x for x in self.dataframe.columns if x.startswith("event_")] + [objtype]
         dataframe = self.dataframe[columns].dropna(how="any", subset=[objtype])
+        dataframe = succint_mdl_to_exploded_mdl.apply(dataframe)
         dataframe = dataframe.rename(columns={"event_activity": "concept:name", "event_timestamp": "time:timestamp", objtype: "case:concept:name"})
         stream = EventStream(dataframe.to_dict('r'))
         log = log_conv_factory.apply(stream)
