@@ -1,0 +1,3056 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- This file has been generated with the OpenXES library. It conforms -->
+<!-- to the XML serialization of the XES standard for log storage and -->
+<!-- management. -->
+<!-- OpenXES is available from http://www.openxes.org/ -->
+<log xes.features="nested-attributes">
+	<event>
+		<string key="id" value="create_order15"/>
+		<string key="activity" value="create_order"/>
+		<string key="timestamp" value="2016-10-21 11:38:26"/>
+		<references>
+			<object>
+				<string key="id" value="supplier_order15"/>
+				<string key="class" value="supplier_order"/>
+				<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+				<string key="rowid" value="15"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="approve_order15"/>
+		<string key="activity" value="approve_order"/>
+		<string key="timestamp" value="2016-10-21 11:38:53"/>
+		<references>
+			<object>
+				<string key="id" value="supplier_order15"/>
+				<string key="class" value="supplier_order"/>
+				<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+				<string key="rowid" value="15"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="make_order1027"/>
+		<string key="activity" value="make_order"/>
+		<string key="timestamp" value="2016-10-21 11:40:00"/>
+		<references>
+			<object>
+				<string key="id" value="order_made1027"/>
+				<string key="class" value="order_made"/>
+				<string key="fk_commande" value="15"/>
+			</object>
+			<object>
+				<string key="id" value="supplier_order15"/>
+				<string key="class" value="supplier_order"/>
+				<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+				<string key="rowid" value="15"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+					<string key="rowid" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1027"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1027"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="order_made1027"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="make_dispatch19"/>
+		<string key="activity" value="make_dispatch"/>
+		<string key="timestamp" value="2016-10-21 11:42:31"/>
+		<references>
+			<object>
+				<string key="id" value="dispatch19"/>
+				<string key="class" value="dispatch"/>
+				<string key="fk_commandefourndet" value="22"/>
+				<string key="rowid" value="19"/>
+			</object>
+			<object>
+				<string key="id" value="supplier_order_line22"/>
+				<string key="class" value="supplier_order_line"/>
+				<string key="fk_commande" value="15"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+					<string key="rowid" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1027"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch19"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="19"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1027"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="order_made1027"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch19"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch19"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="make_dispatch18"/>
+		<string key="activity" value="make_dispatch"/>
+		<string key="timestamp" value="2016-10-21 11:42:31"/>
+		<references>
+			<object>
+				<string key="id" value="dispatch18"/>
+				<string key="class" value="dispatch"/>
+				<string key="fk_commandefourndet" value="23"/>
+				<string key="rowid" value="18"/>
+			</object>
+			<object>
+				<string key="id" value="supplier_order_line23"/>
+				<string key="class" value="supplier_order_line"/>
+				<string key="fk_commande" value="15"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+					<string key="rowid" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1027"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch19"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="19"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch18"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="18"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1027"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="order_made1027"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch19"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch19"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch18"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch18"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="receive_partial_order1028"/>
+		<string key="activity" value="receive_partial_order"/>
+		<string key="timestamp" value="2016-10-21 11:43:00"/>
+		<references>
+			<object>
+				<string key="id" value="partial_receipt1028"/>
+				<string key="class" value="partial_receipt"/>
+				<string key="fk_commande" value="15"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+					<string key="rowid" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1027"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch19"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="19"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch18"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="18"/>
+				</object>
+				<object>
+					<string key="id" value="partial_receipt1028"/>
+					<string key="class" value="partial_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1027"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="order_made1027"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch19"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch19"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch18"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch18"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1028"/>
+					<string key="relation" value="supplier_order-fk_commande-partial_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="partial_receipt1028"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="make_dispatch21"/>
+		<string key="activity" value="make_dispatch"/>
+		<string key="timestamp" value="2016-10-21 11:44:25"/>
+		<references>
+			<object>
+				<string key="id" value="dispatch21"/>
+				<string key="class" value="dispatch"/>
+				<string key="fk_commandefourndet" value="22"/>
+				<string key="rowid" value="21"/>
+			</object>
+			<object>
+				<string key="id" value="supplier_order_line22"/>
+				<string key="class" value="supplier_order_line"/>
+				<string key="fk_commande" value="15"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+					<string key="rowid" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1027"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch19"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="19"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch18"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="18"/>
+				</object>
+				<object>
+					<string key="id" value="partial_receipt1028"/>
+					<string key="class" value="partial_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch21"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="21"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1027"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="order_made1027"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch19"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch19"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch18"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch18"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1028"/>
+					<string key="relation" value="supplier_order-fk_commande-partial_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="partial_receipt1028"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch21"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch21"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="make_dispatch20"/>
+		<string key="activity" value="make_dispatch"/>
+		<string key="timestamp" value="2016-10-21 11:44:25"/>
+		<references>
+			<object>
+				<string key="id" value="dispatch20"/>
+				<string key="class" value="dispatch"/>
+				<string key="fk_commandefourndet" value="23"/>
+				<string key="rowid" value="20"/>
+			</object>
+			<object>
+				<string key="id" value="supplier_order_line23"/>
+				<string key="class" value="supplier_order_line"/>
+				<string key="fk_commande" value="15"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+					<string key="rowid" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1027"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch19"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="19"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch18"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="18"/>
+				</object>
+				<object>
+					<string key="id" value="partial_receipt1028"/>
+					<string key="class" value="partial_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch21"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="21"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch20"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="20"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1027"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="order_made1027"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch19"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch19"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch18"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch18"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1028"/>
+					<string key="relation" value="supplier_order-fk_commande-partial_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="partial_receipt1028"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch21"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch21"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch20"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch20"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="receive_total_order1029"/>
+		<string key="activity" value="receive_total_order"/>
+		<string key="timestamp" value="2016-10-21 11:45:00"/>
+		<references>
+			<object>
+				<string key="id" value="total_receipt1029"/>
+				<string key="class" value="total_receipt"/>
+				<string key="fk_commande" value="15"/>
+			</object>
+			<object>
+				<string key="id" value="supplier_order15"/>
+				<string key="class" value="supplier_order"/>
+				<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+				<string key="rowid" value="15"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+					<string key="rowid" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1027"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch19"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="19"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch18"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="18"/>
+				</object>
+				<object>
+					<string key="id" value="partial_receipt1028"/>
+					<string key="class" value="partial_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch21"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="21"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch20"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="20"/>
+				</object>
+				<object>
+					<string key="id" value="total_receipt1029"/>
+					<string key="class" value="total_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1027"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="order_made1027"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch19"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch19"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch18"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch18"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1028"/>
+					<string key="relation" value="supplier_order-fk_commande-partial_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="partial_receipt1028"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch21"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch21"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch20"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch20"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1029"/>
+					<string key="relation" value="supplier_order-fk_commande-total_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="total_receipt1029"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="create_invoice17"/>
+		<string key="activity" value="create_invoice"/>
+		<string key="timestamp" value="2016-10-21 11:45:46"/>
+		<references>
+			<object>
+				<string key="id" value="oi_element_element484"/>
+				<string key="class" value="oi_element_element"/>
+				<string key="targettype" value="invoice_supplier"/>
+				<string key="invoice_id" value="17"/>
+				<string key="sourcetype" value="order_supplier"/>
+				<string key="order_id" value="15"/>
+			</object>
+			<object>
+				<string key="id" value="invoice17"/>
+				<string key="class" value="invoice"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+					<string key="rowid" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1027"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch19"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="19"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch18"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="18"/>
+				</object>
+				<object>
+					<string key="id" value="partial_receipt1028"/>
+					<string key="class" value="partial_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch21"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="21"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch20"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="20"/>
+				</object>
+				<object>
+					<string key="id" value="total_receipt1029"/>
+					<string key="class" value="total_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="invoice17"/>
+					<string key="class" value="invoice"/>
+				</object>
+				<object>
+					<string key="id" value="oi_element_element484"/>
+					<string key="class" value="oi_element_element"/>
+					<string key="targettype" value="invoice_supplier"/>
+					<string key="invoice_id" value="17"/>
+					<string key="sourcetype" value="order_supplier"/>
+					<string key="order_id" value="15"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1027"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="order_made1027"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch19"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch19"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch18"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch18"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1028"/>
+					<string key="relation" value="supplier_order-fk_commande-partial_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="partial_receipt1028"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch21"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch21"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch20"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch20"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1029"/>
+					<string key="relation" value="supplier_order-fk_commande-total_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="total_receipt1029"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_element_element484"/>
+					<string key="relation" value="supplier_order-fk_source-oi_element_element"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_element_element484"/>
+					<string key="relation" value="invoice-fk_target-oi_element_element"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="create_payment11"/>
+		<string key="activity" value="create_payment"/>
+		<string key="timestamp" value="2016-10-21 11:46:14"/>
+		<references>
+			<object>
+				<string key="id" value="invoice_payment11"/>
+				<string key="class" value="invoice_payment"/>
+				<string key="amount" value="1000.00000000"/>
+				<string key="fk_facturefourn" value="17"/>
+				<string key="fk_paiementfourn" value="11"/>
+			</object>
+			<object>
+				<string key="id" value="payment11"/>
+				<string key="class" value="payment"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+					<string key="rowid" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1027"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch19"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="19"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch18"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="18"/>
+				</object>
+				<object>
+					<string key="id" value="partial_receipt1028"/>
+					<string key="class" value="partial_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch21"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="21"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch20"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="20"/>
+				</object>
+				<object>
+					<string key="id" value="total_receipt1029"/>
+					<string key="class" value="total_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="invoice17"/>
+					<string key="class" value="invoice"/>
+				</object>
+				<object>
+					<string key="id" value="oi_element_element484"/>
+					<string key="class" value="oi_element_element"/>
+					<string key="targettype" value="invoice_supplier"/>
+					<string key="invoice_id" value="17"/>
+					<string key="sourcetype" value="order_supplier"/>
+					<string key="order_id" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="payment11"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment11"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="1000.00000000"/>
+					<string key="fk_facturefourn" value="17"/>
+					<string key="fk_paiementfourn" value="11"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1027"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="order_made1027"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch19"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch19"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch18"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch18"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1028"/>
+					<string key="relation" value="supplier_order-fk_commande-partial_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="partial_receipt1028"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch21"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch21"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch20"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch20"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1029"/>
+					<string key="relation" value="supplier_order-fk_commande-total_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="total_receipt1029"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_element_element484"/>
+					<string key="relation" value="supplier_order-fk_source-oi_element_element"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_element_element484"/>
+					<string key="relation" value="invoice-fk_target-oi_element_element"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn11-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment11"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="create_payment12"/>
+		<string key="activity" value="create_payment"/>
+		<string key="timestamp" value="2016-10-21 11:46:29"/>
+		<references>
+			<object>
+				<string key="id" value="invoice_payment12"/>
+				<string key="class" value="invoice_payment"/>
+				<string key="amount" value="2282.67000000"/>
+				<string key="fk_facturefourn" value="17"/>
+				<string key="fk_paiementfourn" value="12"/>
+			</object>
+			<object>
+				<string key="id" value="payment12"/>
+				<string key="class" value="payment"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+					<string key="rowid" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1027"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch19"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="19"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch18"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="18"/>
+				</object>
+				<object>
+					<string key="id" value="partial_receipt1028"/>
+					<string key="class" value="partial_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch21"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="21"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch20"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="20"/>
+				</object>
+				<object>
+					<string key="id" value="total_receipt1029"/>
+					<string key="class" value="total_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="invoice17"/>
+					<string key="class" value="invoice"/>
+				</object>
+				<object>
+					<string key="id" value="oi_element_element484"/>
+					<string key="class" value="oi_element_element"/>
+					<string key="targettype" value="invoice_supplier"/>
+					<string key="invoice_id" value="17"/>
+					<string key="sourcetype" value="order_supplier"/>
+					<string key="order_id" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="payment11"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment11"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="1000.00000000"/>
+					<string key="fk_facturefourn" value="17"/>
+					<string key="fk_paiementfourn" value="11"/>
+				</object>
+				<object>
+					<string key="id" value="payment12"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment12"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="2282.67000000"/>
+					<string key="fk_facturefourn" value="17"/>
+					<string key="fk_paiementfourn" value="12"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1027"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="order_made1027"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch19"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch19"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch18"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch18"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1028"/>
+					<string key="relation" value="supplier_order-fk_commande-partial_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="partial_receipt1028"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch21"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch21"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch20"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch20"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1029"/>
+					<string key="relation" value="supplier_order-fk_commande-total_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="total_receipt1029"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_element_element484"/>
+					<string key="relation" value="supplier_order-fk_source-oi_element_element"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_element_element484"/>
+					<string key="relation" value="invoice-fk_target-oi_element_element"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn11-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment11"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn12-llx_paiementfourn_facturefourn12"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment12"/>
+					<string key="targetobjectid" value="invoice_payment12"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_paiementfourn_facturefourn12"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="invoice_payment12"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="create_order16"/>
+		<string key="activity" value="create_order"/>
+		<string key="timestamp" value="2016-10-21 11:56:35"/>
+		<references>
+			<object>
+				<string key="id" value="supplier_order16"/>
+				<string key="class" value="supplier_order"/>
+				<string key="approve_order" value="2016-10-21 11:56:50.0"/>
+				<string key="rowid" value="16"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+					<string key="rowid" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1027"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch19"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="19"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch18"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="18"/>
+				</object>
+				<object>
+					<string key="id" value="partial_receipt1028"/>
+					<string key="class" value="partial_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch21"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="21"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch20"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="20"/>
+				</object>
+				<object>
+					<string key="id" value="total_receipt1029"/>
+					<string key="class" value="total_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="invoice17"/>
+					<string key="class" value="invoice"/>
+				</object>
+				<object>
+					<string key="id" value="oi_element_element484"/>
+					<string key="class" value="oi_element_element"/>
+					<string key="targettype" value="invoice_supplier"/>
+					<string key="invoice_id" value="17"/>
+					<string key="sourcetype" value="order_supplier"/>
+					<string key="order_id" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="payment11"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment11"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="1000.00000000"/>
+					<string key="fk_facturefourn" value="17"/>
+					<string key="fk_paiementfourn" value="11"/>
+				</object>
+				<object>
+					<string key="id" value="payment12"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment12"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="2282.67000000"/>
+					<string key="fk_facturefourn" value="17"/>
+					<string key="fk_paiementfourn" value="12"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order16"/>
+					<string key="class" value="supplier_order"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line24"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="16"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1027"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="order_made1027"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch19"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch19"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch18"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch18"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1028"/>
+					<string key="relation" value="supplier_order-fk_commande-partial_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="partial_receipt1028"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch21"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch21"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch20"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch20"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1029"/>
+					<string key="relation" value="supplier_order-fk_commande-total_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="total_receipt1029"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_element_element484"/>
+					<string key="relation" value="supplier_order-fk_source-oi_element_element"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_element_element484"/>
+					<string key="relation" value="invoice-fk_target-oi_element_element"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn11-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment11"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn12-llx_paiementfourn_facturefourn12"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment12"/>
+					<string key="targetobjectid" value="invoice_payment12"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_paiementfourn_facturefourn12"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="invoice_payment12"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur16-llx_commande_fournisseurdet24"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order16"/>
+					<string key="targetobjectid" value="supplier_order_line24"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="approve_order16"/>
+		<string key="activity" value="approve_order"/>
+		<string key="timestamp" value="2016-10-21 11:56:50"/>
+		<references>
+			<object>
+				<string key="id" value="supplier_order16"/>
+				<string key="class" value="supplier_order"/>
+				<string key="approve_order" value="2016-10-21 11:56:50.0"/>
+				<string key="rowid" value="16"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+					<string key="rowid" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1027"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch19"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="19"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch18"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="18"/>
+				</object>
+				<object>
+					<string key="id" value="partial_receipt1028"/>
+					<string key="class" value="partial_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch21"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="21"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch20"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="20"/>
+				</object>
+				<object>
+					<string key="id" value="total_receipt1029"/>
+					<string key="class" value="total_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="invoice17"/>
+					<string key="class" value="invoice"/>
+				</object>
+				<object>
+					<string key="id" value="oi_element_element484"/>
+					<string key="class" value="oi_element_element"/>
+					<string key="targettype" value="invoice_supplier"/>
+					<string key="invoice_id" value="17"/>
+					<string key="sourcetype" value="order_supplier"/>
+					<string key="order_id" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="payment11"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment11"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="1000.00000000"/>
+					<string key="fk_facturefourn" value="17"/>
+					<string key="fk_paiementfourn" value="11"/>
+				</object>
+				<object>
+					<string key="id" value="payment12"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment12"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="2282.67000000"/>
+					<string key="fk_facturefourn" value="17"/>
+					<string key="fk_paiementfourn" value="12"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order16"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:56:50.0"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line24"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="16"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1027"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="order_made1027"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch19"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch19"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch18"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch18"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1028"/>
+					<string key="relation" value="supplier_order-fk_commande-partial_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="partial_receipt1028"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch21"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch21"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch20"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch20"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1029"/>
+					<string key="relation" value="supplier_order-fk_commande-total_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="total_receipt1029"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_element_element484"/>
+					<string key="relation" value="supplier_order-fk_source-oi_element_element"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_element_element484"/>
+					<string key="relation" value="invoice-fk_target-oi_element_element"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn11-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment11"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn12-llx_paiementfourn_facturefourn12"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment12"/>
+					<string key="targetobjectid" value="invoice_payment12"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_paiementfourn_facturefourn12"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="invoice_payment12"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur16-llx_commande_fournisseurdet24"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order16"/>
+					<string key="targetobjectid" value="supplier_order_line24"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="make_order1033"/>
+		<string key="activity" value="make_order"/>
+		<string key="timestamp" value="2016-10-21 11:57:00"/>
+		<references>
+			<object>
+				<string key="id" value="order_made1033"/>
+				<string key="class" value="order_made"/>
+				<string key="fk_commande" value="16"/>
+			</object>
+			<object>
+				<string key="id" value="supplier_order16"/>
+				<string key="class" value="supplier_order"/>
+				<string key="approve_order" value="2016-10-21 11:56:50.0"/>
+				<string key="rowid" value="16"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+					<string key="rowid" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1027"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch19"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="19"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch18"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="18"/>
+				</object>
+				<object>
+					<string key="id" value="partial_receipt1028"/>
+					<string key="class" value="partial_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch21"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="21"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch20"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="20"/>
+				</object>
+				<object>
+					<string key="id" value="total_receipt1029"/>
+					<string key="class" value="total_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="invoice17"/>
+					<string key="class" value="invoice"/>
+				</object>
+				<object>
+					<string key="id" value="oi_element_element484"/>
+					<string key="class" value="oi_element_element"/>
+					<string key="targettype" value="invoice_supplier"/>
+					<string key="invoice_id" value="17"/>
+					<string key="sourcetype" value="order_supplier"/>
+					<string key="order_id" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="payment11"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment11"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="1000.00000000"/>
+					<string key="fk_facturefourn" value="17"/>
+					<string key="fk_paiementfourn" value="11"/>
+				</object>
+				<object>
+					<string key="id" value="payment12"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment12"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="2282.67000000"/>
+					<string key="fk_facturefourn" value="17"/>
+					<string key="fk_paiementfourn" value="12"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order16"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:56:50.0"/>
+					<string key="rowid" value="16"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line24"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="16"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1033"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="16"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1027"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="order_made1027"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch19"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch19"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch18"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch18"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1028"/>
+					<string key="relation" value="supplier_order-fk_commande-partial_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="partial_receipt1028"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch21"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch21"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch20"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch20"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1029"/>
+					<string key="relation" value="supplier_order-fk_commande-total_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="total_receipt1029"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_element_element484"/>
+					<string key="relation" value="supplier_order-fk_source-oi_element_element"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_element_element484"/>
+					<string key="relation" value="invoice-fk_target-oi_element_element"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn11-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment11"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn12-llx_paiementfourn_facturefourn12"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment12"/>
+					<string key="targetobjectid" value="invoice_payment12"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_paiementfourn_facturefourn12"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="invoice_payment12"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur16-llx_commande_fournisseurdet24"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order16"/>
+					<string key="targetobjectid" value="supplier_order_line24"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur16-llx_commande_fournisseur_log1033"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order16"/>
+					<string key="targetobjectid" value="order_made1033"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="make_dispatch22"/>
+		<string key="activity" value="make_dispatch"/>
+		<string key="timestamp" value="2016-10-21 11:57:28"/>
+		<references>
+			<object>
+				<string key="id" value="dispatch22"/>
+				<string key="class" value="dispatch"/>
+				<string key="fk_commandefourndet" value="24"/>
+				<string key="rowid" value="22"/>
+			</object>
+			<object>
+				<string key="id" value="supplier_order_line24"/>
+				<string key="class" value="supplier_order_line"/>
+				<string key="fk_commande" value="16"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+					<string key="rowid" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1027"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch19"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="19"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch18"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="18"/>
+				</object>
+				<object>
+					<string key="id" value="partial_receipt1028"/>
+					<string key="class" value="partial_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch21"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="21"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch20"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="20"/>
+				</object>
+				<object>
+					<string key="id" value="total_receipt1029"/>
+					<string key="class" value="total_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="invoice17"/>
+					<string key="class" value="invoice"/>
+				</object>
+				<object>
+					<string key="id" value="oi_element_element484"/>
+					<string key="class" value="oi_element_element"/>
+					<string key="targettype" value="invoice_supplier"/>
+					<string key="invoice_id" value="17"/>
+					<string key="sourcetype" value="order_supplier"/>
+					<string key="order_id" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="payment11"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment11"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="1000.00000000"/>
+					<string key="fk_facturefourn" value="17"/>
+					<string key="fk_paiementfourn" value="11"/>
+				</object>
+				<object>
+					<string key="id" value="payment12"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment12"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="2282.67000000"/>
+					<string key="fk_facturefourn" value="17"/>
+					<string key="fk_paiementfourn" value="12"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order16"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:56:50.0"/>
+					<string key="rowid" value="16"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line24"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="16"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1033"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="16"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch22"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="24"/>
+					<string key="rowid" value="22"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1027"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="order_made1027"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch19"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch19"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch18"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch18"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1028"/>
+					<string key="relation" value="supplier_order-fk_commande-partial_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="partial_receipt1028"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch21"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch21"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch20"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch20"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1029"/>
+					<string key="relation" value="supplier_order-fk_commande-total_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="total_receipt1029"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_element_element484"/>
+					<string key="relation" value="supplier_order-fk_source-oi_element_element"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_element_element484"/>
+					<string key="relation" value="invoice-fk_target-oi_element_element"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn11-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment11"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn12-llx_paiementfourn_facturefourn12"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment12"/>
+					<string key="targetobjectid" value="invoice_payment12"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_paiementfourn_facturefourn12"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="invoice_payment12"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur16-llx_commande_fournisseurdet24"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order16"/>
+					<string key="targetobjectid" value="supplier_order_line24"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur16-llx_commande_fournisseur_log1033"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order16"/>
+					<string key="targetobjectid" value="order_made1033"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet24-llx_commande_fournisseur_dispatch22"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line24"/>
+					<string key="targetobjectid" value="dispatch22"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="receive_total_order1034"/>
+		<string key="activity" value="receive_total_order"/>
+		<string key="timestamp" value="2016-10-21 11:58:00"/>
+		<references>
+			<object>
+				<string key="id" value="total_receipt1034"/>
+				<string key="class" value="total_receipt"/>
+				<string key="fk_commande" value="16"/>
+			</object>
+			<object>
+				<string key="id" value="supplier_order16"/>
+				<string key="class" value="supplier_order"/>
+				<string key="approve_order" value="2016-10-21 11:56:50.0"/>
+				<string key="rowid" value="16"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+					<string key="rowid" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1027"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch19"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="19"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch18"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="18"/>
+				</object>
+				<object>
+					<string key="id" value="partial_receipt1028"/>
+					<string key="class" value="partial_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch21"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="21"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch20"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="20"/>
+				</object>
+				<object>
+					<string key="id" value="total_receipt1029"/>
+					<string key="class" value="total_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="invoice17"/>
+					<string key="class" value="invoice"/>
+				</object>
+				<object>
+					<string key="id" value="oi_element_element484"/>
+					<string key="class" value="oi_element_element"/>
+					<string key="targettype" value="invoice_supplier"/>
+					<string key="invoice_id" value="17"/>
+					<string key="sourcetype" value="order_supplier"/>
+					<string key="order_id" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="payment11"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment11"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="1000.00000000"/>
+					<string key="fk_facturefourn" value="17"/>
+					<string key="fk_paiementfourn" value="11"/>
+				</object>
+				<object>
+					<string key="id" value="payment12"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment12"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="2282.67000000"/>
+					<string key="fk_facturefourn" value="17"/>
+					<string key="fk_paiementfourn" value="12"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order16"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:56:50.0"/>
+					<string key="rowid" value="16"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line24"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="16"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1033"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="16"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch22"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="24"/>
+					<string key="rowid" value="22"/>
+				</object>
+				<object>
+					<string key="id" value="total_receipt1034"/>
+					<string key="class" value="total_receipt"/>
+					<string key="fk_commande" value="16"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1027"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="order_made1027"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch19"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch19"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch18"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch18"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1028"/>
+					<string key="relation" value="supplier_order-fk_commande-partial_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="partial_receipt1028"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch21"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch21"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch20"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch20"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1029"/>
+					<string key="relation" value="supplier_order-fk_commande-total_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="total_receipt1029"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_element_element484"/>
+					<string key="relation" value="supplier_order-fk_source-oi_element_element"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_element_element484"/>
+					<string key="relation" value="invoice-fk_target-oi_element_element"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn11-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment11"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn12-llx_paiementfourn_facturefourn12"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment12"/>
+					<string key="targetobjectid" value="invoice_payment12"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_paiementfourn_facturefourn12"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="invoice_payment12"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur16-llx_commande_fournisseurdet24"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order16"/>
+					<string key="targetobjectid" value="supplier_order_line24"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur16-llx_commande_fournisseur_log1033"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order16"/>
+					<string key="targetobjectid" value="order_made1033"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet24-llx_commande_fournisseur_dispatch22"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line24"/>
+					<string key="targetobjectid" value="dispatch22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur16-llx_commande_fournisseur_log1034"/>
+					<string key="relation" value="supplier_order-fk_commande-total_receipt"/>
+					<string key="sourceobjectid" value="supplier_order16"/>
+					<string key="targetobjectid" value="total_receipt1034"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="create_invoice18"/>
+		<string key="activity" value="create_invoice"/>
+		<string key="timestamp" value="2016-10-21 11:58:36"/>
+		<references>
+			<object>
+				<string key="id" value="oi_element_element485"/>
+				<string key="class" value="oi_element_element"/>
+				<string key="targettype" value="invoice_supplier"/>
+				<string key="invoice_id" value="18"/>
+				<string key="sourcetype" value="order_supplier"/>
+				<string key="order_id" value="16"/>
+			</object>
+			<object>
+				<string key="id" value="invoice18"/>
+				<string key="class" value="invoice"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+					<string key="rowid" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1027"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch19"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="19"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch18"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="18"/>
+				</object>
+				<object>
+					<string key="id" value="partial_receipt1028"/>
+					<string key="class" value="partial_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch21"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="21"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch20"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="20"/>
+				</object>
+				<object>
+					<string key="id" value="total_receipt1029"/>
+					<string key="class" value="total_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="invoice17"/>
+					<string key="class" value="invoice"/>
+				</object>
+				<object>
+					<string key="id" value="oi_element_element484"/>
+					<string key="class" value="oi_element_element"/>
+					<string key="targettype" value="invoice_supplier"/>
+					<string key="invoice_id" value="17"/>
+					<string key="sourcetype" value="order_supplier"/>
+					<string key="order_id" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="payment11"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment11"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="1000.00000000"/>
+					<string key="fk_facturefourn" value="17"/>
+					<string key="fk_paiementfourn" value="11"/>
+				</object>
+				<object>
+					<string key="id" value="payment12"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment12"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="2282.67000000"/>
+					<string key="fk_facturefourn" value="17"/>
+					<string key="fk_paiementfourn" value="12"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order16"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:56:50.0"/>
+					<string key="rowid" value="16"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line24"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="16"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1033"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="16"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch22"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="24"/>
+					<string key="rowid" value="22"/>
+				</object>
+				<object>
+					<string key="id" value="total_receipt1034"/>
+					<string key="class" value="total_receipt"/>
+					<string key="fk_commande" value="16"/>
+				</object>
+				<object>
+					<string key="id" value="invoice18"/>
+					<string key="class" value="invoice"/>
+				</object>
+				<object>
+					<string key="id" value="oi_element_element485"/>
+					<string key="class" value="oi_element_element"/>
+					<string key="targettype" value="invoice_supplier"/>
+					<string key="invoice_id" value="18"/>
+					<string key="sourcetype" value="order_supplier"/>
+					<string key="order_id" value="16"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1027"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="order_made1027"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch19"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch19"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch18"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch18"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1028"/>
+					<string key="relation" value="supplier_order-fk_commande-partial_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="partial_receipt1028"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch21"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch21"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch20"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch20"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1029"/>
+					<string key="relation" value="supplier_order-fk_commande-total_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="total_receipt1029"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_element_element484"/>
+					<string key="relation" value="supplier_order-fk_source-oi_element_element"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_element_element484"/>
+					<string key="relation" value="invoice-fk_target-oi_element_element"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn11-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment11"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn12-llx_paiementfourn_facturefourn12"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment12"/>
+					<string key="targetobjectid" value="invoice_payment12"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_paiementfourn_facturefourn12"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="invoice_payment12"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur16-llx_commande_fournisseurdet24"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order16"/>
+					<string key="targetobjectid" value="supplier_order_line24"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur16-llx_commande_fournisseur_log1033"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order16"/>
+					<string key="targetobjectid" value="order_made1033"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet24-llx_commande_fournisseur_dispatch22"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line24"/>
+					<string key="targetobjectid" value="dispatch22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur16-llx_commande_fournisseur_log1034"/>
+					<string key="relation" value="supplier_order-fk_commande-total_receipt"/>
+					<string key="sourceobjectid" value="supplier_order16"/>
+					<string key="targetobjectid" value="total_receipt1034"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur16-llx_element_element485"/>
+					<string key="relation" value="supplier_order-fk_source-oi_element_element"/>
+					<string key="sourceobjectid" value="supplier_order16"/>
+					<string key="targetobjectid" value="oi_element_element485"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn18-llx_element_element485"/>
+					<string key="relation" value="invoice-fk_target-oi_element_element"/>
+					<string key="sourceobjectid" value="invoice18"/>
+					<string key="targetobjectid" value="oi_element_element485"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+	<event>
+		<string key="id" value="create_payment13"/>
+		<string key="activity" value="create_payment"/>
+		<string key="timestamp" value="2016-10-21 11:58:59"/>
+		<references>
+			<object>
+				<string key="id" value="invoice_payment13"/>
+				<string key="class" value="invoice_payment"/>
+				<string key="amount" value="47600.00000000"/>
+				<string key="fk_facturefourn" value="18"/>
+				<string key="fk_paiementfourn" value="13"/>
+			</object>
+			<object>
+				<string key="id" value="payment13"/>
+				<string key="class" value="payment"/>
+			</object>
+		</references>
+		<model>
+			<objects>
+				<object>
+					<string key="id" value="supplier_order15"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:38:53.0"/>
+					<string key="rowid" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line22"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line23"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1027"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch19"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="19"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch18"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="18"/>
+				</object>
+				<object>
+					<string key="id" value="partial_receipt1028"/>
+					<string key="class" value="partial_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch21"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="22"/>
+					<string key="rowid" value="21"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch20"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="23"/>
+					<string key="rowid" value="20"/>
+				</object>
+				<object>
+					<string key="id" value="total_receipt1029"/>
+					<string key="class" value="total_receipt"/>
+					<string key="fk_commande" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="invoice17"/>
+					<string key="class" value="invoice"/>
+				</object>
+				<object>
+					<string key="id" value="oi_element_element484"/>
+					<string key="class" value="oi_element_element"/>
+					<string key="targettype" value="invoice_supplier"/>
+					<string key="invoice_id" value="17"/>
+					<string key="sourcetype" value="order_supplier"/>
+					<string key="order_id" value="15"/>
+				</object>
+				<object>
+					<string key="id" value="payment11"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment11"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="1000.00000000"/>
+					<string key="fk_facturefourn" value="17"/>
+					<string key="fk_paiementfourn" value="11"/>
+				</object>
+				<object>
+					<string key="id" value="payment12"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment12"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="2282.67000000"/>
+					<string key="fk_facturefourn" value="17"/>
+					<string key="fk_paiementfourn" value="12"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order16"/>
+					<string key="class" value="supplier_order"/>
+					<string key="approve_order" value="2016-10-21 11:56:50.0"/>
+					<string key="rowid" value="16"/>
+				</object>
+				<object>
+					<string key="id" value="supplier_order_line24"/>
+					<string key="class" value="supplier_order_line"/>
+					<string key="fk_commande" value="16"/>
+				</object>
+				<object>
+					<string key="id" value="order_made1033"/>
+					<string key="class" value="order_made"/>
+					<string key="fk_commande" value="16"/>
+				</object>
+				<object>
+					<string key="id" value="dispatch22"/>
+					<string key="class" value="dispatch"/>
+					<string key="fk_commandefourndet" value="24"/>
+					<string key="rowid" value="22"/>
+				</object>
+				<object>
+					<string key="id" value="total_receipt1034"/>
+					<string key="class" value="total_receipt"/>
+					<string key="fk_commande" value="16"/>
+				</object>
+				<object>
+					<string key="id" value="invoice18"/>
+					<string key="class" value="invoice"/>
+				</object>
+				<object>
+					<string key="id" value="oi_element_element485"/>
+					<string key="class" value="oi_element_element"/>
+					<string key="targettype" value="invoice_supplier"/>
+					<string key="invoice_id" value="18"/>
+					<string key="sourcetype" value="order_supplier"/>
+					<string key="order_id" value="16"/>
+				</object>
+				<object>
+					<string key="id" value="payment13"/>
+					<string key="class" value="payment"/>
+				</object>
+				<object>
+					<string key="id" value="invoice_payment13"/>
+					<string key="class" value="invoice_payment"/>
+					<string key="amount" value="47600.00000000"/>
+					<string key="fk_facturefourn" value="18"/>
+					<string key="fk_paiementfourn" value="13"/>
+				</object>
+			</objects>
+			<relations>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet22"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseurdet23"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="supplier_order_line23"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1027"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="order_made1027"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch19"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch19"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch18"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch18"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1028"/>
+					<string key="relation" value="supplier_order-fk_commande-partial_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="partial_receipt1028"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet22-llx_commande_fournisseur_dispatch21"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line22"/>
+					<string key="targetobjectid" value="dispatch21"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet23-llx_commande_fournisseur_dispatch20"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line23"/>
+					<string key="targetobjectid" value="dispatch20"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_commande_fournisseur_log1029"/>
+					<string key="relation" value="supplier_order-fk_commande-total_receipt"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="total_receipt1029"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur15-llx_element_element484"/>
+					<string key="relation" value="supplier_order-fk_source-oi_element_element"/>
+					<string key="sourceobjectid" value="supplier_order15"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_element_element484"/>
+					<string key="relation" value="invoice-fk_target-oi_element_element"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="oi_element_element484"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn11-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment11"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_paiementfourn_facturefourn11"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="invoice_payment11"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn12-llx_paiementfourn_facturefourn12"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment12"/>
+					<string key="targetobjectid" value="invoice_payment12"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn17-llx_paiementfourn_facturefourn12"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice17"/>
+					<string key="targetobjectid" value="invoice_payment12"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur16-llx_commande_fournisseurdet24"/>
+					<string key="relation" value="supplier_order-fk_commande-supplier_order_line"/>
+					<string key="sourceobjectid" value="supplier_order16"/>
+					<string key="targetobjectid" value="supplier_order_line24"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur16-llx_commande_fournisseur_log1033"/>
+					<string key="relation" value="supplier_order-fk_commande-order_made"/>
+					<string key="sourceobjectid" value="supplier_order16"/>
+					<string key="targetobjectid" value="order_made1033"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseurdet24-llx_commande_fournisseur_dispatch22"/>
+					<string key="relation" value="supplier_order_line-fk_commandefourndet-dispatch"/>
+					<string key="sourceobjectid" value="supplier_order_line24"/>
+					<string key="targetobjectid" value="dispatch22"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur16-llx_commande_fournisseur_log1034"/>
+					<string key="relation" value="supplier_order-fk_commande-total_receipt"/>
+					<string key="sourceobjectid" value="supplier_order16"/>
+					<string key="targetobjectid" value="total_receipt1034"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_commande_fournisseur16-llx_element_element485"/>
+					<string key="relation" value="supplier_order-fk_source-oi_element_element"/>
+					<string key="sourceobjectid" value="supplier_order16"/>
+					<string key="targetobjectid" value="oi_element_element485"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn18-llx_element_element485"/>
+					<string key="relation" value="invoice-fk_target-oi_element_element"/>
+					<string key="sourceobjectid" value="invoice18"/>
+					<string key="targetobjectid" value="oi_element_element485"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_paiementfourn13-llx_paiementfourn_facturefourn13"/>
+					<string key="relation" value="payment-fk_paiementfourn-invoice_payment"/>
+					<string key="sourceobjectid" value="payment13"/>
+					<string key="targetobjectid" value="invoice_payment13"/>
+				</relation>
+				<relation>
+					<string key="id" value="llx_facture_fourn18-llx_paiementfourn_facturefourn13"/>
+					<string key="relation" value="invoice-fk_facturefourn-invoice_payment"/>
+					<string key="sourceobjectid" value="invoice18"/>
+					<string key="targetobjectid" value="invoice_payment13"/>
+				</relation>
+			</relations>
+		</model>
+	</event>
+</log>
