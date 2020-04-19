@@ -9,6 +9,7 @@ dir = r"C:\Users\aless\Documents\sap_extraction"
 
 
 class Shared:
+    ekbe = {}
     activities = {}
     events = {}
 
@@ -29,6 +30,14 @@ def remove_zeros(stru):
             return stru[i:]
         i = i + 1
     return stru
+
+
+def read_ekbe():
+    ekbe = pd.read_csv(os.path.join(dir, "ekbe.tsv"), sep="\t")
+    ekbe = ekbe[["BELNR", "EBELN"]]
+    stream = ekbe.to_dict("r")
+    for row in stream:
+        Shared.ekbe[row["BELNR"]] = row["EBELN"]
 
 
 def extract_cdhdr():
@@ -58,12 +67,9 @@ def extract_cdhdr():
 
 
 def extract_rbkp():
-    # keep only stuff in EKBE
-    ekbe = pd.read_csv(os.path.join(dir, "ekbe.tsv"), sep="\t")
-    belnr = list(ekbe["BELNR"])
     rbkp = pd.read_csv(os.path.join(dir, "rbkp.tsv"), sep="\t")
     rbkp = rbkp[["BELNR", "CPUDT", "CPUTM", "USNAM", "TCODE"]]
-    rbkp = rbkp[rbkp["BELNR"].isin(belnr)]
+    rbkp = rbkp[rbkp["BELNR"].isin(Shared.ekbe.keys())]
     rbkp = rbkp.rename(columns={"USNAM": "event_resource", "TCODE": "event_activity"})
     rbkp["event_timestamp"] = rbkp["CPUDT"] + " " + rbkp["CPUTM"]
     rbkp["event_timestamp"] = pd.to_datetime(rbkp["event_timestamp"], format="%d.%m.%Y %H:%M:%S")
@@ -79,12 +85,9 @@ def extract_rbkp():
 
 
 def extract_bkpf():
-    # keep only stuff in EKBE
-    ekbe = pd.read_csv(os.path.join(dir, "ekbe.tsv"), sep="\t")
-    belnr = list(ekbe["BELNR"])
     bkpf = pd.read_csv(os.path.join(dir, "bkpf.tsv"), sep="\t")
     bkpf = bkpf[["BELNR", "CPUDT", "CPUTM", "USNAM", "TCODE"]]
-    bkpf = bkpf[bkpf["BELNR"].isin(belnr)]
+    bkpf = bkpf[bkpf["BELNR"].isin(Shared.ekbe.keys())]
     bkpf = bkpf.rename(columns={"USNAM": "event_resource", "TCODE": "event_activity"})
     bkpf["event_timestamp"] = bkpf["CPUDT"] + " " + bkpf["CPUTM"]
     bkpf["event_timestamp"] = pd.to_datetime(bkpf["event_timestamp"], format="%d.%m.%Y %H:%M:%S")
@@ -116,6 +119,23 @@ def extract_eban():
         Shared.events[key].add(frozendict({"BANF": str(ev["BANFN"])}))
 
 
+def extract_ekko():
+    ekko = pd.read_csv(os.path.join(dir, "ekko.tsv"), sep="\t")
+    ekko = ekko[["EBELN", "BEDAT", "ERNAM"]]
+    ekko = ekko.rename(columns={"ERNAM": "event_resource", "BEDAT": "event_timestamp"})
+    ekko["event_timestamp"] = pd.to_datetime(ekko["event_timestamp"], format="%d.%m.%Y")
+    ekko["event_activity"] = "ME21N"
+    ekko = ekko.dropna(subset=["event_activity"])
+    ekko = ekko.dropna(subset=["event_resource"])
+    stream = ekko.to_dict("r")
+    for ev in stream:
+        key = frozendict({"event_timestamp": ev["event_timestamp"],
+                          "event_resource": ev["event_resource"], "event_activity": ev["event_activity"]})
+        if key not in Shared.events:
+            Shared.events[key] = set()
+        Shared.events[key].add(frozendict({"EBELN": str(ev["EBELN"])}))
+
+
 def get_final_dataframe():
     stream = []
     keys = sorted(list(Shared.events.keys()), key=lambda x: x["event_timestamp"])
@@ -135,11 +155,13 @@ def get_final_dataframe():
 
 
 if __name__ == "__main__":
+    read_ekbe()
     read_activities()
-    extract_cdhdr()
-    #extract_rbkp()
-    #extract_bkpf()
+    #extract_cdhdr()
+    extract_rbkp()
+    extract_bkpf()
     extract_eban()
+    extract_ekko()
     if True:
         dataframe = get_final_dataframe()
         dataframe = clean_frequency.apply(dataframe, 20)
