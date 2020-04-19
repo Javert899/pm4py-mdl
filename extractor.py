@@ -46,14 +46,16 @@ def extract_cdhdr():
 def get_final_dataframe():
     stream = []
     keys = sorted(list(Shared.events.keys()), key=lambda x: x["event_timestamp"])
-    for key in keys:
+    id = 0
+    for index, key in enumerate(keys):
+        id = id + 1
         for obj in Shared.events[key]:
             ev = dict(key)
             ev.update(dict(obj))
+            ev["event_id"] = str(id)
             stream.append(ev)
             act = ev["event_activity"]
             ev["event_activity"] = Shared.activities[act] if act in Shared.activities else act
-            print(ev)
     dataframe = pd.DataFrame(stream)
     dataframe.type = "exploded"
     return dataframe
