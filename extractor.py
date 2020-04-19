@@ -10,6 +10,7 @@ dir = r"C:\Users\aless\Documents\sap_extraction"
 
 class Shared:
     ekbe = {}
+    ekpo = {}
     activities = {}
     events = {}
 
@@ -35,9 +36,21 @@ def remove_zeros(stru):
 def read_ekbe():
     ekbe = pd.read_csv(os.path.join(dir, "ekbe.tsv"), sep="\t")
     ekbe = ekbe[["BELNR", "EBELN"]]
+    ekbe = ekbe.dropna(subset=["BELNR"])
+    ekbe = ekbe.dropna(subset=["EBELN"])
     stream = ekbe.to_dict("r")
     for row in stream:
-        Shared.ekbe[row["BELNR"]] = row["EBELN"]
+        Shared.ekbe[str(row["BELNR"])] = str(row["EBELN"])
+
+
+def read_ekpo():
+    ekpo = pd.read_csv(os.path.join(dir, "ekpo.tsv"), sep="\t")
+    ekpo = ekpo[["BANFN", "EBELN"]]
+    ekpo = ekpo.dropna(subset=["BANFN"])
+    ekpo = ekpo.dropna(subset=["EBELN"])
+    stream = ekpo.to_dict("r")
+    for row in stream:
+        Shared.ekpo[str(row["EBELN"])] = str(int(row["BANFN"]))
 
 
 def extract_cdhdr():
@@ -133,8 +146,8 @@ def extract_ekko():
                           "event_resource": ev["event_resource"], "event_activity": ev["event_activity"]})
         if key not in Shared.events:
             Shared.events[key] = set()
-        Shared.events[key].add(frozendict({"EBELN": str(ev["EBELN"])}))
-
+        ebeln = str(ev["EBELN"])
+        Shared.events[key].add(frozendict({"EINKBELEG": ebeln}))
 
 def get_final_dataframe():
     stream = []
@@ -154,19 +167,59 @@ def get_final_dataframe():
     return dataframe
 
 
+def insert_ekpo_information():
+    events = sorted(list(Shared.events.keys()), key=lambda x: x["event_timestamp"])
+    ebeln_map = {}
+    for index, eve in enumerate(events):
+        eve_map = dict()
+        for val in Shared.events[eve]:
+            for k in val:
+                eve_map[k] = val[k]
+        if "EINKBELEG" in eve_map:
+            val = eve_map["EINKBELEG"]
+            if val in Shared.ekpo:
+                ebeln_map[val] = eve
+    for n in ebeln_map:
+        eve = ebeln_map[n]
+        corr = Shared.ekpo[n]
+        Shared.events[eve].add(frozendict({"BANF": corr}))
+
+
+def insert_ekbe_information():
+    events = sorted(list(Shared.events.keys()), key=lambda x: x["event_timestamp"])
+    belnr_map = {}
+    for index, eve in enumerate(events):
+        eve_map = dict()
+        for val in Shared.events[eve]:
+            for k in val:
+                eve_map[k] = val[k]
+        if "BELNR" in eve_map:
+            val = eve_map["BELNR"]
+            if val in Shared.ekbe:
+                belnr_map[val] = eve
+    for n in belnr_map:
+        eve = belnr_map[n]
+        corr = Shared.ekbe[n]
+        Shared.events[eve].add(frozendict({"EINKBELEG": corr}))
+
+
 if __name__ == "__main__":
+    read_ekpo()
+    #print(Shared.ekpo)
     read_ekbe()
     read_activities()
-    #extract_cdhdr()
+    extract_cdhdr()
     extract_rbkp()
     extract_bkpf()
     extract_eban()
     extract_ekko()
+    insert_ekpo_information()
+    insert_ekbe_information()
     if True:
         dataframe = get_final_dataframe()
-        dataframe = clean_frequency.apply(dataframe, 20)
+        dataframe = clean_frequency.apply(dataframe, 50)
     if True:
         model = discovery.apply(dataframe, model_type_variant="model2", node_freq_variant="type21",
                                 edge_freq_variant="type211")
-        gviz = vis_factory.apply(model, parameters={"format": "svg", "min_edge_freq": 10})
+        gviz = vis_factory.apply(model, parameters={"format": "svg", "min_edge_freq": 50})
         vis_factory.view(gviz)
