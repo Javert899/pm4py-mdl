@@ -78,9 +78,9 @@ def read_lips():
     lips = lips.dropna(subset=["VGBEL"])
     stream = lips.to_dict("r")
     for row in stream:
-        if not row["VGBEL"] in Shared.lips:
-            Shared.lips[row["VGBEL"]] = set()
-        Shared.lips[row["VGBEL"]].add(row["VBELN"])
+        if not row["VBELN"] in Shared.lips:
+            Shared.lips[row["VBELN"]] = set()
+        Shared.lips[row["VBELN"]].add(row["VGBEL"])
 
 
 def extract_cdhdr():
@@ -193,6 +193,11 @@ def get_final_dataframe():
             act = ev["event_activity"]
             ev["event_activity"] = Shared.activities[act] if act in Shared.activities else act
     dataframe = pd.DataFrame(stream)
+    #material = dataframe.dropna(subset=["MATERIAL"])
+    #i1 = dataframe.index
+    #i2 = material.index
+    #dataframe = dataframe[~i1.isin(i2)]
+    del dataframe["MATERIAL"]
     dataframe.type = "exploded"
     return dataframe
 
@@ -250,28 +255,28 @@ def extract_vbak():
         objtype = None
         if ev["VBTYP"] == "K":
             activity = "VA01"
-            objtype = "VBELN"
+            objtype = "VERKBELEG" # Create Sales Order
         elif ev["VBTYP"] == "G":
             activity = "VA41"
-            objtype = "VBELN"
+            objtype = "VERKBELEG" # Create Contract
         elif ev["VBTYP"] == "A":
             activity = "VA11"
-            objtype = "VBELN"
+            objtype = "VERKBELEG" # Create Inquiry
         elif ev["VBTYP"] == "E":
             activity = "VA31"
-            objtype = "VBELN"
+            objtype = "VERKBELEG" # Create Scheduling Agreement
         elif ev["VBTYP"] == "F":
             activity = "VA31"
-            objtype = "VBELN"
+            objtype = "VERKBELEG" # Create Scheduling Agreement
         elif ev["VBTYP"] == "W":
             activity = "MD61"
-            objtype = "VBELN"
+            objtype = "VERKBELEG" # Create Planned Indep. Requirements
         elif ev["VBTYP"] == "D":
             activity = "VA51"
-            objtype = "VBELN"
+            objtype = "VERKBELEG" # Create Item Proposal
         elif ev["VBTYP"] == "L":
             activity = "VA01"
-            objtype = "VBELN"
+            objtype = "VERKBELEG" # Create Sales Order
         if activity is not None:
             key = frozendict({"event_timestamp": ev["event_timestamp"],
                               "event_resource": ev["event_resource"], "event_activity": activity})
@@ -281,8 +286,21 @@ def extract_vbak():
             Shared.events[key].add(frozendict({objtype: ebeln}))
 
 
-def extract_lipk():
-    pass
+def extract_likp():
+    likp = pd.read_csv(os.path.join(dir, "likp.tsv"), sep="\t", dtype={"VBELN": str})
+    likp = likp.rename(columns={"ERNAM": "event_resource"})
+    likp["event_timestamp"] = likp["ERDAT"] + " " + likp["ERZET"]
+    likp["event_timestamp"] = pd.to_datetime(likp["event_timestamp"], format="%d.%m.%Y %H:%M:%S")
+    likp["event_activity"] = likp["TCODE"]
+    likp = likp.dropna(subset=["event_activity"])
+    likp = likp.dropna(subset=["event_resource"])
+    stream = likp.to_dict("r")
+    for ev in stream:
+        key = frozendict({"event_timestamp": ev["event_timestamp"],
+                          "event_resource": ev["event_resource"], "event_activity": ev["event_activity"]})
+        if key not in Shared.events:
+            Shared.events[key] = set()
+        Shared.events[key].add(frozendict({"LIEFERUNG": ev["VBELN"]}))
 
 
 def insert_ekpo_information():
@@ -339,8 +357,28 @@ def insert_vbfa_information():
         eve = vbeln_map[n]
         corr = Shared.vbfa[n]
         for el in corr:
-            Shared.events[eve].add(frozendict({"VBELN": el}))
+            Shared.events[eve].add(frozendict({"VERKBELEG": el}))
 
+
+def insert_lips_information():
+    events = sorted(list(Shared.events.keys()), key=lambda x: x["event_timestamp"])
+    lips_map = {}
+    for index, eve in enumerate(events):
+        eve_map = dict()
+        for val in Shared.events[eve]:
+            for k in val:
+                eve_map[k] = val[k]
+        if "LIEFERUNG" in eve_map:
+            val = eve_map["LIEFERUNG"]
+            if val in Shared.lips:
+                lips_map[val] = eve
+    for n in lips_map:
+        eve = lips_map[n]
+        corr = Shared.lips[n]
+        for el in corr:
+            Shared.events[eve].add(frozendict({"VERKBELEG": el}))
+            #print(Shared.events[eve])
+            #input()
 
 if __name__ == "__main__":
     read_ekpo()
@@ -349,19 +387,21 @@ if __name__ == "__main__":
     read_lips()
     read_activities()
     extract_cdhdr()
-    extract_rbkp()
-    extract_bkpf()
-    extract_eban()
-    extract_ekko()
+    #extract_rbkp()
+    #extract_bkpf()
+    #extract_eban()
+    #extract_ekko()
     extract_vbak()
+    extract_likp()
     insert_ekpo_information()
     insert_ekbe_information()
     insert_vbfa_information()
+    insert_lips_information()
     if True:
         dataframe = get_final_dataframe()
-        dataframe = clean_frequency.apply(dataframe, 50)
+        dataframe = clean_frequency.apply(dataframe, 3)
     if True:
         model = discovery.apply(dataframe, model_type_variant="model2", node_freq_variant="type21",
                                 edge_freq_variant="type211")
-        gviz = vis_factory.apply(model, parameters={"format": "svg", "min_edge_freq": 50})
+        gviz = vis_factory.apply(model, parameters={"format": "svg", "min_edge_freq": 1})
         vis_factory.view(gviz)
