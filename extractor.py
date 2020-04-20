@@ -43,8 +43,8 @@ def read_ekbe():
     stream = ekbe.to_dict("r")
     for row in stream:
         if not row["BELNR"] in Shared.ekbe:
-            Shared.ekbe[row["BELNR"]] = []
-        Shared.ekbe[row["BELNR"]].append(row["EBELN"])
+            Shared.ekbe[row["BELNR"]] = set()
+        Shared.ekbe[row["BELNR"]].add(row["EBELN"])
 
 
 def read_ekpo():
@@ -55,8 +55,8 @@ def read_ekpo():
     stream = ekpo.to_dict("r")
     for row in stream:
         if not row["EBELN"] in Shared.ekpo:
-            Shared.ekpo[row["EBELN"]] = []
-        Shared.ekpo[row["EBELN"]].append(row["BANFN"])
+            Shared.ekpo[row["EBELN"]] = set()
+        Shared.ekpo[row["EBELN"]].add(row["BANFN"])
 
 
 def read_vbfa():
@@ -67,8 +67,8 @@ def read_vbfa():
     stream = vbfa.to_dict("r")
     for row in stream:
         if not row["VBELN"] in Shared.vbfa:
-            Shared.vbfa[row["VBELN"]] = []
-        Shared.vbfa[row["VBELN"]].append(row["VBELV"])
+            Shared.vbfa[row["VBELN"]] = set()
+        Shared.vbfa[row["VBELN"]].add(row["VBELV"])
 
 
 def read_lips():
@@ -79,8 +79,8 @@ def read_lips():
     stream = lips.to_dict("r")
     for row in stream:
         if not row["VGBEL"] in Shared.lips:
-            Shared.lips[row["VGBEL"]] = []
-        Shared.lips[row["VGBEL"]].append(row["VBELN"])
+            Shared.lips[row["VGBEL"]] = set()
+        Shared.lips[row["VGBEL"]].add(row["VBELN"])
 
 
 def extract_cdhdr():
