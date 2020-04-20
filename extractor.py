@@ -13,6 +13,7 @@ class Shared:
     ekpo = {}
     vbfa = {}
     lips = {}
+    vbak = {}
     activities = {}
     events = {}
 
@@ -128,8 +129,8 @@ def extract_rbkp():
 
 
 def extract_bkpf():
-    bkpf = pd.read_csv(os.path.join(dir, "bkpf.tsv"), sep="\t", dtype={"BELNR": str})
-    bkpf = bkpf[["BELNR", "CPUDT", "CPUTM", "USNAM", "TCODE"]]
+    bkpf = pd.read_csv(os.path.join(dir, "bkpf.tsv"), sep="\t", dtype={"BELNR": str, "AWKEY": str})
+    bkpf = bkpf[["BELNR", "CPUDT", "CPUTM", "USNAM", "TCODE", "AWKEY"]]
     bkpf = bkpf[bkpf["BELNR"].isin(Shared.ekbe.keys())]
     bkpf = bkpf.rename(columns={"USNAM": "event_resource", "TCODE": "event_activity"})
     bkpf["event_timestamp"] = bkpf["CPUDT"] + " " + bkpf["CPUTM"]
@@ -143,6 +144,8 @@ def extract_bkpf():
         if key not in Shared.events:
             Shared.events[key] = set()
         Shared.events[key].add(frozendict({"BELNR": str(ev["BELNR"])}))
+        if ev["AWKEY"] in Shared.vbak:
+            Shared.events[key].add(Shared.vbak[ev["AWKEY"]])
 
 
 def extract_eban():
@@ -282,8 +285,11 @@ def extract_vbak():
                               "event_resource": ev["event_resource"], "event_activity": activity})
             if key not in Shared.events:
                 Shared.events[key] = set()
+                Shared.vbak[key] = set()
             ebeln = str(ev["VBELN"])
-            Shared.events[key].add(frozendict({objtype: ebeln}))
+            xx = frozendict({objtype: ebeln})
+            Shared.events[key].add(xx)
+            Shared.vbak[key].add(xx)
 
 
 def extract_likp():
@@ -387,12 +393,12 @@ if __name__ == "__main__":
     read_lips()
     read_activities()
     extract_cdhdr()
+    extract_vbak()
     #extract_rbkp()
-    #extract_bkpf()
     #extract_eban()
     #extract_ekko()
-    extract_vbak()
-    extract_likp()
+    #extract_likp()
+    extract_bkpf()
     insert_ekpo_information()
     insert_ekbe_information()
     insert_vbfa_information()
