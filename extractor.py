@@ -11,6 +11,7 @@ dir = r"C:\Users\aless\Documents\sap_extraction"
 class Shared:
     ekbe = {}
     ekpo = {}
+    vbfa = {}
     activities = {}
     events = {}
 
@@ -34,29 +35,39 @@ def remove_zeros(stru):
 
 
 def read_ekbe():
-    ekbe = pd.read_csv(os.path.join(dir, "ekbe.tsv"), sep="\t")
+    ekbe = pd.read_csv(os.path.join(dir, "ekbe.tsv"), sep="\t", dtype={"BELNR": str, "EBELN": str})
     ekbe = ekbe[["BELNR", "EBELN"]]
     ekbe = ekbe.dropna(subset=["BELNR"])
     ekbe = ekbe.dropna(subset=["EBELN"])
     stream = ekbe.to_dict("r")
     for row in stream:
-        Shared.ekbe[str(row["BELNR"])] = str(row["EBELN"])
+        Shared.ekbe[row["BELNR"]] = row["EBELN"]
 
 
 def read_ekpo():
-    ekpo = pd.read_csv(os.path.join(dir, "ekpo.tsv"), sep="\t")
+    ekpo = pd.read_csv(os.path.join(dir, "ekpo.tsv"), sep="\t", dtype={"EBELN": str, "BANFN": str})
     ekpo = ekpo[["BANFN", "EBELN"]]
     ekpo = ekpo.dropna(subset=["BANFN"])
     ekpo = ekpo.dropna(subset=["EBELN"])
     stream = ekpo.to_dict("r")
     for row in stream:
-        Shared.ekpo[str(row["EBELN"])] = str(int(row["BANFN"]))
+        Shared.ekpo[row["EBELN"]] = row["BANFN"]
+
+
+def read_vbfa():
+    vbfa = pd.read_csv(os.path.join(dir, "vbfa.tsv"), sep="\t", dtype={"VBELN": str, "VBELV": str})
+    vbfa = vbfa[["VBELV", "VBELN"]]
+    vbfa = vbfa.dropna(subset=["VBELV"])
+    vbfa = vbfa.dropna(subset=["VBELN"])
+    stream = vbfa.to_dict("r")
+    for row in stream:
+        Shared.vbfa[row["VBELN"]] = row["VBELV"]
 
 
 def extract_cdhdr():
-    cdhdr = pd.read_csv(os.path.join(dir, "cdhdr.tsv"), sep="\t")
+    cdhdr = pd.read_csv(os.path.join(dir, "cdhdr.tsv"), sep="\t", dtype={"OBJECTCLAS": str, "OBJECTID": str, "CHANGENR": str})
     cdhdr = cdhdr[["OBJECTCLAS", "OBJECTID", "USERNAME", "UDATE", "UTIME", "TCODE", "CHANGENR"]]
-    cdpos = pd.read_csv(os.path.join(dir, "cdpos.tsv"), sep="\t")
+    cdpos = pd.read_csv(os.path.join(dir, "cdpos.tsv"), sep="\t", dtype={"CHANGENR": str, "VALUE_NEW": str})
     cdpos = cdpos[["CHANGENR", "VALUE_NEW"]]
     merged = pd.merge(cdhdr, cdpos, left_on="CHANGENR", right_on="CHANGENR", suffixes=["", "_2"])
     merged = merged.dropna(subset=["VALUE_NEW"])
@@ -69,8 +80,8 @@ def extract_cdhdr():
     merged = merged.dropna(subset=["event_resource"])
     stream = merged.to_dict("r")
     for ev in stream:
-        ev["OBJECTID"] = remove_zeros(ev["OBJECTID"])
-        ev["OBJECTID_3"] = remove_zeros(ev["OBJECTID_3"])
+        #ev["OBJECTID"] = remove_zeros(ev["OBJECTID"])
+        #ev["OBJECTID_3"] = remove_zeros(ev["OBJECTID_3"])
         key = frozendict({"event_timestamp": ev["event_timestamp"],
                           "event_resource": ev["event_resource"], "event_activity": ev["event_activity"]})
         if key not in Shared.events:
@@ -80,7 +91,7 @@ def extract_cdhdr():
 
 
 def extract_rbkp():
-    rbkp = pd.read_csv(os.path.join(dir, "rbkp.tsv"), sep="\t")
+    rbkp = pd.read_csv(os.path.join(dir, "rbkp.tsv"), sep="\t", dtype={"BELNR": str})
     rbkp = rbkp[["BELNR", "CPUDT", "CPUTM", "USNAM", "TCODE"]]
     rbkp = rbkp[rbkp["BELNR"].isin(Shared.ekbe.keys())]
     rbkp = rbkp.rename(columns={"USNAM": "event_resource", "TCODE": "event_activity"})
@@ -98,7 +109,7 @@ def extract_rbkp():
 
 
 def extract_bkpf():
-    bkpf = pd.read_csv(os.path.join(dir, "bkpf.tsv"), sep="\t")
+    bkpf = pd.read_csv(os.path.join(dir, "bkpf.tsv"), sep="\t", dtype={"BELNR": str})
     bkpf = bkpf[["BELNR", "CPUDT", "CPUTM", "USNAM", "TCODE"]]
     bkpf = bkpf[bkpf["BELNR"].isin(Shared.ekbe.keys())]
     bkpf = bkpf.rename(columns={"USNAM": "event_resource", "TCODE": "event_activity"})
@@ -116,7 +127,7 @@ def extract_bkpf():
 
 
 def extract_eban():
-    eban = pd.read_csv(os.path.join(dir, "eban.tsv"), sep="\t")
+    eban = pd.read_csv(os.path.join(dir, "eban.tsv"), sep="\t", dtype={"BANFN": str})
     eban = eban[["BANFN", "ERDAT", "ERNAM"]]
     eban = eban.rename(columns={"ERNAM": "event_resource", "ERDAT": "event_timestamp"})
     eban["event_timestamp"] = pd.to_datetime(eban["event_timestamp"], format="%d.%m.%Y")
@@ -133,7 +144,7 @@ def extract_eban():
 
 
 def extract_ekko():
-    ekko = pd.read_csv(os.path.join(dir, "ekko.tsv"), sep="\t")
+    ekko = pd.read_csv(os.path.join(dir, "ekko.tsv"), sep="\t", dtype={"EBELN": str})
     ekko = ekko[["EBELN", "BEDAT", "ERNAM"]]
     ekko = ekko.rename(columns={"ERNAM": "event_resource", "BEDAT": "event_timestamp"})
     ekko["event_timestamp"] = pd.to_datetime(ekko["event_timestamp"], format="%d.%m.%Y")
@@ -203,23 +214,127 @@ def insert_ekbe_information():
         Shared.events[eve].add(frozendict({"EINKBELEG": corr}))
 
 
+def extract_vbak():
+    vbak = pd.read_csv(os.path.join(dir, "vbak.tsv"), sep="\t", dtype={"VBELN": str, "VBTYP": str})
+    vbak = vbak[["VBELN", "ERDAT", "ERZET", "ERNAM", "VBTYP"]]
+    vbak = vbak.rename(columns={"ERNAM": "event_resource"})
+    vbak["event_timestamp"] = vbak["ERDAT"] + " " + vbak["ERZET"]
+    vbak["event_timestamp"] = pd.to_datetime(vbak["event_timestamp"], format="%d.%m.%Y %H:%M:%S")
+    # ['C' 'I' 'B' 'H' 'K' 'G' 'A' 'E' 'F' 'W' 'D' 'L']
+    # C => Create Sales Order VA01
+    # I => Create Sales Order w/o charge VA01
+    # B => Create Sales Quotation VA21
+    # H => Create Sales Return FB75
+    """
+    A Inquiry
+    B Quotation
+    C Order
+    D Item proposal
+    E Scheduling agreement
+    F Scheduling agreement with external service agent
+    G Contract
+    H Returns
+    I Order w / o charge
+    J Delivery
+    K Credit memo request
+    L Debit memo request
+    M Invoice
+    N Invoice cancellation
+    O Credit memo
+    P Debit memo
+    Q WMS transfer order
+    R Goods movement
+    S Credit memo cancellation
+    T Returns delivery for order
+    U Pro forma invoice
+    V Purchase order
+    W Independent reqts plan
+    X Handling unit
+    """
+    vbak = vbak.dropna(subset=["VBTYP"])
+    vbak = vbak.dropna(subset=["event_resource"])
+    stream = vbak.to_dict("r")
+    for ev in stream:
+        # K => VA01
+        # G => VA41
+        # A => VA11
+        # E => VA31
+        # F => VA31
+        # W => MD61
+        # D => VA51
+        # L => VA01
+        activity = None
+        objtype = None
+        if ev["VBTYP"] == "K":
+            activity = "VA01"
+            objtype = "VBELN"
+        elif ev["VBTYP"] == "G":
+            activity = "VA41"
+            objtype = "VBELN"
+        elif ev["VBTYP"] == "A":
+            activity = "VA11"
+            objtype = "VBELN"
+        elif ev["VBTYP"] == "E":
+            activity = "VA31"
+            objtype = "VBELN"
+        elif ev["VBTYP"] == "F":
+            activity = "VA31"
+            objtype = "VBELN"
+        elif ev["VBTYP"] == "W":
+            activity = "MD61"
+            objtype = "VBELN"
+        elif ev["VBTYP"] == "D":
+            activity = "VA51"
+            objtype = "VBELN"
+        elif ev["VBTYP"] == "L":
+            activity = "VA01"
+            objtype = "VBELN"
+        if activity is not None:
+            key = frozendict({"event_timestamp": ev["event_timestamp"],
+                              "event_resource": ev["event_resource"], "event_activity": activity})
+            if key not in Shared.events:
+                Shared.events[key] = set()
+            ebeln = str(ev["VBELN"])
+            Shared.events[key].add(frozendict({objtype: ebeln}))
+
+
+def insert_vbfa_information():
+    events = sorted(list(Shared.events.keys()), key=lambda x: x["event_timestamp"])
+    vbeln_map = {}
+    for index, eve in enumerate(events):
+        eve_map = dict()
+        for val in Shared.events[eve]:
+            for k in val:
+                eve_map[k] = val[k]
+        if "VBELN" in eve_map:
+            val = eve_map["VBELN"]
+            if val in Shared.vbfa:
+                vbeln_map[val] = eve
+    for n in vbeln_map:
+        eve = vbeln_map[n]
+        corr = Shared.vbfa[n]
+        Shared.events[eve].add(frozendict({"VBELN": corr}))
+
+
 if __name__ == "__main__":
     read_ekpo()
-    #print(Shared.ekpo)
     read_ekbe()
+    read_vbfa()
     read_activities()
     extract_cdhdr()
-    extract_rbkp()
-    extract_bkpf()
+    #extract_rbkp()
+    #extract_bkpf()
     extract_eban()
     extract_ekko()
     insert_ekpo_information()
     insert_ekbe_information()
+    extract_vbak()
+    insert_vbfa_information()
     if True:
         dataframe = get_final_dataframe()
-        dataframe = clean_frequency.apply(dataframe, 50)
+        dataframe = clean_frequency.apply(dataframe, 45)
     if True:
         model = discovery.apply(dataframe, model_type_variant="model2", node_freq_variant="type21",
                                 edge_freq_variant="type211")
-        gviz = vis_factory.apply(model, parameters={"format": "svg", "min_edge_freq": 50})
+        gviz = vis_factory.apply(model, parameters={"format": "svg", "min_edge_freq": 5})
         vis_factory.view(gviz)
