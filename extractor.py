@@ -131,7 +131,7 @@ def extract_rbkp():
 def extract_bkpf():
     bkpf = pd.read_csv(os.path.join(dir, "bkpf.tsv"), sep="\t", dtype={"BELNR": str, "AWKEY": str})
     bkpf = bkpf[["BELNR", "CPUDT", "CPUTM", "USNAM", "TCODE", "AWKEY"]]
-    bkpf = bkpf[bkpf["BELNR"].isin(Shared.ekbe.keys())]
+    bkpf = bkpf[bkpf["BELNR"].isin(Shared.ekbe.keys()) | bkpf["AWKEY"].isin(Shared.vbak.keys())]
     bkpf = bkpf.rename(columns={"USNAM": "event_resource", "TCODE": "event_activity"})
     bkpf["event_timestamp"] = bkpf["CPUDT"] + " " + bkpf["CPUTM"]
     bkpf["event_timestamp"] = pd.to_datetime(bkpf["event_timestamp"], format="%d.%m.%Y %H:%M:%S")
@@ -145,7 +145,8 @@ def extract_bkpf():
             Shared.events[key] = set()
         Shared.events[key].add(frozendict({"BELNR": str(ev["BELNR"])}))
         if ev["AWKEY"] in Shared.vbak:
-            Shared.events[key].add(Shared.vbak[ev["AWKEY"]])
+            for el in Shared.vbak[ev["AWKEY"]]:
+                Shared.events[key].add(el)
 
 
 def extract_eban():
@@ -196,11 +197,8 @@ def get_final_dataframe():
             act = ev["event_activity"]
             ev["event_activity"] = Shared.activities[act] if act in Shared.activities else act
     dataframe = pd.DataFrame(stream)
-    #material = dataframe.dropna(subset=["MATERIAL"])
-    #i1 = dataframe.index
-    #i2 = material.index
-    #dataframe = dataframe[~i1.isin(i2)]
-    del dataframe["MATERIAL"]
+    if "MATERIAL" in dataframe.columns:
+        del dataframe["MATERIAL"]
     dataframe.type = "exploded"
     return dataframe
 
@@ -285,11 +283,12 @@ def extract_vbak():
                               "event_resource": ev["event_resource"], "event_activity": activity})
             if key not in Shared.events:
                 Shared.events[key] = set()
-                Shared.vbak[key] = set()
             ebeln = str(ev["VBELN"])
             xx = frozendict({objtype: ebeln})
             Shared.events[key].add(xx)
-            Shared.vbak[key].add(xx)
+            if ebeln not in Shared.vbak:
+                Shared.vbak[ebeln] = set()
+            Shared.vbak[ebeln].add(key)
 
 
 def extract_likp():
@@ -383,8 +382,6 @@ def insert_lips_information():
         corr = Shared.lips[n]
         for el in corr:
             Shared.events[eve].add(frozendict({"VERKBELEG": el}))
-            #print(Shared.events[eve])
-            #input()
 
 if __name__ == "__main__":
     read_ekpo()
@@ -392,12 +389,12 @@ if __name__ == "__main__":
     read_vbfa()
     read_lips()
     read_activities()
-    extract_cdhdr()
+    #extract_cdhdr()
     extract_vbak()
-    #extract_rbkp()
     #extract_eban()
     #extract_ekko()
     #extract_likp()
+    extract_rbkp()
     extract_bkpf()
     insert_ekpo_information()
     insert_ekbe_information()
@@ -405,9 +402,9 @@ if __name__ == "__main__":
     insert_lips_information()
     if True:
         dataframe = get_final_dataframe()
-        dataframe = clean_frequency.apply(dataframe, 3)
+        dataframe = clean_frequency.apply(dataframe, 45)
     if True:
         model = discovery.apply(dataframe, model_type_variant="model2", node_freq_variant="type21",
                                 edge_freq_variant="type211")
-        gviz = vis_factory.apply(model, parameters={"format": "svg", "min_edge_freq": 1})
+        gviz = vis_factory.apply(model, parameters={"format": "svg", "min_edge_freq": 45})
         vis_factory.view(gviz)
