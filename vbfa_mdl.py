@@ -151,7 +151,11 @@ if __name__ == "__main__":
     activities.update(Shared.tcodes)
     df[Shared.activity_column] = df[Shared.activity_column].map(activities)
     df = df.dropna(subset=[Shared.activity_column])
-    print(df)
     df = df[[x for x in df.columns if "named:" not in x]]
+    allowed_columns = [x for x in df.columns if not x.startswith("C_") and not x.startswith("event_")]
+    df = df.dropna(subset=allowed_columns, how="all")
     df = df.sort_values(Shared.timestamp_column)
-    df.to_csv("sap.mdl", index=False)
+    print(df)
+    df.type = "exploded"
+    from pm4pymdl.objects.mdl.exporter import factory as mdl_exporter
+    mdl_exporter.apply(df, "sap.mdl")
