@@ -4,6 +4,8 @@ import networkx
 import datetime
 from frozendict import frozendict
 from copy import deepcopy
+import uuid
+
 
 class Shared:
     vbeln = {}
@@ -14,6 +16,26 @@ class Shared:
     associated_events = {}
     enable_filling_events = False
     unmapped = set()
+    timestamps = {}
+    event_map = {}
+    bkpf = {}
+
+
+def extract_bkpf():
+    bkpf = pd.read_csv(os.path.join(Shared.dir, "bkpf.tsv"), sep="\t", dtype={"BELNR": str, "AWKEY": str})
+    bkpf = bkpf[["BELNR", "CPUDT", "CPUTM", "USNAM", "TCODE", "AWKEY"]]
+    bkpf = bkpf.rename(columns={"USNAM": "event_resource", "TCODE": Shared.activity_column})
+    bkpf[Shared.timestamp_column] = bkpf["CPUDT"] + " " + bkpf["CPUTM"]
+    bkpf[Shared.timestamp_column] = pd.to_datetime(bkpf[Shared.timestamp_column], format="%d.%m.%Y %H:%M:%S")
+    stream = bkpf.to_dict("r")
+    for ev in stream:
+        awkey = ev["AWKEY"]
+        if awkey not in Shared.bkpf:
+            Shared.bkpf[awkey] = set()
+        Shared.bkpf[awkey].add(frozendict(
+            {Shared.timestamp_column: ev[Shared.timestamp_column], Shared.activity_column: ev[Shared.activity_column],
+             "event_id": str(uuid.uuid4()), "event_objtype": "BELNR", "event_objid": ev["BELNR"]}))
+
 
 def read_activities():
     tstct = pd.read_csv(os.path.join(Shared.dir, "TSTCT.tsv"), sep="\t")
@@ -28,8 +50,10 @@ def read_vbak():
     vbak = pd.read_csv(os.path.join(Shared.dir, "vbak.tsv"), sep="\t", dtype={"VBELN": str, "VBTYP": str})
     vbak[Shared.timestamp_column] = vbak["ERDAT"] + " " + vbak["ERZET"]
     vbak[Shared.timestamp_column] = pd.to_datetime(vbak[Shared.timestamp_column], format="%d.%m.%Y %H:%M:%S")
+    # vbak = vbak[["VBELN", Shared.timestamp_column]]
     vbak = vbak.to_dict("r")
     Shared.vbeln = {ev["VBELN"]: ev for ev in vbak}
+    Shared.timestamps = {ev["VBELN"]: ev[Shared.timestamp_column] for ev in vbak}
 
 
 def get_class_from_type(typ):
@@ -44,19 +68,19 @@ def get_class_from_type(typ):
     dct["U"] = "INVOICE_PRO_FORMA"
     dct["H"] = "RETURNS_DOC"
 
-    dct["A"] = "VERKBELEG" # inquiry
+    dct["A"] = "VERKBELEG"  # inquiry
     dct["T"] = "RETURNS_DELIVERY"
     dct["D"] = "ITEM_PROPOSAL"
-    dct["V"] = "INFOSATZ" # purchase order
+    dct["V"] = "INFOSATZ"  # purchase order
     dct["N"] = "INVOICE_CANCEL"
-    dct["E"] = "EINKBELEG" # scheduling agreement
+    dct["E"] = "EINKBELEG"  # scheduling agreement
     dct["O"] = "CREDIT_MEMO_DOC"
     dct["K"] = "CREDIT_MEMO_REQ"
-    dct["B"] = "VERKBELEG" # quotation
-    dct["G"] = "VERKBELEG" # contract
-    dct["W"] = "INDIP_REQ" # indipendent requisition
-    dct["I"] = "ORD_WO_CHARGE" # order without charge
-    dct["X"] = "HANDL_UNIT" # handling unit
+    dct["B"] = "VERKBELEG"  # quotation
+    dct["G"] = "VERKBELEG"  # contract
+    dct["W"] = "INDIP_REQ"  # indipendent requisition
+    dct["I"] = "ORD_WO_CHARGE"  # order without charge
+    dct["X"] = "HANDL_UNIT"  # handling unit
     if typ in dct:
         return dct[typ]
     Shared.unmapped.add(typ)
@@ -64,6 +88,7 @@ def get_class_from_type(typ):
 
 
 if __name__ == "__main__":
+    extract_bkpf()
     read_activities()
     read_vbak()
     G = networkx.DiGraph()
@@ -94,22 +119,38 @@ if __name__ == "__main__":
         id = id + 1
         typ = nodes[node]
         cl = get_class_from_type(typ)
-        timest = timestamp[node] if node in timestamp else datetime.datetime.fromtimestamp(1000000)
-        basic_event = {Shared.activity_column: typ, Shared.timestamp_column: timest, "event_id": str(id)}
-        event = deepcopy(basic_event)
-        event[cl] = node
-        events.add(frozendict(event))
-        for other_node in G.predecessors(node):
+        timest = timestamp[node] if node in timestamp else (
+            Shared.timestamps[node] if node in Shared.timestamps else None)
+        if timest is not None:
+            basic_event = {Shared.activity_column: typ, Shared.timestamp_column: timest, "event_id": str(id),
+                           "event_objtype": cl, "event_objid": node}
             event = deepcopy(basic_event)
-            otyp = nodes[other_node]
-            ocl = get_class_from_type(otyp)
-            event[ocl] = other_node
+            event[cl] = node
+            Shared.event_map[node] = cl
             events.add(frozendict(event))
+            for other_node in G.predecessors(node):
+                event = deepcopy(basic_event)
+                otyp = nodes[other_node]
+                ocl = get_class_from_type(otyp)
+                event[ocl] = other_node
+                events.add(frozendict(event))
+    events_to_add = set()
+    for ev in events:
+        if ev["event_objid"] in Shared.bkpf:
+            for nev0 in Shared.bkpf[ev["event_objid"]]:
+                nev1 = dict(nev0)
+                nev1["BELNR"] = nev1["event_objid"]
+                events_to_add.add(frozendict(nev1))
+                nev2 = dict(nev0)
+                nev2[ev["event_objtype"]] = ev["event_objid"]
+                events_to_add.add(frozendict(nev2))
+    for ev in events_to_add:
+        events.add(ev)
     events = [dict(x) for x in events]
     df = pd.DataFrame(events)
     df.type = "exploded"
-    #unique_values = set(df[Shared.activity_column].unique())
-    #activities = {x: x for x in unique_values}
+    # unique_values = set(df[Shared.activity_column].unique())
+    # activities = {x: x for x in unique_values}
     activities = {}
     activities["C"] = "Create Order"
     activities["J"] = "Create Delivery"
@@ -158,4 +199,5 @@ if __name__ == "__main__":
     print(df)
     df.type = "exploded"
     from pm4pymdl.objects.mdl.exporter import factory as mdl_exporter
+
     mdl_exporter.apply(df, "sap.mdl")
