@@ -9,6 +9,7 @@ from pm4py.algo.filtering.pandas.start_activities import start_activities_filter
 from pm4py.objects.heuristics_net.net import HeuristicsNet
 from pm4py.util import constants
 import pandas as pd
+from collections import Counter
 
 DEPENDENCY_THRESH = "dependency_thresh"
 AND_MEASURE_THRESH = "and_measure_thresh"
@@ -113,9 +114,9 @@ def apply(df, parameters=None):
     if perspectives is None:
         perspectives = list(x for x in df.columns if not x.startswith("event"))
 
-        #del perspectives[perspectives.index("event_id")]
-        #del perspectives[perspectives.index("event_activity")]
-        #if "event_timestamp" in perspectives:
+        # del perspectives[perspectives.index("event_id")]
+        # del perspectives[perspectives.index("event_activity")]
+        # if "event_timestamp" in perspectives:
         #    del perspectives[perspectives.index("event_timestamp")]
         perspectives = sorted(perspectives)
     for p_ind, p in enumerate(perspectives):
@@ -126,8 +127,18 @@ def apply(df, parameters=None):
         else:
             proj_df = df[["event_id", "event_activity", p]].dropna(subset=[p])
 
-        #proj_df = proj_df.groupby(["event_id", "event_activity", p]).first().reset_index()
-        #print('sii')
+        """
+        proj_df_activities = Counter(list(proj_df["event_activity"]))
+        proj_df_activities = set(x for x in proj_df_activities if proj_df_activities[x] >= min_act_count)
+        proj_df = proj_df[proj_df["event_activity"].isin(proj_df_activities)]
+        print(proj_df_activities)"""
+
+        # proj_df = proj_df.groupby(["event_id", "event_activity", p]).first().reset_index()
+        # print('sii')
+
+        activities_occurrences = attributes_filter.get_attribute_values(df, "event_activity")
+        activities_occurrences = {x: y for x, y in activities_occurrences.items() if y >= min_act_count}
+        proj_df = proj_df[proj_df["event_activity"].isin(activities_occurrences)]
 
         if performance:
             dfg_frequency, dfg_preformance = df_statistics.get_dfg_graph(proj_df, activity_key="event_activity",
@@ -156,10 +167,27 @@ def apply(df, parameters=None):
             end_activities = end_activities_filter.get_end_activities(proj_df, parameters=parameters_sa_ea)
             start_activities = clean_sa_ea(start_activities, decreasing_factor_sa_ea)
             end_activities = clean_sa_ea(end_activities, decreasing_factor_sa_ea)
-            activities_occurrences = attributes_filter.get_attribute_values(df, "event_activity")
+            max_entry = dict()
+            max_exit = dict()
+            for x in dfg_frequency:
+                a1 = x[0]
+                a2 = x[1]
+                y = dfg_frequency[x]
+                if not a1 == a2:
+                    if not a2 in max_entry or max_entry[a2][1] < y:
+                        max_entry[a2] = [x, y]
+                    if not a1 in max_exit or max_exit[a1][1] < y:
+                        max_exit[a1] = [x, y]
+            max_entry = set(y[0] for y in max_entry.values())
+            max_exit = set(y[0] for y in max_exit.values())
+            max_entry = {}
+            max_exit = {}
+            dfg_frequency = {x: y for x, y in dfg_frequency.items() if
+                             y >= min_dfg_occurrences or x in max_entry or x in max_exit}
             activities = list(activities_occurrences.keys())
 
             if performance:
+                dfg_performance = {x: y for x, y in dfg_performance.items() if x in dfg_frequency}
                 heu_net = HeuristicsNet(dfg_frequency, start_activities=start_activities, end_activities=end_activities,
                                         default_edges_color=this_color, net_name=p, activities=activities,
                                         activities_occurrences=activities_occurrences, performance_dfg=dfg_preformance)
@@ -168,7 +196,7 @@ def apply(df, parameters=None):
                                         default_edges_color=this_color, net_name=p, activities=activities,
                                         activities_occurrences=activities_occurrences)
             heu_net.calculate(dependency_thresh=dependency_thresh, and_measure_thresh=and_measure_thresh,
-                              min_act_count=min_act_count, min_dfg_occurrences=min_dfg_occurrences,
+                              min_act_count=1, min_dfg_occurrences=1,
                               dfg_pre_cleaning_noise_thresh=dfg_pre_cleaning_noise_thresh)
             if len(heu_net.nodes) > 0:
                 perspectives_heu[p] = heu_net
