@@ -19,6 +19,78 @@ class Shared:
     timestamps = {}
     event_map = {}
     bkpf = {}
+    vbap = {}
+    ekpo = {}
+
+
+def read_vbap():
+    vbap = pd.read_csv(os.path.join(Shared.dir, "vbap.tsv"), sep="\t", dtype={"VBELN": str, "MATNTR": str})
+    vbap = vbap.dropna(subset=["VBELN"])
+    vbap = vbap.dropna(subset=["MATNR"])
+    vbap = vbap.to_dict("r")
+    for el in vbap:
+        vbeln = el["VBELN"]
+        matnr = el["MATNR"]
+        if not vbeln in Shared.vbap:
+            Shared.vbap[vbeln] = set()
+        Shared.vbap[vbeln].add(matnr)
+
+
+def read_ekpo():
+    ekpo = pd.read_csv(os.path.join(Shared.dir, "ekpo.tsv"), sep="\t", dtype={"EBELN": str, "MATNR": str})
+    ekpo = ekpo.dropna(subset=["EBELN"])
+    ekpo = ekpo.dropna(subset=["MATNR"])
+    ekpo = ekpo.to_dict("r")
+    for ev in ekpo:
+        ebeln = ev["EBELN"]
+        matnr = ev["MATNR"]
+        if ebeln not in Shared.ekpo:
+            Shared.ekpo[ebeln] = set()
+        Shared.ekpo[ebeln].add(matnr)
+
+
+def read_ekko():
+    ekko = pd.read_csv(os.path.join(Shared.dir, "ekko.tsv"), sep="\t", dtype={"EBELN": str})
+    ekko = ekko[["EBELN", "BEDAT", "ERNAM"]]
+    ekko = ekko.rename(columns={"ERNAM": "event_resource", "BEDAT": Shared.timestamp_column})
+    ekko[Shared.timestamp_column] = pd.to_datetime(ekko[Shared.timestamp_column], format="%d.%m.%Y")
+    ekko[Shared.activity_column] = "ME21N"
+    ekko = ekko.dropna(subset=[Shared.activity_column])
+    stream = ekko.to_dict("r")
+    events = set()
+    for ev in stream:
+        ebeln = ev["EBELN"]
+        if ebeln in Shared.ekpo:
+            basic_event = {Shared.timestamp_column: ev[Shared.timestamp_column],
+                           Shared.activity_column: ev[Shared.activity_column], "event_id": str(uuid.uuid4()),
+                           "event_objid": ebeln, "event_objtype": "EINKBELEG"}
+            event = deepcopy(basic_event)
+            event["EINKBELEG"] = ebeln
+            events.add(frozendict(event))
+            for el in Shared.ekpo[ebeln]:
+                event = deepcopy(basic_event)
+                event["MATERIAL"] = el
+                events.add(frozendict(event))
+    return events
+
+
+def read_eban():
+    eban = pd.read_csv(os.path.join(Shared.dir, "eban.tsv"), sep="\t", dtype={"BANFN": str, "MATNR": str})
+    eban["ERDAT"] = pd.to_datetime(eban["ERDAT"], format="%d.%m.%Y")
+    eban = eban.rename(columns={"ERDAT": Shared.timestamp_column})
+    eban = eban.to_dict("r")
+    # EINKBELEG
+    events = set()
+    for ev in eban:
+        basic_event = {Shared.timestamp_column: ev[Shared.timestamp_column], Shared.activity_column: "ME51N",
+                       "event_id": str(uuid.uuid4()), "event_objid": ev["BANFN"], "event_objtype": "EINKBELEG"}
+        ev0 = deepcopy(basic_event)
+        ev0["EINKBELEG"] = ev["BANFN"]
+        ev1 = deepcopy(basic_event)
+        ev1["MATERIAL"] = ev["MATNR"]
+        events.add(frozendict(ev0))
+        events.add(frozendict(ev1))
+    return events
 
 
 def extract_bkpf():
@@ -54,7 +126,7 @@ def read_vbak():
     vbak = vbak.to_dict("r")
     Shared.vbeln = {ev["VBELN"]: frozendict({"event_" + x: y for x, y in ev.items()}) for ev in vbak}
     Shared.timestamps = {ev["VBELN"]: ev[Shared.timestamp_column] for ev in vbak}
-    #print(Shared.vbeln)
+    # print(Shared.vbeln)
 
 
 def get_class_from_type(typ):
@@ -89,6 +161,15 @@ def get_class_from_type(typ):
 
 
 if __name__ == "__main__":
+    read_ekpo()
+    print(Shared.ekpo)
+    input()
+    ekko_events = read_ekko()
+    print(ekko_events)
+    input()
+    read_vbap()
+    # eban_events = read_eban()
+    eban_events = set()
     extract_bkpf()
     read_activities()
     read_vbak()
@@ -135,6 +216,11 @@ if __name__ == "__main__":
                 ocl = get_class_from_type(otyp)
                 event[ocl] = other_node
                 events.add(frozendict(event))
+            if node in Shared.vbap:
+                for matnr in Shared.vbap[node]:
+                    event = deepcopy(basic_event)
+                    event["MATERIAL"] = matnr
+                    events.add(frozendict(event))
     events_to_add = set()
     for ev in events:
         if ev["event_objid"] in Shared.bkpf:
@@ -147,10 +233,14 @@ if __name__ == "__main__":
                 events_to_add.add(frozendict(nev2))
     for ev in events_to_add:
         events.add(ev)
+    for ev in eban_events:
+        events.add(ev)
+    for ev in ekko_events:
+        events.add(ev)
     events = [dict(x) for x in events]
-    for ev in events:
+    """for ev in events:
         if ev["event_objid"] in Shared.vbeln:
-            ev.update(Shared.vbeln[ev["event_objid"]])
+            ev.update(Shared.vbeln[ev["event_objid"]])"""
     df = pd.DataFrame(events)
     df.type = "exploded"
     # unique_values = set(df[Shared.activity_column].unique())
