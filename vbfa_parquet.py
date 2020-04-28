@@ -77,84 +77,86 @@ def read_vbak():
     Shared.vbeln = {ev["VBELN"]: ev for ev in vbak}
 
 
-read_activities()
-read_vbak()
-extract_cdhdr()
-G = networkx.DiGraph()
-nodes = {}
-timestamp = {}
-path = os.path.join(Shared.dir, "VBFA.tsv")
-vbfa = pd.read_csv(path, sep="\t", dtype={"VBELN": str, "VBELV": str})
-# df = df.sample(n=100)
-vbfa["event_timestamp"] = vbfa["ERDAT"] + " " + vbfa["ERZET"]
-vbfa["event_timestamp"] = pd.to_datetime(vbfa["event_timestamp"], format="%d.%m.%Y %H:%M:%S")
-stream = vbfa.to_dict("r")
-for ev in stream:
-    id1 = ev["VBELV"]
-    id2 = ev["VBELN"]
-    typ1 = ev["VBTYP_V"]
-    typ2 = ev["VBTYP_N"]
-    if not id1 in G.nodes:
-        nodes[id1] = typ1
-        G.add_node(id1)
-    if not id2 in G.nodes:
-        nodes[id2] = typ2
-        G.add_node(id2)
-    G.add_edge(id1, id2)
-    timestamp[id2] = ev["event_timestamp"]
-target_type = "C"
-orders = [n for n in nodes if nodes[n] == target_type]
-log = EventLog()
-for o in orders:
-    parents = {}
-    if o in timestamp:
-        trace = []
-        e = {Shared.activity_column: nodes[o],
-             Shared.timestamp_column: timestamp[o] if o in timestamp else datetime.datetime.fromtimestamp(1000000),
-             "obj_id": o, "obj_parent": "", "obj_type": nodes[o]}
-        fill_event(e)
-        trace.append(Event(e))
-        visited_nodes = list()
-        curr_nodes = list()
-        for s in G.neighbors(o):
-            curr_nodes.append(s)
-            parents[s] = o
-        i = 0
-        while i < len(curr_nodes):
-            el = curr_nodes[i]
-            if el not in visited_nodes and nodes[el] != target_type:
-                visited_nodes.append(el)
-                e = {Shared.activity_column: nodes[el], Shared.timestamp_column: timestamp[el], "obj_id": el,
-                     "obj_parent": parents[el] if el in parents else "", "obj_type": nodes[el]}
-                fill_event(e)
-                trace.append(Event(e))
-                for s in G.neighbors(el):
-                    curr_nodes.append(s)
-                    parents[s] = el
-            i = i + 1
-        trace = insert_missing_events(trace)
-        trace = sorted(trace, key=lambda x: x[Shared.timestamp_column])
-        trace1 = Trace(trace)
-        trace1.attributes["concept:name"] = o
-        log.append(trace1)
-df = log_conv_factory.apply(log, variant=log_conv_factory.TO_DATAFRAME)
-df = start_activities_filter.apply(df, [target_type])
-unique_values = set(df[Shared.activity_column].unique())
-activities = {x: x for x in unique_values}
-activities["C"] = "Create Order Document"
-activities["J"] = "Create Delivery Document"
-activities["Q"] = "Create WMS Transfer Order Document"
-activities["R"] = "Create Goods Movement Document"
-activities["M"] = "Create Invoice Document"
-activities["L"] = "Create Debit Memo Request"
-activities["P"] = "Create Debit Memo Document"
-activities["3"] = "Create Invoice List"
-activities["U"] = "Create Pro Forma Invoice Document"
-activities["H"] = "Create Returns Document"
-activities.update(Shared.tcodes)
-df[Shared.activity_column] = df[Shared.activity_column].map(activities)
-df = df[[x for x in df.columns if "named:" not in x]]
-df.to_csv("sales_document_flow.csv", index=False)
-#from pm4py.objects.log.exporter.parquet import factory as parquet_exporter
+if __name__ == "__main__":
+    read_activities()
+    read_vbak()
+    extract_cdhdr()
+    G = networkx.DiGraph()
+    nodes = {}
+    timestamp = {}
+    path = os.path.join(Shared.dir, "VBFA.tsv")
+    vbfa = pd.read_csv(path, sep="\t", dtype={"VBELN": str, "VBELV": str})
+    # df = df.sample(n=100)
+    vbfa["event_timestamp"] = vbfa["ERDAT"] + " " + vbfa["ERZET"]
+    vbfa["event_timestamp"] = pd.to_datetime(vbfa["event_timestamp"], format="%d.%m.%Y %H:%M:%S")
+    stream = vbfa.to_dict("r")
+    for ev in stream:
+        id1 = ev["VBELV"]
+        id2 = ev["VBELN"]
+        typ1 = ev["VBTYP_V"]
+        typ2 = ev["VBTYP_N"]
+        if not id1 in G.nodes:
+            nodes[id1] = typ1
+            G.add_node(id1)
+        if not id2 in G.nodes:
+            nodes[id2] = typ2
+            G.add_node(id2)
+        G.add_edge(id1, id2)
+        timestamp[id2] = ev["event_timestamp"]
+    target_type = "C"
+    orders = [n for n in nodes if nodes[n] == target_type]
+    log = EventLog()
+    for o in orders:
+        parents = {}
+        if o in timestamp:
+            trace = []
+            e = {Shared.activity_column: nodes[o],
+                 Shared.timestamp_column: timestamp[o] if o in timestamp else datetime.datetime.fromtimestamp(1000000),
+                 "obj_id": o, "obj_parent": "", "obj_type": nodes[o]}
+            fill_event(e)
+            trace.append(Event(e))
+            visited_nodes = list()
+            curr_nodes = list()
+            for s in G.neighbors(o):
+                curr_nodes.append(s)
+                parents[s] = o
+            i = 0
+            while i < len(curr_nodes):
+                el = curr_nodes[i]
+                if el not in visited_nodes and nodes[el] != target_type:
+                    visited_nodes.append(el)
+                    e = {Shared.activity_column: nodes[el], Shared.timestamp_column: timestamp[el], "obj_id": el,
+                         "obj_parent": parents[el] if el in parents else "", "obj_type": nodes[el]}
+                    fill_event(e)
+                    trace.append(Event(e))
+                    for s in G.neighbors(el):
+                        curr_nodes.append(s)
+                        parents[s] = el
+                i = i + 1
+            trace = insert_missing_events(trace)
+            trace = sorted(trace, key=lambda x: x[Shared.timestamp_column])
+            trace1 = Trace(trace)
+            trace1.attributes["concept:name"] = o
+            log.append(trace1)
+    df = log_conv_factory.apply(log, variant=log_conv_factory.TO_DATAFRAME)
+    df = start_activities_filter.apply(df, [target_type])
+    unique_values = set(df[Shared.activity_column].unique())
+    activities = {x: x for x in unique_values}
+    activities["C"] = "Create Order"
+    activities["J"] = "Create Delivery"
+    activities["Q"] = "WMS Transfer Order"
+    activities["R"] = "Goods Movement"
+    activities["M"] = "Create Invoice"
+    activities["L"] = "Create Debit Memo Request"
+    activities["P"] = "Create Debit Memo"
+    activities["U"] = "Create Pro Forma Invoice"
+    activities["H"] = "Create Returns Document"
+    activities.update(Shared.tcodes)
+    df[Shared.activity_column] = df[Shared.activity_column].map(activities)
+    df = df.dropna(subset=[Shared.activity_column])
+    df = df[[x for x in df.columns if "named:" not in x]]
+    df.type = "exploded"
+    df.to_csv("sales_document_flow.csv", index=False)
+    #from pm4py.objects.log.exporter.parquet import factory as parquet_exporter
 
-#parquet_exporter.apply(df, "sales_document_flow.parquet")
+    #parquet_exporter.apply(df, "sales_document_flow.parquet")

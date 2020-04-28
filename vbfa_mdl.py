@@ -52,8 +52,9 @@ def read_vbak():
     vbak[Shared.timestamp_column] = pd.to_datetime(vbak[Shared.timestamp_column], format="%d.%m.%Y %H:%M:%S")
     # vbak = vbak[["VBELN", Shared.timestamp_column]]
     vbak = vbak.to_dict("r")
-    Shared.vbeln = {ev["VBELN"]: ev for ev in vbak}
+    Shared.vbeln = {ev["VBELN"]: frozendict({"event_" + x: y for x, y in ev.items()}) for ev in vbak}
     Shared.timestamps = {ev["VBELN"]: ev[Shared.timestamp_column] for ev in vbak}
+    #print(Shared.vbeln)
 
 
 def get_class_from_type(typ):
@@ -147,6 +148,9 @@ if __name__ == "__main__":
     for ev in events_to_add:
         events.add(ev)
     events = [dict(x) for x in events]
+    for ev in events:
+        if ev["event_objid"] in Shared.vbeln:
+            ev.update(Shared.vbeln[ev["event_objid"]])
     df = pd.DataFrame(events)
     df.type = "exploded"
     # unique_values = set(df[Shared.activity_column].unique())
