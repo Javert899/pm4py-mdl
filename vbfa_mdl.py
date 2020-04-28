@@ -162,11 +162,7 @@ def get_class_from_type(typ):
 
 if __name__ == "__main__":
     read_ekpo()
-    print(Shared.ekpo)
-    input()
     ekko_events = read_ekko()
-    print(ekko_events)
-    input()
     read_vbap()
     # eban_events = read_eban()
     eban_events = set()
