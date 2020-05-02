@@ -119,6 +119,9 @@ def apply(df, parameters=None):
         # if "event_timestamp" in perspectives:
         #    del perspectives[perspectives.index("event_timestamp")]
         perspectives = sorted(perspectives)
+    activities_occurrences = attributes_filter.get_attribute_values(df.groupby("event_id").first().reset_index(),
+                                                                    "event_activity")
+    activities_occurrences = {x: y for x, y in activities_occurrences.items() if y >= min_act_count}
     for p_ind, p in enumerate(perspectives):
         has_timestamp = False
         if "event_timestamp" in df.columns and use_timestamp:
@@ -136,12 +139,11 @@ def apply(df, parameters=None):
         # proj_df = proj_df.groupby(["event_id", "event_activity", p]).first().reset_index()
         # print('sii')
 
-        activities_occurrences = attributes_filter.get_attribute_values(df, "event_activity")
-        activities_occurrences = {x: y for x, y in activities_occurrences.items() if y >= min_act_count}
         proj_df = proj_df[proj_df["event_activity"].isin(activities_occurrences)]
+        proj_df_first = proj_df.groupby("event_id").first().reset_index()
 
         if performance:
-            dfg_frequency, dfg_preformance = df_statistics.get_dfg_graph(proj_df, activity_key="event_activity",
+            dfg_frequency, dfg_performance = df_statistics.get_dfg_graph(proj_df, activity_key="event_activity",
                                                                          case_id_glue=p,
                                                                          timestamp_key="event_timestamp",
                                                                          measure="both",
@@ -180,8 +182,8 @@ def apply(df, parameters=None):
                         max_exit[a1] = [x, y]
             max_entry = set(y[0] for y in max_entry.values())
             max_exit = set(y[0] for y in max_exit.values())
-            max_entry = {}
-            max_exit = {}
+            #max_entry = {}
+            #max_exit = {}
             dfg_frequency = {x: y for x, y in dfg_frequency.items() if
                              y >= min_dfg_occurrences or x in max_entry or x in max_exit}
             activities = list(activities_occurrences.keys())
@@ -190,7 +192,7 @@ def apply(df, parameters=None):
                 dfg_performance = {x: y for x, y in dfg_performance.items() if x in dfg_frequency}
                 heu_net = HeuristicsNet(dfg_frequency, start_activities=start_activities, end_activities=end_activities,
                                         default_edges_color=this_color, net_name=p, activities=activities,
-                                        activities_occurrences=activities_occurrences, performance_dfg=dfg_preformance)
+                                        activities_occurrences=activities_occurrences, performance_dfg=dfg_performance)
             else:
                 heu_net = HeuristicsNet(dfg_frequency, start_activities=start_activities, end_activities=end_activities,
                                         default_edges_color=this_color, net_name=p, activities=activities,
