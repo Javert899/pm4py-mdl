@@ -64,7 +64,7 @@ def process_view(process=None):
     min_paths_count = request.cookies.get(
         'min_paths_count') if 'min_paths_count' in request.cookies else process.selected_min_edge_freq_count
     model_type = request.cookies.get('model_type') if 'model_type' in request.cookies else defaults.DEFAULT_MODEL_TYPE
-    classifier = request.cookies.get('classifier') if 'classifier' in request.cookies else "combined"
+    classifier = request.cookies.get('classifier') if 'classifier' in request.cookies else "activity"
     if 'exponent' in request.cookies:
         pc_controller.DEFAULT_EXPONENT = int(request.cookies['exponent'])
     min_acti_count = int(min_acti_count)
@@ -83,6 +83,8 @@ def process_view(process=None):
         response.set_cookie('min_paths_count', str(min_paths_count))
     if not request.cookies.get('model_type'):
         response.set_cookie('model_type', model_type)
+    if not request.cookies.get('classifier'):
+        response.set_cookie('classifier', classifier)
     if not request.cookies.get('exponent'):
         response.set_cookie('exponent', str(pc_controller.DEFAULT_EXPONENT))
     return response
