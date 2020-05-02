@@ -2,8 +2,10 @@ from pm4pymdl.objects.mdl.importer import factory as mdl_importer
 from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl, exploded_mdl_to_succint_mdl
 from pm4py.algo.discovery.dfg.adapters.pandas import df_statistics
 from pm4pymdl.algo.mvp.gen_framework import factory as mdfg_disc_factory
+from pm4pymdl.algo.mvp.gen_framework2 import factory as mdfg_disc_factory2
 from pm4pymdl.algo.mvp.get_logs_and_replay import factory as petri_disc_factory
 from pm4pymdl.visualization.mvp.gen_framework import factory as mdfg_vis_factory
+from pm4pymdl.visualization.mvp.gen_framework2 import factory as mdfg_vis_factory2
 from pm4pymdl.visualization.petrinet import factory as pn_vis_factory
 from pm4pymdl.algo.mvp.utils import get_activ_attrs_with_type, get_activ_otypes
 from pm4pymdl.algo.mvp.utils import filter_act_attr_val, filter_act_ot, filter_timestamp, filter_metaclass, \
@@ -27,6 +29,7 @@ from pm4py.objects.log.log import EventStream
 from pm4py.objects.conversion.log import factory as log_conv_factory
 from pm4py.objects.log.exporter.xes import factory as xes_exporter
 from pm4py.objects.log.util import sorting
+from collections import Counter
 
 DEFAULT_EXPONENT = 9
 
@@ -64,12 +67,17 @@ class Process(object):
         except:
             pass
         self.session_objects = {}
+
+        self.possible_model_types = {"process_tree": "oc-PTree", "petri_alpha": "oc-Alpha",
+                                     "petri_inductive": "oc-Inductive"}
+        """
         self.possible_model_types = {"model1": "mDFGs type 1", "model2": "mDFGs type 2", "model3": "mDFGs type 3",
                                      "petri": "Object-centric Petri net", "mvp_frequency": "MVP frequency",
-                                     "mvp_performance": "MVP performance"}
+                                     "mvp_performance": "MVP performance""}
+        """
         self.selected_model_type = defaults.DEFAULT_MODEL_TYPE
-        self.selected_min_acti_count = 5
-        self.selected_min_edge_freq_count = 4
+        self.selected_min_acti_count = 10
+        self.selected_min_edge_freq_count = 10
         self.model_view = ""
 
     def get_stream(self):
@@ -81,12 +89,13 @@ class Process(object):
         columns = [x for x in self.dataframe.columns if x.startswith("event_")] + [objtype]
         dataframe = self.dataframe[columns].dropna(how="any", subset=[objtype])
         dataframe = succint_mdl_to_exploded_mdl.apply(dataframe)
-        dataframe = dataframe.rename(columns={"event_activity": "concept:name", "event_timestamp": "time:timestamp", objtype: "case:concept:name"})
+        dataframe = dataframe.rename(columns={"event_activity": "concept:name", "event_timestamp": "time:timestamp",
+                                              objtype: "case:concept:name"})
         stream = EventStream(dataframe.to_dict('r'))
         log = log_conv_factory.apply(stream)
         log = sorting.sort_timestamp(log, "time:timestamp")
         exported_log = base64.b64encode(xes_exporter.export_log_as_string(log)).decode("utf-8")
-        return self.name+"_"+objtype, "xes", exported_log
+        return self.name + "_" + objtype, "xes", exported_log
 
     def get_most_similar(self, id, exponent=None):
         if exponent is None:
@@ -192,7 +201,7 @@ class Process(object):
             self.clusters = {}
             for i in range(len(new_clusters)):
                 self.clusters["Cluster " + self.fill_string(str(i + 1)) + " (" + str(len(new_clusters[i])) + ")"] = \
-                new_clusters[i]
+                    new_clusters[i]
             clusters_keys = sorted(list(self.clusters.keys()))
             self.clustersrepr = "@@@".join(clusters_keys)
 
@@ -366,9 +375,21 @@ class Process(object):
             obj.get_dfg_visualization()
         elif obj.selected_model_type.startswith("petri"):
             obj.get_petri_visualization()
-        else:
+        elif obj.selected_model_type.startswith("mvp"):
             obj.get_mvp_visualization()
+        else:
+            obj.get_new_visualization()
         return obj
+
+    def get_new_visualization(self):
+        model = mdfg_disc_factory2.apply(self.dataframe, variant=self.selected_model_type,
+                                         parameters={"min_acti_count": self.selected_min_acti_count,
+                                                     "min_edge_count": self.selected_min_edge_freq_count})
+        gviz = mdfg_vis_factory2.apply(model, parameters={"format": "svg"})
+        tfilepath = tempfile.NamedTemporaryFile(suffix='.svg')
+        tfilepath.close()
+        mdfg_vis_factory.save(gviz, tfilepath.name)
+        self.model_view = base64.b64encode(open(tfilepath.name, "rb").read()).decode('utf-8')
 
     def get_dfg_visualization(self):
         if self.selected_model_type == "model1":
