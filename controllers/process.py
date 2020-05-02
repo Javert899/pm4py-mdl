@@ -68,8 +68,8 @@ class Process(object):
             pass
         self.session_objects = {}
 
-        self.possible_model_types = {"process_tree": "oc-PTree", "petri_alpha": "oc-Alpha",
-                                     "petri_inductive": "oc-Inductive"}
+        self.possible_model_types = {"process_tree": "oc-PTree", "petri_alpha": "oc-Net-Alpha",
+                                     "petri_inductive": "oc-Net-Inductive"}
         """
         self.possible_model_types = {"model1": "mDFGs type 1", "model2": "mDFGs type 2", "model3": "mDFGs type 3",
                                      "petri": "Object-centric Petri net", "mvp_frequency": "MVP frequency",
