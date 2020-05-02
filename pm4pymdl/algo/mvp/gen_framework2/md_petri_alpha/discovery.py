@@ -3,7 +3,7 @@ from pm4pymdl.algo.mvp.gen_framework2 import general
 from pm4pymdl.algo.mvp.utils import clean_frequency, clean_arc_frequency
 from pm4py.objects.conversion.log import factory as log_conv_factory
 from pm4py.objects.log.log import EventStream
-from pm4py.algo.discovery.inductive import factory as inductive_miner
+from pm4py.algo.discovery.alpha import factory as alpha_miner
 from collections import Counter
 
 
@@ -26,8 +26,8 @@ def apply(df0, classifier_function=None, parameters=None):
     models = {}
 
     obj_types = [x for x in df.columns if not x.startswith("event_")]
-    activities = {}
     activities_repeated = Counter()
+    activities = {}
 
     for ot in obj_types:
         new_df = df[["event_id", "event_activity", "event_timestamp", ot]].dropna(subset=[ot])
@@ -47,10 +47,9 @@ def apply(df0, classifier_function=None, parameters=None):
             activities_repeated[act] += 1
         log = log_conv_factory.apply(log, variant=log_conv_factory.TO_EVENT_LOG)
 
-        models[ot] = inductive_miner.apply_tree(log, parameters=parameters)
+        models[ot] = alpha_miner.apply(log, parameters=parameters)
 
-    activities = dict(Counter(list(activities.values())))
     activities_repeated = set(x for x in activities_repeated if activities_repeated[x] > 1)
+    activities = dict(Counter(list(activities.values())))
 
-    return {"type": "ptree", "models": models, "activities": activities, "activities_repeated": activities_repeated}
-
+    return {"type": "petri", "models": models, "activities": activities, "activities_repeated": activities_repeated}

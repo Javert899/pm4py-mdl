@@ -24,10 +24,10 @@ def apply(df0, classifier_function=None, parameters=None):
     df = clean_arc_frequency.apply(df, min_freq=min_edge_freq)
 
     models = {}
-    activities = df.groupby("event_id").first().reset_index()["event_activity"].value_counts()
 
     obj_types = [x for x in df.columns if not x.startswith("event_")]
     activities_repeated = Counter()
+    activities = {}
 
     for ot in obj_types:
         new_df = df[["event_id", "event_activity", "event_timestamp", ot]].dropna(subset=[ot])
@@ -39,6 +39,7 @@ def apply(df0, classifier_function=None, parameters=None):
             ev["concept:name"] = classifier_function(ev)
             del ev["event_objtype"]
             del ev["event_activity"]
+            activities[ev["event_id"]] = ev["concept:name"]
 
         log = EventStream(log)
         this_activities = set(x["concept:name"] for x in log)
@@ -49,5 +50,6 @@ def apply(df0, classifier_function=None, parameters=None):
         models[ot] = inductive_miner.apply(log, parameters=parameters)
 
     activities_repeated = set(x for x in activities_repeated if activities_repeated[x] > 1)
+    activities = dict(Counter(list(activities.values())))
 
     return {"type": "petri", "models": models, "activities": activities, "activities_repeated": activities_repeated}
