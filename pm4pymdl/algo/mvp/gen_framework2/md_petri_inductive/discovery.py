@@ -28,8 +28,14 @@ def apply(df0, classifier_function=None, parameters=None):
     obj_types = [x for x in df.columns if not x.startswith("event_")]
     activities_repeated = Counter()
     activities = set()
+    edges = Counter()
+    start_activities = dict()
+    end_activities = dict()
 
     for ot in obj_types:
+        start_activities[ot] = set()
+        end_activities[ot] = set()
+
         new_df = df[["event_id", "event_activity", "event_timestamp", ot]].dropna(subset=[ot])
         new_df = new_df.rename(
             columns={ot: "case:concept:name", "event_timestamp": "time:timestamp"})
@@ -47,9 +53,19 @@ def apply(df0, classifier_function=None, parameters=None):
             activities_repeated[act] += 1
         log = log_conv_factory.apply(log, variant=log_conv_factory.TO_EVENT_LOG)
 
+        for trace in log:
+            if trace:
+                start_activities[ot].add(trace[0]["concept:name"])
+                end_activities[ot].add(trace[-1]["concept:name"])
+                for i in range(len(trace) - 1):
+                    ev0 = trace[i]
+                    ev1 = trace[i + 1]
+                    edges[(ot, ev0["concept:name"], ev1["concept:name"], ev0["event_id"], ev1["event_id"])] += 1
+
         models[ot] = inductive_miner.apply(log, parameters=parameters)
 
     activities_repeated = set(x for x in activities_repeated if activities_repeated[x] > 1)
     activities = dict(Counter(list(x[1] for x in activities)))
 
-    return {"type": "petri", "models": models, "activities": activities, "activities_repeated": activities_repeated}
+    return {"type": "petri", "models": models, "activities": activities, "activities_repeated": activities_repeated,
+            "edges": edges}
