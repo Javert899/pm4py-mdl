@@ -7,8 +7,10 @@ from controllers import defaults
 import uuid
 import json
 
+
 class Shared:
     logs = {}
+
 
 app = Flask(__name__)
 
@@ -19,7 +21,7 @@ def welcome():
     response = make_response(render_template(
         'welcome.html',
         Process=Shared.logs[list(Shared.logs.keys())[0]].get_names()
-        ))
+    ))
     if not request.cookies.get('session'):
         response.set_cookie('session', session)
     return response
@@ -31,7 +33,7 @@ def act_ot_selection(process=None):
     response = make_response(render_template(
         'act_ot_selection.html',
         Process=Shared.logs[process].get_controller(session)
-        ))
+    ))
     if not request.cookies.get('session'):
         response.set_cookie('session', session)
     return response
@@ -45,7 +47,7 @@ def cases_view(process=None):
     response = make_response(render_template(
         'cases_view.html',
         Process=Shared.logs[process].get_controller(session).events_list()
-        ))
+    ))
     if not request.cookies.get('session'):
         response.set_cookie('session', session)
     if not request.cookies.get('exponent'):
@@ -57,17 +59,21 @@ def cases_view(process=None):
 def process_view(process=None):
     session = request.cookies.get('session') if 'session' in request.cookies else str(uuid.uuid4())
     process = Shared.logs[process].get_controller(session)
-    min_acti_count = request.cookies.get('min_acti_count') if 'min_acti_count' in request.cookies else process.selected_min_acti_count
-    min_paths_count = request.cookies.get('min_paths_count') if 'min_paths_count' in request.cookies else process.selected_min_edge_freq_count
+    min_acti_count = request.cookies.get(
+        'min_acti_count') if 'min_acti_count' in request.cookies else process.selected_min_acti_count
+    min_paths_count = request.cookies.get(
+        'min_paths_count') if 'min_paths_count' in request.cookies else process.selected_min_edge_freq_count
     model_type = request.cookies.get('model_type') if 'model_type' in request.cookies else defaults.DEFAULT_MODEL_TYPE
+    classifier = request.cookies.get('classifier') if 'classifier' in request.cookies else "combined"
     if 'exponent' in request.cookies:
         pc_controller.DEFAULT_EXPONENT = int(request.cookies['exponent'])
     min_acti_count = int(min_acti_count)
     min_paths_count = int(min_paths_count)
     response = make_response(render_template(
         'process_view.html',
-        Process=process.get_visualization(min_acti_count=min_acti_count, min_paths_count=min_paths_count, model_type=model_type)
-        ))
+        Process=process.get_visualization(min_acti_count=min_acti_count, min_paths_count=min_paths_count,
+                                          model_type=model_type, classifier=classifier)
+    ))
 
     if not request.cookies.get('session'):
         response.set_cookie('session', session)
@@ -123,6 +129,7 @@ def get_log_object_type():
 
     return jsonify({"name": name, "type": type, "log": log})
 
+
 @app.route("/getSpecObjTable")
 def get_spec_obj_table():
     session = request.cookies.get('session')
@@ -165,6 +172,7 @@ def apply_cluster_filter():
     process.filter_on_cluster(session, cluster)
 
     return ""
+
 
 @app.route("/applyActivityFilter")
 def apply_activity_filter():
@@ -271,7 +279,7 @@ def get_ot_distr_summary():
     dictio = process.get_ot_distr_summary(session, activity, ot)
 
     new_dictio = {}
-    for x,y in dictio.items():
+    for x, y in dictio.items():
         if "int" in str(type(x)):
             x = int(x)
         elif "float" in str(type(x)):
@@ -281,7 +289,7 @@ def get_ot_distr_summary():
         elif "float" in str(type(y)):
             y = float(x)
         new_dictio[x] = y
-    #dictio = {x: float(y) for x, y in dictio.items() if "int" in str(type(y)) or "float" in str(type(y))}
+    # dictio = {x: float(y) for x, y in dictio.items() if "int" in str(type(y)) or "float" in str(type(y))}
 
     return jsonify(new_dictio)
 
@@ -301,14 +309,15 @@ def reset_filters():
 def main():
     if defaults.CONFIGURATION == 1:
         Shared.logs["orders"] = Process("orders", "example_logs/mdl/order_management.mdl", Shared.logs)
-        #Shared.logs["orders2"] = Process("orders2", "example_logs/mdl/order_management.mdl", Shared.logs)
-        #Shared.logs["o2c"] = Process("o2c", "sap.mdl", Shared.logs)
+        # Shared.logs["orders2"] = Process("orders2", "example_logs/mdl/order_management.mdl", Shared.logs)
+        # Shared.logs["o2c"] = Process("o2c", "sap.mdl", Shared.logs)
     elif defaults.CONFIGURATION == 2:
         Shared.logs["bkpf"] = Process("bkpf", "sap/bkpf_bseg.mdl", Shared.logs)
         Shared.logs["cdhdr"] = Process("cdhdr", "sap/sap_withTrial.mdl", Shared.logs)
         Shared.logs["opportunities"] = Process("opportunities", "example_logs/mdl/log_opp_red.mdl", Shared.logs)
     elif defaults.CONFIGURATION == 3:
-        Shared.logs["runningexample"] = Process("runningexample", "example_logs/mdl/mdl-running-example.mdl", Shared.logs)
+        Shared.logs["runningexample"] = Process("runningexample", "example_logs/mdl/mdl-running-example.mdl",
+                                                Shared.logs)
         Shared.logs["orders"] = Process("orders", "example_logs/mdl/order_management.mdl", Shared.logs)
         Shared.logs["runningexample"].initial_act_obj_types = {"place order": ["orders", "items"],
                                                                "confirm order": ["orders", "items"],

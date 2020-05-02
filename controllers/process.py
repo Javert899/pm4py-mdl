@@ -76,6 +76,8 @@ class Process(object):
                                      "mvp_performance": "MVP performance""}
         """
         self.selected_model_type = defaults.DEFAULT_MODEL_TYPE
+        self.possible_classifiers = {"activity", "combined"}
+        self.selected_classifier = "activity"
         self.selected_min_acti_count = 10
         self.selected_min_edge_freq_count = 10
         self.model_view = ""
@@ -350,12 +352,14 @@ class Process(object):
         self.shared_logs_names = "@@@".join([x for x in self.shared_logs])
         return self
 
-    def get_visualization(self, min_acti_count=0, min_paths_count=0, model_type=defaults.DEFAULT_MODEL_TYPE):
+    def get_visualization(self, min_acti_count=0, min_paths_count=0, model_type=defaults.DEFAULT_MODEL_TYPE,
+                          classifier="activity"):
         obj = copy(self)
         obj.get_names()
         obj.selected_min_acti_count = min_acti_count
         obj.selected_min_edge_freq_count = min_paths_count
         obj.selected_model_type = model_type
+        obj.selected_classifier = classifier
         reversed_dict = {}
         for act in obj.activities:
             if act in obj.selected_act_obj_types:
@@ -382,7 +386,13 @@ class Process(object):
         return obj
 
     def get_new_visualization(self):
-        model = mdfg_disc_factory2.apply(self.dataframe, variant=self.selected_model_type,
+        classifier_function = None
+        if self.selected_classifier == "activity":
+            classifier_function = lambda x: x["event_activity"]
+        elif self.selected_classifier == "combined":
+            classifier_function = lambda x: x["event_activity"] + "+" + x["event_objtype"]
+        model = mdfg_disc_factory2.apply(self.dataframe, classifier_function=classifier_function,
+                                         variant=self.selected_model_type,
                                          parameters={"min_acti_count": self.selected_min_acti_count,
                                                      "min_edge_count": self.selected_min_edge_freq_count})
         gviz = mdfg_vis_factory2.apply(model, parameters={"format": "svg"})
