@@ -119,8 +119,6 @@ def apply(res, parameters=None):
                 else:
                     this_trans_id = acti_map[str(tree)]
 
-        print(count, acti_map)
-
     viz.attr(overlap='false')
     viz.attr(fontsize='11')
     viz.format = image_format
