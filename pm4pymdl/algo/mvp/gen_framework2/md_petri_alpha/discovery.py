@@ -27,7 +27,7 @@ def apply(df0, classifier_function=None, parameters=None):
 
     obj_types = [x for x in df.columns if not x.startswith("event_")]
     activities_repeated = Counter()
-    activities = {}
+    activities = set()
 
     for ot in obj_types:
         new_df = df[["event_id", "event_activity", "event_timestamp", ot]].dropna(subset=[ot])
@@ -39,7 +39,7 @@ def apply(df0, classifier_function=None, parameters=None):
             ev["concept:name"] = classifier_function(ev)
             del ev["event_objtype"]
             del ev["event_activity"]
-            activities[ev["event_id"]] = ev["concept:name"]
+            activities.add((ev["event_id"], ev["concept:name"]))
 
         log = EventStream(log)
         this_activities = set(x["concept:name"] for x in log)
@@ -50,6 +50,6 @@ def apply(df0, classifier_function=None, parameters=None):
         models[ot] = alpha_miner.apply(log, parameters=parameters)
 
     activities_repeated = set(x for x in activities_repeated if activities_repeated[x] > 1)
-    activities = dict(Counter(list(activities.values())))
+    activities = dict(Counter(list(x[1] for x in activities)))
 
     return {"type": "petri", "models": models, "activities": activities, "activities_repeated": activities_repeated}

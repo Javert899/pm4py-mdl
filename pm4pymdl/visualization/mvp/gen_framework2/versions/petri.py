@@ -41,9 +41,9 @@ def apply(res, parameters=None):
                 trans_id = acti_map[t.label]
             else:
                 if t.label in res["activities_repeated"]:
-                    viz.node(trans_id, t.label, style="filled", fillcolor="white")
+                    viz.node(trans_id, t.label+" ("+str(res["activities"][t.label])+")", style="filled", fillcolor="white")
                 else:
-                    viz.node(trans_id, t.label, style="filled", fillcolor=persp_color)
+                    viz.node(trans_id, t.label+" ("+str(res["activities"][t.label])+")", style="filled", fillcolor=persp_color)
                 acti_map[t.label] = trans_id
             for arc in t.in_arcs:
                 p = arc.source

@@ -42,9 +42,9 @@ def repr_tree(tree, viz, current_node, rec_depth, res, acti_map, persp_color, pa
                 if not str(child) in acti_map:
                     acti_map[str(child)] = this_trans_id
                     if str(child) in res["activities_repeated"]:
-                        viz.node(this_trans_id, str(child), style="filled", fillcolor="white")
+                        viz.node(this_trans_id, str(child)+" ("+str(res["activities"][str(child)])+")", style="filled", fillcolor="white")
                     else:
-                        viz.node(this_trans_id, str(child), style="filled", fillcolor=persp_color)
+                        viz.node(this_trans_id, str(child)+" ("+str(res["activities"][str(child)])+")", style="filled", fillcolor=persp_color)
                 else:
                     this_trans_id = acti_map[str(child)]
             viz.edge(current_node, this_trans_id, color=persp_color)
@@ -63,9 +63,9 @@ def repr_tree(tree, viz, current_node, rec_depth, res, acti_map, persp_color, pa
                     if not str(childchild) in acti_map:
                         acti_map[str(childchild)] = this_trans_id
                         if str(childchild) in res["activities_repeated"]:
-                            viz.node(this_trans_id, str(childchild), style="filled", fillcolor="white")
+                            viz.node(this_trans_id, str(childchild)+" ("+str(res["activities"][str(childchild)])+")", style="filled", fillcolor="white")
                         else:
-                            viz.node(this_trans_id, str(childchild), style="filled", fillcolor=persp_color)
+                            viz.node(this_trans_id, str(childchild)+" ("+str(res["activities"][str(childchild)])+")", style="filled", fillcolor=persp_color)
                     else:
                         this_trans_id = acti_map[str(childchild)]
                 viz.edge(current_node, this_trans_id, color=persp_color)
@@ -113,9 +113,9 @@ def apply(res, parameters=None):
                 if not str(tree) in acti_map:
                     acti_map[str(tree)] = this_trans_id
                     if str(tree) in res["activities_repeated"]:
-                        viz.node(this_trans_id, str(tree), style="filled", fillcolor="white")
+                        viz.node(this_trans_id, str(tree)+" ("+str(res["activities"][str(tree)])+")", style="filled", fillcolor="white")
                     else:
-                        viz.node(this_trans_id, str(tree), style="filled", fillcolor=persp_color)
+                        viz.node(this_trans_id, str(tree)+" ("+str(res["activities"][str(tree)])+")", style="filled", fillcolor=persp_color)
                 else:
                     this_trans_id = acti_map[str(tree)]
 

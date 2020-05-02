@@ -26,7 +26,7 @@ def apply(df0, classifier_function=None, parameters=None):
     models = {}
 
     obj_types = [x for x in df.columns if not x.startswith("event_")]
-    activities = {}
+    activities = set()
     activities_repeated = Counter()
 
     for ot in obj_types:
@@ -39,7 +39,7 @@ def apply(df0, classifier_function=None, parameters=None):
             ev["concept:name"] = classifier_function(ev)
             del ev["event_objtype"]
             del ev["event_activity"]
-            activities[ev["event_id"]] = ev["concept:name"]
+            activities.add((ev["event_id"], ev["concept:name"]))
 
         log = EventStream(log)
         this_activities = set(x["concept:name"] for x in log)
@@ -49,8 +49,7 @@ def apply(df0, classifier_function=None, parameters=None):
 
         models[ot] = inductive_miner.apply_tree(log, parameters=parameters)
 
-    activities = dict(Counter(list(activities.values())))
+    activities = dict(Counter(list(x[1] for x in activities)))
     activities_repeated = set(x for x in activities_repeated if activities_repeated[x] > 1)
 
     return {"type": "ptree", "models": models, "activities": activities, "activities_repeated": activities_repeated}
-
