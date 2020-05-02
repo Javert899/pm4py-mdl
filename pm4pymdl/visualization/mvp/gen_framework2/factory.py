@@ -1,6 +1,6 @@
 from pm4py.visualization.common import gview
 from pm4py.visualization.common import save as gsave
-from pm4pymdl.visualization.mvp.gen_framework2.versions import ptree
+from pm4pymdl.visualization.mvp.gen_framework2.versions import ptree, petri
 
 
 def apply(res, parameters=None):
@@ -9,7 +9,8 @@ def apply(res, parameters=None):
 
     if res["type"] == "ptree":
         return ptree.apply(res, parameters=parameters)
-
+    elif res["type"] == "petri":
+        return petri.apply(res, parameters=parameters)
 
 def save(gviz, output_file_path):
     """
