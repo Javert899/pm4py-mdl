@@ -32,8 +32,14 @@ def apply(df0, classifier_function=None, parameters=None):
     for ot in obj_types:
         new_df = df[["event_id", "event_activity", "event_timestamp", ot]].dropna(subset=[ot])
         new_df = new_df.rename(
-            columns={ot: "case:concept:name", "event_activity": "concept:name", "event_timestamp": "time:timestamp"})
+            columns={ot: "case:concept:name", "event_timestamp": "time:timestamp"})
         log = new_df.to_dict("r")
+        for ev in log:
+            ev["event_objtype"] = ot
+            ev["concept:name"] = classifier_function(ev)
+            del ev["event_objtype"]
+            del ev["event_activity"]
+
         log = EventStream(log)
         this_activities = set(x["concept:name"] for x in log)
         for act in this_activities:
