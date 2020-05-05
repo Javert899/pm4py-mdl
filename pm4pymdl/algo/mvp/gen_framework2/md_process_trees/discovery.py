@@ -5,6 +5,7 @@ from pm4py.objects.conversion.log import factory as log_conv_factory
 from pm4py.objects.log.log import EventStream
 from pm4py.algo.discovery.inductive import factory as inductive_miner
 from collections import Counter
+from pm4py.objects.log.util import sorting
 
 
 def apply(df0, classifier_function=None, parameters=None):
@@ -37,6 +38,7 @@ def apply(df0, classifier_function=None, parameters=None):
         end_activities[ot] = set()
 
         new_df = df[["event_id", "event_activity", "event_timestamp", ot]].dropna(subset=[ot])
+        new_df = new_df.sort_values("event_timestamp")
         new_df = new_df.rename(
             columns={ot: "case:concept:name", "event_timestamp": "time:timestamp"})
         log = new_df.to_dict("r")
@@ -52,6 +54,7 @@ def apply(df0, classifier_function=None, parameters=None):
         for act in this_activities:
             activities_repeated[act] += 1
         log = log_conv_factory.apply(log, variant=log_conv_factory.TO_EVENT_LOG)
+        log = sorting.sort_timestamp(log, "time:timestamp")
 
         for trace in log:
             if trace:
