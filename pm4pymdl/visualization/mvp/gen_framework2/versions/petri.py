@@ -32,7 +32,7 @@ def apply(res, parameters=None):
             viz.node(str(id(p)), "", style="filled", fillcolor=persp_color)
 
         # transitions
-        viz.attr('node', shape='box')
+        viz.attr('node', shape='box', width='3.8')
         for t in net.transitions:
             trans_id = str(id(t))
             if t.label is None:
