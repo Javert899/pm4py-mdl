@@ -2,6 +2,8 @@ import tempfile
 import uuid
 from graphviz import Digraph
 from pm4py.objects.process_tree import pt_operator
+from pm4pymdl.visualization.mvp.gen_framework2.versions import util
+
 
 COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#306A8A", "#678225", "#2742FE", "#4C9A75",
           "#4C36E9", "#7DB022", "#EDAC54", "#EAC439", "#EAC439", "#1A9C45", "#8A51C4", "#496A63", "#FB9543", "#2B49DD",
@@ -80,7 +82,7 @@ def repr_tree(tree, viz, current_node, rec_depth, res, acti_map, persp_color, pa
     return viz, acti_map
 
 
-def apply(res, parameters=None):
+def apply(res, freq="events", parameters=None):
     if parameters is None:
         parameters = {}
 
@@ -88,6 +90,13 @@ def apply(res, parameters=None):
     viz = Digraph("pt", filename=filename.name, engine='dot', graph_attr={'bgcolor': 'transparent'})
     image_format = parameters["format"] if "format" in parameters else "png"
     acti_map = {}
+
+    edges_map = {}
+    activ_freq_map = {}
+
+    for key in res["models"]:
+        edges_map[key] = util.get_edges_map(key, res, variant=freq)
+        activ_freq_map[key] = util.get_activity_map(key, res, variant=freq)
 
     count = 0
     for tree in res["models"].values():

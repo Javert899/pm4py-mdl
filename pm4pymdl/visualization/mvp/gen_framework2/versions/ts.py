@@ -1,6 +1,7 @@
 import tempfile
 import uuid
 from graphviz import Digraph
+from pm4pymdl.visualization.mvp.gen_framework2.versions import util
 
 
 COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#306A8A", "#678225", "#2742FE", "#4C9A75",
@@ -8,7 +9,7 @@ COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#30
           "#13ADA5", "#2DD8C1", "#2E53D7", "#EF9B77", "#06924F", "#AC2C4D", "#82193F", "#0140D3"]
 
 
-def apply(res, parameters=None):
+def apply(res, freq="events", parameters=None):
     if parameters is None:
         parameters = {}
 
@@ -16,6 +17,13 @@ def apply(res, parameters=None):
     viz = Digraph("pt", filename=filename.name, engine='dot', graph_attr={'bgcolor': 'transparent'})
     image_format = parameters["format"] if "format" in parameters else "png"
     acti_map = {}
+
+    edges_map = {}
+    activ_freq_map = {}
+
+    for key in res["models"]:
+        edges_map[key] = util.get_edges_map(key, res, variant=freq)
+        activ_freq_map[key] = util.get_activity_map(key, res, variant=freq)
 
     count = 0
 

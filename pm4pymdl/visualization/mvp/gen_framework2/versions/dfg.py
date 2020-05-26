@@ -8,7 +8,7 @@ COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#30
           "#13ADA5", "#2DD8C1", "#2E53D7", "#EF9B77", "#06924F", "#AC2C4D", "#82193F", "#0140D3"]
 
 
-def apply(res, parameters=None):
+def apply(res, freq="events", parameters=None):
     if parameters is None:
         parameters = {}
 
@@ -19,9 +19,14 @@ def apply(res, parameters=None):
 
     count = 0
 
-    for key, model in res["models"].items():
-        edges_map = util.get_edges_map(key, res)
+    edges_map = {}
+    activ_freq_map = {}
 
+    for key in res["models"]:
+        edges_map[key] = util.get_edges_map(key, res, variant=freq)
+        activ_freq_map[key] = util.get_activity_map(key, res, variant=freq)
+
+    for key, model in res["models"].items():
         persp_color = COLORS[count % len(COLORS)]
         count = count + 1
 
@@ -41,9 +46,9 @@ def apply(res, parameters=None):
             else:
                 acti_map[act] = act_id
                 if act in res["activities_repeated"]:
-                    viz.node(act_id, act, style='filled', fillcolor="white", color=persp_color)
+                    viz.node(act_id, act+" ("+str(activ_freq_map[key][act])+")", style='filled', fillcolor="white", color=persp_color)
                 else:
-                    viz.node(act_id, act, style='filled', fillcolor=persp_color)
+                    viz.node(act_id, act+" ("+str(activ_freq_map[key][act])+")", style='filled', fillcolor=persp_color)
 
             if act in res["start_activities"][key]:
                 viz.edge(sn_uuid, act_id, color=persp_color)
@@ -51,8 +56,8 @@ def apply(res, parameters=None):
             if act in res["end_activities"][key]:
                 viz.edge(act_id, en_uuid, color=persp_color)
 
-        for k in edges_map:
-            viz.edge(acti_map[k[0]], acti_map[k[1]], xlabel=str(edges_map[k]), color=persp_color)
+        for k in edges_map[key]:
+            viz.edge(acti_map[k[0]], acti_map[k[1]], xlabel=str(edges_map[key][k]), color=persp_color)
 
     viz.attr(overlap='false')
     viz.attr(fontsize='11')
