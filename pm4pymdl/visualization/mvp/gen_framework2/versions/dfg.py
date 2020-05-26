@@ -1,7 +1,7 @@
 import tempfile
 import uuid
 from graphviz import Digraph
-
+from collections import Counter
 
 COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#306A8A", "#678225", "#2742FE", "#4C9A75",
           "#4C36E9", "#7DB022", "#EDAC54", "#EAC439", "#EAC439", "#1A9C45", "#8A51C4", "#496A63", "#FB9543", "#2B49DD",
@@ -25,10 +25,10 @@ def apply(res, parameters=None):
         for x in edges:
             k = (x[1], x[2])
             if k not in edges_map:
-                edges_map[k] = set()
-            edges_map[k].add((x[3], x[4]))
+                edges_map[k] = Counter()
+            edges_map[k][(x[3], x[4])] += res["edges"][x]
         for k in edges_map:
-            edges_map[k] = len(edges_map)
+            edges_map[k] = sum(edges_map[k].values())
         persp_color = COLORS[count % len(COLORS)]
         count = count + 1
 
