@@ -26,9 +26,11 @@ def apply(res, freq="events", parameters=None):
         edges_map[key] = util.get_edges_map(key, res, variant=freq)
         activ_freq_map[key] = util.get_activity_map(key, res, variant=freq)
 
+    print(activ_freq_map)
+
     count = 0
 
-    for model in res["models"].values():
+    for key, model in res["models"].items():
         persp_color = COLORS[count % len(COLORS)]
         count = count + 1
 
@@ -49,9 +51,9 @@ def apply(res, freq="events", parameters=None):
                 trans_id = acti_map[t.label]
             else:
                 if t.label in res["activities_repeated"]:
-                    viz.node(trans_id, t.label+" ("+str(res["activities"][t.label])+")", style="filled", fillcolor="white")
+                    viz.node(trans_id, t.label+" ("+str(activ_freq_map[key][t.label])+")", style="filled", fillcolor="white")
                 else:
-                    viz.node(trans_id, t.label+" ("+str(res["activities"][t.label])+")", style="filled", fillcolor=persp_color)
+                    viz.node(trans_id, t.label+" ("+str(activ_freq_map[key][t.label])+")", style="filled", fillcolor=persp_color)
                 acti_map[t.label] = trans_id
             for arc in t.in_arcs:
                 p = arc.source

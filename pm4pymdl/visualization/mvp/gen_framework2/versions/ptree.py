@@ -10,7 +10,7 @@ COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#30
           "#13ADA5", "#2DD8C1", "#2E53D7", "#EF9B77", "#06924F", "#AC2C4D", "#82193F", "#0140D3"]
 
 
-def repr_tree(tree, viz, current_node, rec_depth, res, acti_map, persp_color, parameters):
+def repr_tree(tree, viz, current_node, rec_depth, res, acti_map, persp_color, edges_map, activ_freq_map, parameters):
     """
     Represent a subtree on the GraphViz object
 
@@ -77,7 +77,7 @@ def repr_tree(tree, viz, current_node, rec_depth, res, acti_map, persp_color, pa
                 op_node_identifier = str(uuid.uuid4())
                 viz.node(op_node_identifier, str(child.operator))
                 viz.edge(current_node, op_node_identifier, color=persp_color)
-                viz, acti_map = repr_tree(child, viz, op_node_identifier, rec_depth + 1, res, acti_map, persp_color,
+                viz, acti_map = repr_tree(child, viz, op_node_identifier, rec_depth + 1, res, acti_map, persp_color, edges_map, activ_freq_map,
                                           parameters)
     return viz, acti_map
 
@@ -99,7 +99,7 @@ def apply(res, freq="events", parameters=None):
         activ_freq_map[key] = util.get_activity_map(key, res, variant=freq)
 
     count = 0
-    for tree in res["models"].values():
+    for key, tree in res["models"].items():
         persp_color = COLORS[count % len(COLORS)]
         count = count + 1
 
@@ -110,7 +110,7 @@ def apply(res, freq="events", parameters=None):
             op_node_identifier = str(uuid.uuid4())
             viz.node(op_node_identifier, str(tree.operator))
 
-            viz, acti_map = repr_tree(tree, viz, op_node_identifier, 0, res, acti_map, persp_color, parameters)
+            viz, acti_map = repr_tree(tree, viz, op_node_identifier, 0, res, acti_map, persp_color, edges_map, activ_freq_map, parameters)
         else:
             viz.attr('node', shape='box', fixedsize='true', width="2.5",
                      fontsize="8")
@@ -122,9 +122,9 @@ def apply(res, freq="events", parameters=None):
                 if not str(tree) in acti_map:
                     acti_map[str(tree)] = this_trans_id
                     if str(tree) in res["activities_repeated"]:
-                        viz.node(this_trans_id, str(tree)+" ("+str(res["activities"][str(tree)])+")", style="filled", fillcolor="white")
+                        viz.node(this_trans_id, str(tree)+" ("+str(activ_freq_map[key][str(tree)])+")", style="filled", fillcolor="white")
                     else:
-                        viz.node(this_trans_id, str(tree)+" ("+str(res["activities"][str(tree)])+")", style="filled", fillcolor=persp_color)
+                        viz.node(this_trans_id, str(tree)+" ("+str(activ_freq_map[key][str(tree)])+")", style="filled", fillcolor=persp_color)
                 else:
                     this_trans_id = acti_map[str(tree)]
 
