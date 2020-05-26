@@ -63,7 +63,7 @@ def apply(df0, classifier_function=None, parameters=None):
                 for i in range(len(trace) - 1):
                     ev0 = trace[i]
                     ev1 = trace[i + 1]
-                    edges[(ot, ev0["concept:name"], ev1["concept:name"], ev0["event_id"], ev1["event_id"])] += 1
+                    edges[(ot, ev0["concept:name"], ev1["concept:name"], ev0["event_id"], ev1["event_id"], trace.attributes["concept:name"])] += 1
 
         models[ot] = inductive_miner.apply(log, parameters=parameters)
 
