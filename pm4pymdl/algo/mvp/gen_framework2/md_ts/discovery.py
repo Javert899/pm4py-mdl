@@ -31,6 +31,7 @@ def apply(df0, classifier_function=None, parameters=None):
     edges = Counter()
     start_activities = dict()
     end_activities = dict()
+    acti_spec = Counter()
 
     for ot in obj_types:
         start_activities[ot] = set()
@@ -61,6 +62,11 @@ def apply(df0, classifier_function=None, parameters=None):
                     ev0 = trace[i]
                     ev1 = trace[i + 1]
                     edges[(ot, ev0["concept:name"], ev1["concept:name"], ev0["event_id"], ev1["event_id"], trace.attributes["concept:name"])] += 1
+                    acti_spec[
+                        (ot, trace[i]["concept:name"], trace[i]["event_id"], trace.attributes["concept:name"])] += 1
+                if len(trace) > 0:
+                    acti_spec[
+                        (ot, trace[-1]["concept:name"], trace[-1]["event_id"], trace.attributes["concept:name"])] += 1
 
         models[ot] = tsystem.apply(log)
 
@@ -68,4 +74,4 @@ def apply(df0, classifier_function=None, parameters=None):
     activities_repeated = set(x for x in activities_repeated if activities_repeated[x] > 1)
 
     return {"type": "trans_system", "models": models, "activities": activities, "activities_repeated": activities_repeated,
-            "edges": edges}
+            "edges": edges, "acti_spec": acti_spec}
