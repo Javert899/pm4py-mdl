@@ -65,6 +65,11 @@ def process_view(process=None):
         'min_paths_count') if 'min_paths_count' in request.cookies else process.selected_min_edge_freq_count
     model_type = request.cookies.get('model_type') if 'model_type' in request.cookies else defaults.DEFAULT_MODEL_TYPE
     classifier = request.cookies.get('classifier') if 'classifier' in request.cookies else "activity"
+    aggregation_measure = request.cookies.get(
+        "aggregation_measure") if "aggregation_measure" in request.cookies else "events"
+    decoration_measure = request.cookies.get(
+        "decoration_measure") if "decoration_measure" in request.cookies else "frequency"
+
     if 'exponent' in request.cookies:
         pc_controller.DEFAULT_EXPONENT = int(request.cookies['exponent'])
     min_acti_count = int(min_acti_count)
@@ -72,7 +77,9 @@ def process_view(process=None):
     response = make_response(render_template(
         'process_view.html',
         Process=process.get_visualization(min_acti_count=min_acti_count, min_paths_count=min_paths_count,
-                                          model_type=model_type, classifier=classifier)
+                                          model_type=model_type, classifier=classifier,
+                                          aggregation_measure=aggregation_measure,
+                                          decoration_measure=decoration_measure)
     ))
 
     if not request.cookies.get('session'):
@@ -87,6 +94,10 @@ def process_view(process=None):
         response.set_cookie('classifier', classifier)
     if not request.cookies.get('exponent'):
         response.set_cookie('exponent', str(pc_controller.DEFAULT_EXPONENT))
+    if not request.cookies.get('aggregation_measure'):
+        response.set_cookie('aggregation_measure', aggregation_measure)
+    if not request.cookies.get('decoration_measure'):
+        response.set_cookie('decoration_measure', decoration_measure)
     return response
 
 

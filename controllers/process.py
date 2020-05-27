@@ -79,6 +79,8 @@ class Process(object):
         self.selected_model_type = defaults.DEFAULT_MODEL_TYPE
         self.possible_classifiers = {"activity", "combined"}
         self.selected_classifier = "activity"
+        self.selected_aggregation_measure = "events"
+        self.selected_decoration_measure = "frequency"
         self.selected_min_acti_count = 10
         self.selected_min_edge_freq_count = 10
         self.model_view = ""
@@ -354,13 +356,16 @@ class Process(object):
         return self
 
     def get_visualization(self, min_acti_count=0, min_paths_count=0, model_type=defaults.DEFAULT_MODEL_TYPE,
-                          classifier="activity"):
+                          classifier="activity", aggregation_measure="events",
+                          decoration_measure="frequency"):
         obj = copy(self)
         obj.get_names()
         obj.selected_min_acti_count = min_acti_count
         obj.selected_min_edge_freq_count = min_paths_count
         obj.selected_model_type = model_type
         obj.selected_classifier = classifier
+        obj.selected_aggregation_measure = aggregation_measure
+        obj.selected_decoration_measure = decoration_measure
         reversed_dict = {}
         for act in obj.activities:
             if act in obj.selected_act_obj_types:
@@ -396,7 +401,8 @@ class Process(object):
                                          variant=self.selected_model_type,
                                          parameters={"min_acti_count": self.selected_min_acti_count,
                                                      "min_edge_count": self.selected_min_edge_freq_count})
-        gviz = mdfg_vis_factory2.apply(model, parameters={"format": "svg"})
+        gviz = mdfg_vis_factory2.apply(model, measure=self.selected_decoration_measure,
+                                       freq=self.selected_aggregation_measure, parameters={"format": "svg"})
         tfilepath = tempfile.NamedTemporaryFile(suffix='.svg')
         tfilepath.close()
         mdfg_vis_factory.save(gviz, tfilepath.name)
