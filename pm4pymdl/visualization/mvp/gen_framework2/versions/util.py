@@ -1,5 +1,5 @@
 from collections import Counter
-from statistics import median
+from statistics import mean
 
 
 def human_readable_stat(c):
@@ -45,7 +45,7 @@ def get_events_edges_map_performance(key, res):
             edges_map[k] = dict()
         edges_map[k][(x[3], x[4])] = x[7].timestamp() - x[6].timestamp()
     for k in edges_map:
-        edges_map[k] = median(edges_map[k].values())
+        edges_map[k] = mean(edges_map[k].values())
     return edges_map
 
 
@@ -58,7 +58,7 @@ def get_objects_edges_map_performance(key, res):
             edges_map[k] = dict()
         edges_map[k][x[5]] = x[7].timestamp() - x[6].timestamp()
     for k in edges_map:
-        edges_map[k] = median(edges_map[k].values())
+        edges_map[k] = mean(edges_map[k].values())
     return edges_map
 
 
@@ -71,7 +71,7 @@ def get_eo_edges_map_performance(key, res):
             edges_map[k] = list()
         edges_map[k].append(x[7].timestamp() - x[6].timestamp())
     for k in edges_map:
-        edges_map[k] = median(edges_map[k])
+        edges_map[k] = mean(edges_map[k])
     return edges_map
 
 
@@ -146,7 +146,7 @@ def get_activity_map_events_frequency(key, res):
         k = x[1]
         if k not in activities_map:
             activities_map[k] = Counter()
-        activities_map[k][x[3]] += res["acti_spec"][x]
+        activities_map[k][x[2]] += res["acti_spec"][x]
     for k in activities_map:
         activities_map[k] = len(activities_map[k])
     return activities_map
@@ -159,9 +159,9 @@ def get_activity_map_eo_frequency(key, res):
         k = x[1]
         if k not in activities_map:
             activities_map[k] = Counter()
-        activities_map[k][x[3]] += res["acti_spec"][x]
+        activities_map[k][x[2]] += res["acti_spec"][x]
     for k in activities_map:
-        activities_map[k] = sum(activities_map[k])
+        activities_map[k] = sum(activities_map[k].values())
     return activities_map
 
 
@@ -172,7 +172,7 @@ def get_activity_map_objects_frequency(key, res):
         k = x[1]
         if k not in activities_map:
             activities_map[k] = Counter()
-        activities_map[k][x[4]] += res["acti_spec"][x]
+        activities_map[k][x[3]] += res["acti_spec"][x]
     for k in activities_map:
         activities_map[k] = len(activities_map[k])
     return activities_map
