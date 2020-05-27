@@ -113,14 +113,16 @@ def apply(res, measure="frequency", freq="events", classifier="activity", projec
 
     node_shape = "box" if classifier == "activity" else "trapezium"
 
-    edges_map_objs = {}
+    reference_map = {}
     edges_map = {}
     activ_freq_map = {}
 
     for key in res["models"]:
         edges_map[key] = util.get_edges_map(key, res, measure=measure, variant=freq)
         activ_freq_map[key] = util.get_activity_map_frequency(key, res, variant=freq)
-        edges_map_objs[key] = util.get_edges_map(key, res, measure="frequency", variant="events")
+        reference_map[key] = util.get_activity_map_frequency(key, res, variant="objects")
+
+    edges_map = util.projection(edges_map, reference_map, type=projection)
 
     count = 0
     for key, tree in res["models"].items():

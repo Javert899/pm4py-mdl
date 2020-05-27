@@ -2,6 +2,24 @@ from collections import Counter
 from statistics import mean
 
 
+def projection(edges_map, reference_map, type="no"):
+    acti_assignation_map = {}
+    acti_assignation_score = {}
+    for k in reference_map:
+        for a in reference_map[k]:
+            if not a in acti_assignation_map or reference_map[k][a] > acti_assignation_score[a]:
+                acti_assignation_map[a] = k
+                acti_assignation_score[a] = reference_map[k][a]
+
+    if not type == "no":
+        if type == "source":
+            edges_map[k] = {x: y for x, y in edges_map[k].items() if acti_assignation_map[x[0]] == k}
+        elif type == "target":
+            edges_map[k] = {x: y for x, y in edges_map[k].items() if acti_assignation_map[x[1]] == k}
+
+    return edges_map
+
+
 def human_readable_stat(c):
     """
     Transform a timedelta expressed in seconds into a human readable string
