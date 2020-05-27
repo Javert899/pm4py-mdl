@@ -93,7 +93,7 @@ def repr_tree(tree, viz, current_node, rec_depth, res, acti_map, persp_color, ed
     return viz, acti_map
 
 
-def apply(res, measure="frequency", freq="events", parameters=None):
+def apply(res, measure="frequency", freq="events", classifier="activity", parameters=None):
     if parameters is None:
         parameters = {}
 

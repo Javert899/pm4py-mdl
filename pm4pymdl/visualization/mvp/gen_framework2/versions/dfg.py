@@ -8,7 +8,7 @@ COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#30
           "#13ADA5", "#2DD8C1", "#2E53D7", "#EF9B77", "#06924F", "#AC2C4D", "#82193F", "#0140D3"]
 
 
-def apply(res, measure="frequency", freq="events", parameters=None):
+def apply(res, measure="frequency", freq="events", classifier="activity", parameters=None):
     if parameters is None:
         parameters = {}
 
@@ -22,6 +22,8 @@ def apply(res, measure="frequency", freq="events", parameters=None):
         freq_prefix = "O="
     elif freq == "eo":
         freq_prefix = "EO="
+
+    node_shape = "box" if classifier == "activity" else "trapezium"
 
     count = 0
 
@@ -42,8 +44,6 @@ def apply(res, measure="frequency", freq="events", parameters=None):
         en_uuid = str(uuid.uuid4())
         en = viz.node(en_uuid, "", style="filled", fillcolor="orange")
 
-        viz.attr('node', shape='box', width='3.8')
-
         for act in model:
             act_id = str(id(act))
 
@@ -52,9 +52,9 @@ def apply(res, measure="frequency", freq="events", parameters=None):
             else:
                 acti_map[act] = act_id
                 if act in res["activities_repeated"]:
-                    viz.node(act_id, act+" ("+freq_prefix+str(activ_freq_map[key][act])+")", style='filled', fillcolor="white", color=persp_color)
+                    viz.node(act_id, act+" ("+freq_prefix+str(activ_freq_map[key][act])+")", style='filled', fillcolor="white", color=persp_color, shape=node_shape, width='3.8')
                 else:
-                    viz.node(act_id, act+" ("+freq_prefix+str(activ_freq_map[key][act])+")", style='filled', fillcolor=persp_color)
+                    viz.node(act_id, act+" ("+freq_prefix+str(activ_freq_map[key][act])+")", style='filled', fillcolor=persp_color, shape=node_shape, width='3.8')
 
             if act in res["start_activities"][key]:
                 viz.edge(sn_uuid, act_id, color=persp_color)

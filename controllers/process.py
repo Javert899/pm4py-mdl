@@ -402,7 +402,7 @@ class Process(object):
                                          parameters={"min_acti_count": self.selected_min_acti_count,
                                                      "min_edge_count": self.selected_min_edge_freq_count})
         gviz = mdfg_vis_factory2.apply(model, measure=self.selected_decoration_measure,
-                                       freq=self.selected_aggregation_measure, parameters={"format": "svg"})
+                                       freq=self.selected_aggregation_measure, classifier=self.selected_classifier, parameters={"format": "svg"})
         tfilepath = tempfile.NamedTemporaryFile(suffix='.svg')
         tfilepath.close()
         mdfg_vis_factory.save(gviz, tfilepath.name)
