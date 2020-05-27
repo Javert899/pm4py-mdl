@@ -29,8 +29,6 @@
           <div>
               Model:
               <select id="model_type" name="model_type">
-                  <option value="mvp_frequency">oc-DFG (frequency)</option>
-                  <option value="mvp_performance">oc-DFG (performance)</option>
                   <option value="process_tree">oc-PTree</option>
                   <option value="alpha_petri">oc-Net-Alpha</option>
                   <option value="inductive_petri">oc-Net-Inductive</option>
@@ -43,6 +41,23 @@
               <select id="classifier" name="classifier">
                   <option value="activity">Activity Classifier</option>
                   <option value="combined">Combined Classifier</option>
+              </select>
+              <button onclick="javascript:formCookie()">Set</button>
+          </div>
+          <div>
+              Aggregation measure:
+              <select id="aggregation_measure" name="aggregation_measure">
+                  <option value="events">Events</option>
+                  <option value="objects">Objects</option>
+                  <option value="eo">E+O Combo</option>
+              </select>
+              <button onclick="javascript:formCookie()">Set</button>
+          </div>
+          <div>
+              Decoration measure:
+              <select id="decoration_measure" name="decoration_measure">
+                  <option value="frequency">Frequency</option>
+                  <option value="performance">Performance</option>
               </select>
               <button onclick="javascript:formCookie()">Set</button>
           </div>
@@ -259,6 +274,8 @@
 
     function preliminary() {
         document.getElementById("classifier").value = "{{ Process.selected_classifier }}";
+        document.getElementById("aggregation_measure").value = "{{ Process.selected_aggregation_measure }}";
+        document.getElementById("decoration_measure").value = "{{ Process.selected_decoration_measure }}";
         document.getElementById("model_type").value = "{{ Process.selected_model_type }}";
         document.getElementById("min_acti_count").value = "{{ Process.selected_min_acti_count }}";
         document.getElementById("min_paths_count").value = "{{ Process.selected_min_edge_freq_count }}";
@@ -354,6 +371,12 @@
             }
             else if (cookie_name == "classifier") {
                 setCookie(cookie_name, document.getElementById("classifier").value, 1);
+            }
+            else if (cookie_name == "aggregation_measure") {
+                setCookie(cookie_name, document.getElementById("aggregation_measure").value, 1);
+            }
+            else if (cookie_name == "decoration_measure") {
+                setCookie(cookie_name, document.getElementById("decoration_measure").value, 1);
             }
             i++;
         }
