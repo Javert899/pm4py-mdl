@@ -18,6 +18,12 @@ def apply(res, measure="frequency", freq="events", parameters=None):
     image_format = parameters["format"] if "format" in parameters else "png"
     acti_map = {}
 
+    freq_prefix = "E="
+    if freq == "objects":
+        freq_prefix = "O="
+    elif freq == "eo":
+        freq_prefix = "EO="
+
     edges_map = {}
     activ_freq_map = {}
 

@@ -19,6 +19,12 @@ def apply(res, measure="frequency", freq="events", parameters=None):
     image_format = parameters["format"] if "format" in parameters else "png"
     acti_map = {}
 
+    freq_prefix = "E="
+    if freq == "objects":
+        freq_prefix = "O="
+    elif freq == "eo":
+        freq_prefix = "EO="
+
     edges_map = {}
     activ_freq_map = {}
 
@@ -49,9 +55,9 @@ def apply(res, measure="frequency", freq="events", parameters=None):
                 trans_id = acti_map[t.label]
             else:
                 if t.label in res["activities_repeated"]:
-                    viz.node(trans_id, t.label+" ("+str(activ_freq_map[key][t.label])+")", style="filled", fillcolor="white")
+                    viz.node(trans_id, t.label+" ("+freq_prefix+str(activ_freq_map[key][t.label])+")", style="filled", fillcolor="white")
                 else:
-                    viz.node(trans_id, t.label+" ("+str(activ_freq_map[key][t.label])+")", style="filled", fillcolor=persp_color)
+                    viz.node(trans_id, t.label+" ("+freq_prefix+str(activ_freq_map[key][t.label])+")", style="filled", fillcolor=persp_color)
                 acti_map[t.label] = trans_id
             for arc in t.in_arcs:
                 p = arc.source

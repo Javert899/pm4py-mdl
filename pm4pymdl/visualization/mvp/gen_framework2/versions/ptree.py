@@ -4,13 +4,13 @@ from graphviz import Digraph
 from pm4py.objects.process_tree import pt_operator
 from pm4pymdl.visualization.mvp.gen_framework2.versions import util
 
-
 COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#306A8A", "#678225", "#2742FE", "#4C9A75",
           "#4C36E9", "#7DB022", "#EDAC54", "#EAC439", "#EAC439", "#1A9C45", "#8A51C4", "#496A63", "#FB9543", "#2B49DD",
           "#13ADA5", "#2DD8C1", "#2E53D7", "#EF9B77", "#06924F", "#AC2C4D", "#82193F", "#0140D3"]
 
 
-def repr_tree(tree, viz, current_node, rec_depth, res, acti_map, persp_color, edges_map, activ_freq_map, parameters):
+def repr_tree(tree, viz, current_node, rec_depth, res, acti_map, persp_color, edges_map, activ_freq_map, measure, freq,
+              key, parameters):
     """
     Represent a subtree on the GraphViz object
 
@@ -32,6 +32,12 @@ def repr_tree(tree, viz, current_node, rec_depth, res, acti_map, persp_color, ed
     gviz
         (partial) GraphViz object
     """
+    freq_prefix = "E="
+    if freq == "objects":
+        freq_prefix = "O="
+    elif freq == "eo":
+        freq_prefix = "EO="
+
     for child in tree.children:
         if child.operator is None:
             viz.attr('node', shape='box', fixedsize='true', width="2.5",
@@ -44,9 +50,11 @@ def repr_tree(tree, viz, current_node, rec_depth, res, acti_map, persp_color, ed
                 if not str(child) in acti_map:
                     acti_map[str(child)] = this_trans_id
                     if str(child) in res["activities_repeated"]:
-                        viz.node(this_trans_id, str(child)+" ("+str(res["activities"][str(child)])+")", style="filled", fillcolor="white")
+                        viz.node(this_trans_id, str(child) + " (" + freq_prefix + str(res["activities"][str(child)]) + ")",
+                                 style="filled", fillcolor="white")
                     else:
-                        viz.node(this_trans_id, str(child)+" ("+str(res["activities"][str(child)])+")", style="filled", fillcolor=persp_color)
+                        viz.node(this_trans_id, str(child) + " (" + freq_prefix + str(res["activities"][str(child)]) + ")",
+                                 style="filled", fillcolor=persp_color)
                 else:
                     this_trans_id = acti_map[str(child)]
             viz.edge(current_node, this_trans_id, color=persp_color)
@@ -65,9 +73,11 @@ def repr_tree(tree, viz, current_node, rec_depth, res, acti_map, persp_color, ed
                     if not str(childchild) in acti_map:
                         acti_map[str(childchild)] = this_trans_id
                         if str(childchild) in res["activities_repeated"]:
-                            viz.node(this_trans_id, str(childchild)+" ("+str(res["activities"][str(childchild)])+")", style="filled", fillcolor="white")
+                            viz.node(this_trans_id, str(childchild) + " (" + freq_prefix + str(
+                                activ_freq_map[key][str(childchild)]) + ")", style="filled", fillcolor="white")
                         else:
-                            viz.node(this_trans_id, str(childchild)+" ("+str(res["activities"][str(childchild)])+")", style="filled", fillcolor=persp_color)
+                            viz.node(this_trans_id, str(childchild) + " (" + freq_prefix + str(
+                                activ_freq_map[key][str(childchild)]) + ")", style="filled", fillcolor=persp_color)
                     else:
                         this_trans_id = acti_map[str(childchild)]
                 viz.edge(current_node, this_trans_id, color=persp_color)
@@ -77,8 +87,9 @@ def repr_tree(tree, viz, current_node, rec_depth, res, acti_map, persp_color, ed
                 op_node_identifier = str(uuid.uuid4())
                 viz.node(op_node_identifier, str(child.operator))
                 viz.edge(current_node, op_node_identifier, color=persp_color)
-                viz, acti_map = repr_tree(child, viz, op_node_identifier, rec_depth + 1, res, acti_map, persp_color, edges_map, activ_freq_map,
-                                          parameters)
+                viz, acti_map = repr_tree(child, viz, op_node_identifier, rec_depth + 1, res, acti_map, persp_color,
+                                          edges_map, activ_freq_map,
+                                          measure, freq, key, parameters)
     return viz, acti_map
 
 
@@ -90,6 +101,12 @@ def apply(res, measure="frequency", freq="events", parameters=None):
     viz = Digraph("pt", filename=filename.name, engine='dot', graph_attr={'bgcolor': 'transparent'})
     image_format = parameters["format"] if "format" in parameters else "png"
     acti_map = {}
+
+    freq_prefix = "E="
+    if freq == "objects":
+        freq_prefix = "O="
+    elif freq == "eo":
+        freq_prefix = "EO="
 
     edges_map = {}
     activ_freq_map = {}
@@ -110,7 +127,8 @@ def apply(res, measure="frequency", freq="events", parameters=None):
             op_node_identifier = str(uuid.uuid4())
             viz.node(op_node_identifier, str(tree.operator))
 
-            viz, acti_map = repr_tree(tree, viz, op_node_identifier, 0, res, acti_map, persp_color, edges_map, activ_freq_map, parameters)
+            viz, acti_map = repr_tree(tree, viz, op_node_identifier, 0, res, acti_map, persp_color, edges_map,
+                                      activ_freq_map, measure, freq, key, parameters)
         else:
             viz.attr('node', shape='box', fixedsize='true', width="2.5",
                      fontsize="8")
@@ -122,9 +140,13 @@ def apply(res, measure="frequency", freq="events", parameters=None):
                 if not str(tree) in acti_map:
                     acti_map[str(tree)] = this_trans_id
                     if str(tree) in res["activities_repeated"]:
-                        viz.node(this_trans_id, str(tree)+" ("+str(activ_freq_map[key][str(tree)])+")", style="filled", fillcolor="white")
+                        viz.node(this_trans_id,
+                                 str(tree) + " (" + freq_prefix + str(activ_freq_map[key][str(tree)]) + ")",
+                                 style="filled", fillcolor="white")
                     else:
-                        viz.node(this_trans_id, str(tree)+" ("+str(activ_freq_map[key][str(tree)])+")", style="filled", fillcolor=persp_color)
+                        viz.node(this_trans_id,
+                                 str(tree) + " (" + freq_prefix + str(activ_freq_map[key][str(tree)]) + ")",
+                                 style="filled", fillcolor=persp_color)
                 else:
                     this_trans_id = acti_map[str(tree)]
 

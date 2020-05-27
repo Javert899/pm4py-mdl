@@ -8,7 +8,7 @@ COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#30
           "#13ADA5", "#2DD8C1", "#2E53D7", "#EF9B77", "#06924F", "#AC2C4D", "#82193F", "#0140D3"]
 
 
-def apply(res, measure="performance", freq="events", parameters=None):
+def apply(res, measure="frequency", freq="events", parameters=None):
     if parameters is None:
         parameters = {}
 
