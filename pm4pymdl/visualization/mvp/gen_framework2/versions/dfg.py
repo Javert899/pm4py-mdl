@@ -64,9 +64,9 @@ def apply(res, measure="performance", freq="events", parameters=None):
 
         for k in edges_map[key]:
             if measure == "frequency":
-                viz.edge(acti_map[k[0]], acti_map[k[1]], xlabel=freq_prefix+str(edges_map[key][k]), color=persp_color)
+                viz.edge(acti_map[k[0]], acti_map[k[1]], xlabel=freq_prefix+str(edges_map[key][k]), color=persp_color, fontcolor=persp_color)
             elif measure == "performance":
-                viz.edge(acti_map[k[0]], acti_map[k[1]], xlabel=freq_prefix+"P="+util.human_readable_stat(edges_map[key][k]), color=persp_color)
+                viz.edge(acti_map[k[0]], acti_map[k[1]], xlabel=freq_prefix+"P="+util.human_readable_stat(edges_map[key][k]), color=persp_color, fontcolor=persp_color)
     viz.attr(overlap='false')
     viz.attr(fontsize='11')
     viz.format = image_format
