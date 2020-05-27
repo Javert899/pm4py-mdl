@@ -1,7 +1,28 @@
 from collections import Counter
 
 
-def get_events_edges_map(key, res):
+def get_events_edges_map_performance(key, res):
+    pass
+
+
+def get_objects_edges_map_performance(key, res):
+    pass
+
+
+def get_eo_edges_map_performance(key, res):
+    pass
+
+
+def get_edges_map_performance(key, res, variant="events"):
+    if variant == "events":
+        return get_events_edges_map_performance(key, res)
+    elif variant == "eo":
+        return get_eo_edges_map_performance(key, res)
+    elif variant == "objects":
+        return get_objects_edges_map_performance(key, res)
+
+
+def get_events_edges_map_frequency(key, res):
     edges = [x for x in res["edges"] if x[0] == key]
     edges_map = {}
     for x in edges:
@@ -14,7 +35,7 @@ def get_events_edges_map(key, res):
     return edges_map
 
 
-def get_objects_edges_map(key, res):
+def get_objects_edges_map_frequency(key, res):
     edges = [x for x in res["edges"] if x[0] == key]
     edges_map = {}
     for x in edges:
@@ -27,7 +48,7 @@ def get_objects_edges_map(key, res):
     return edges_map
 
 
-def get_eo_edges_map(key, res):
+def get_eo_edges_map_frequency(key, res):
     edges = [x for x in res["edges"] if x[0] == key]
     edges_map = {}
     for x in edges:
@@ -40,16 +61,23 @@ def get_eo_edges_map(key, res):
     return edges_map
 
 
-def get_edges_map(key, res, variant="events"):
+def get_edges_map_frequency(key, res, variant="events"):
     if variant == "events":
-        return get_events_edges_map(key, res)
+        return get_events_edges_map_frequency(key, res)
     elif variant == "eo":
-        return get_eo_edges_map(key, res)
+        return get_eo_edges_map_frequency(key, res)
     elif variant == "objects":
-        return get_objects_edges_map(key, res)
+        return get_objects_edges_map_frequency(key, res)
 
 
-def get_activity_map_events(key, res):
+def get_edges_map(key, res, measure="frequency", variant="events"):
+    if measure == "frequency":
+        return get_edges_map_frequency(key, res, variant=variant)
+    else:
+        return get_edges_map_performance(key, res, variant=variant)
+
+
+def get_activity_map_events_frequency(key, res):
     activities = [x for x in res["acti_spec"] if x[0] == key]
     activities_map = {}
     for x in activities:
@@ -62,7 +90,7 @@ def get_activity_map_events(key, res):
     return activities_map
 
 
-def get_activity_map_eo(key, res):
+def get_activity_map_eo_frequency(key, res):
     activities = [x for x in res["acti_spec"] if x[0] == key]
     activities_map = {}
     for x in activities:
@@ -75,7 +103,7 @@ def get_activity_map_eo(key, res):
     return activities_map
 
 
-def get_activity_map_objects(key, res):
+def get_activity_map_objects_frequency(key, res):
     activities = [x for x in res["acti_spec"] if x[0] == key]
     activities_map = {}
     for x in activities:
@@ -88,10 +116,10 @@ def get_activity_map_objects(key, res):
     return activities_map
 
 
-def get_activity_map(key, res, variant="events"):
+def get_activity_map_frequency(key, res, variant="events"):
     if variant == "events":
-        return get_activity_map_events(key, res)
+        return get_activity_map_events_frequency(key, res)
     elif variant == "eo":
-        return get_activity_map_eo(key, res)
+        return get_activity_map_eo_frequency(key, res)
     elif variant == "objects":
-        return get_activity_map_objects(key, res)
+        return get_activity_map_objects_frequency(key, res)

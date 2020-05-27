@@ -82,7 +82,7 @@ def repr_tree(tree, viz, current_node, rec_depth, res, acti_map, persp_color, ed
     return viz, acti_map
 
 
-def apply(res, freq="events", parameters=None):
+def apply(res, measure="frequency", freq="events", parameters=None):
     if parameters is None:
         parameters = {}
 
@@ -95,8 +95,8 @@ def apply(res, freq="events", parameters=None):
     activ_freq_map = {}
 
     for key in res["models"]:
-        edges_map[key] = util.get_edges_map(key, res, variant=freq)
-        activ_freq_map[key] = util.get_activity_map(key, res, variant=freq)
+        edges_map[key] = util.get_edges_map(key, res, measure=measure, variant=freq)
+        activ_freq_map[key] = util.get_activity_map_frequency(key, res, variant=freq)
 
     count = 0
     for key, tree in res["models"].items():
