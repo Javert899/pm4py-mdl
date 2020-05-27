@@ -64,10 +64,10 @@ def apply(df0, classifier_function=None, parameters=None):
                 for i in range(len(trace) - 1):
                     ev0 = trace[i]
                     ev1 = trace[i + 1]
-                    edges[(ot, ev0["concept:name"], ev1["concept:name"], ev0["event_id"], ev1["event_id"], trace.attributes["concept:name"])] += 1
-                    acti_spec[(ot, trace[i]["concept:name"], trace[i]["event_id"], trace.attributes["concept:name"])] += 1
+                    edges[(ot, ev0["concept:name"], ev1["concept:name"], ev0["event_id"], ev1["event_id"], trace.attributes["concept:name"], ev0["time:timestamp"], ev1["time:timestamp"])] += 1
+                    acti_spec[(ot, trace[i]["concept:name"], trace[i]["event_id"], trace.attributes["concept:name"], trace[i]["time:timestamp"])] += 1
                 if len(trace) > 0:
-                    acti_spec[(ot, trace[-1]["concept:name"], trace[-1]["event_id"], trace.attributes["concept:name"])] += 1
+                    acti_spec[(ot, trace[-1]["concept:name"], trace[-1]["event_id"], trace.attributes["concept:name"], trace[-1]["time:timestamp"])] += 1
 
         models[ot] = alpha_miner.apply(log, parameters=parameters)
 
