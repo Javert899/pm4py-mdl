@@ -1,12 +1,11 @@
 import pandas as pd
 
-def apply(file_path, parameters=None):
+def apply(file_path, return_obj_dataframe=False, parameters=None):
     if parameters is None:
         parameters = {}
 
     sep = parameters["sep"] if "sep" in parameters else ","
     quotechar = parameters["quotechar"] if "quotechar" in parameters else "\""
-    return_obj_dataframe = parameters["return_obj_dataframe"] if "return_obj_dataframe" in parameters else False
 
     if file_path.endswith(".csv") or file_path.endswith(".mdl"):
         all_df = pd.read_csv(file_path, sep=sep, quotechar=quotechar)
