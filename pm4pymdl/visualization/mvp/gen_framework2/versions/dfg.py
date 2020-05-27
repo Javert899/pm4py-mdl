@@ -8,7 +8,7 @@ COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#30
           "#13ADA5", "#2DD8C1", "#2E53D7", "#EF9B77", "#06924F", "#AC2C4D", "#82193F", "#0140D3"]
 
 
-def apply(res, measure="frequency", freq="events", classifier="activity", parameters=None):
+def apply(res, measure="frequency", freq="events", classifier="activity", projection="no", parameters=None):
     if parameters is None:
         parameters = {}
 
@@ -27,12 +27,14 @@ def apply(res, measure="frequency", freq="events", classifier="activity", parame
 
     count = 0
 
+    edges_map_objs = {}
     edges_map = {}
     activ_freq_map = {}
 
     for key in res["models"]:
         edges_map[key] = util.get_edges_map(key, res, measure=measure, variant=freq)
         activ_freq_map[key] = util.get_activity_map_frequency(key, res, variant=freq)
+        edges_map_objs[key] = util.get_edges_map(key, res, measure="frequency", variant="events")
 
     for key, model in res["models"].items():
         persp_color = COLORS[count % len(COLORS)]

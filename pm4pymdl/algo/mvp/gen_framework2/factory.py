@@ -1,7 +1,7 @@
 from pm4pymdl.algo.mvp.gen_framework2 import md_petri_inductive, md_petri_alpha, md_process_trees, md_dfg, md_ts
 
 
-def apply(df, variant="inductive_petri", classifier_function=None, parameters=None):
+def apply(df, variant="dfg", classifier_function=None, parameters=None):
     if parameters is None:
         parameters = {}
 

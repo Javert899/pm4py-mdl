@@ -10,7 +10,7 @@ COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#30
 
 
 def repr_tree(tree, viz, current_node, rec_depth, res, acti_map, persp_color, edges_map, activ_freq_map, measure, freq,
-              key, classifier, node_shape, parameters):
+              key, classifier, node_shape, projection, parameters):
     """
     Represent a subtree on the GraphViz object
 
@@ -92,11 +92,11 @@ def repr_tree(tree, viz, current_node, rec_depth, res, acti_map, persp_color, ed
                 viz.edge(current_node, op_node_identifier, color=persp_color)
                 viz, acti_map = repr_tree(child, viz, op_node_identifier, rec_depth + 1, res, acti_map, persp_color,
                                           edges_map, activ_freq_map,
-                                          measure, freq, key, classifier, node_shape, parameters)
+                                          measure, freq, key, classifier, node_shape, projection, parameters)
     return viz, acti_map
 
 
-def apply(res, measure="frequency", freq="events", classifier="activity", parameters=None):
+def apply(res, measure="frequency", freq="events", classifier="activity", projection="no", parameters=None):
     if parameters is None:
         parameters = {}
 
@@ -113,12 +113,14 @@ def apply(res, measure="frequency", freq="events", classifier="activity", parame
 
     node_shape = "box" if classifier == "activity" else "trapezium"
 
+    edges_map_objs = {}
     edges_map = {}
     activ_freq_map = {}
 
     for key in res["models"]:
         edges_map[key] = util.get_edges_map(key, res, measure=measure, variant=freq)
         activ_freq_map[key] = util.get_activity_map_frequency(key, res, variant=freq)
+        edges_map_objs[key] = util.get_edges_map(key, res, measure="frequency", variant="events")
 
     count = 0
     for key, tree in res["models"].items():
@@ -132,7 +134,7 @@ def apply(res, measure="frequency", freq="events", classifier="activity", parame
                      fontsize="14", style="filled", fillcolor=persp_color)
 
             viz, acti_map = repr_tree(tree, viz, op_node_identifier, 0, res, acti_map, persp_color, edges_map,
-                                      activ_freq_map, measure, freq, key, classifier, node_shape, parameters)
+                                      activ_freq_map, measure, freq, key, classifier, node_shape, projection, parameters)
         else:
             this_trans_id = str(uuid.uuid4())
             if tree.label is None:
