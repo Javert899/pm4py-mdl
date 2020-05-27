@@ -24,6 +24,8 @@ def apply(res, measure="frequency", freq="events", classifier="activity", parame
     elif freq == "eo":
         freq_prefix = "EO="
 
+    node_shape = "box" if classifier == "activity" else "trapezium"
+
     edges_map = {}
     activ_freq_map = {}
 

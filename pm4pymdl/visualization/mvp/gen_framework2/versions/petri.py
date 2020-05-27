@@ -25,6 +25,8 @@ def apply(res, measure="frequency", freq="events", classifier="activity", parame
     elif freq == "eo":
         freq_prefix = "EO="
 
+    node_shape = "box" if classifier == "activity" else "trapezium"
+
     edges_map = {}
     activ_freq_map = {}
 
@@ -45,19 +47,17 @@ def apply(res, measure="frequency", freq="events", classifier="activity", parame
         for p in net.places:
             viz.node(str(id(p)), "", style="filled", fillcolor=persp_color)
 
-        # transitions
-        viz.attr('node', shape='box', width='3.8')
         for t in net.transitions:
             trans_id = str(id(t))
             if t.label is None:
-                viz.node(trans_id, "", style='filled', fillcolor="black", color=persp_color)
+                viz.node(trans_id, "", style='filled', fillcolor="black", color=persp_color, shape='box', width='3.8')
             elif t.label in acti_map:
                 trans_id = acti_map[t.label]
             else:
                 if t.label in res["activities_repeated"]:
-                    viz.node(trans_id, t.label+" ("+freq_prefix+str(activ_freq_map[key][t.label])+")", style="filled", fillcolor="white")
+                    viz.node(trans_id, t.label+" ("+freq_prefix+str(activ_freq_map[key][t.label])+")", style="filled", fillcolor="white", shape=node_shape, width='3.8')
                 else:
-                    viz.node(trans_id, t.label+" ("+freq_prefix+str(activ_freq_map[key][t.label])+")", style="filled", fillcolor=persp_color)
+                    viz.node(trans_id, t.label+" ("+freq_prefix+str(activ_freq_map[key][t.label])+")", style="filled", fillcolor=persp_color, shape=node_shape, width='3.8')
                 acti_map[t.label] = trans_id
             for arc in t.in_arcs:
                 p = arc.source
