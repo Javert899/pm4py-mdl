@@ -38,11 +38,10 @@ def apply(res, measure="frequency", freq="events", classifier="activity", parame
         persp_color = COLORS[count % len(COLORS)]
         count = count + 1
 
-        viz.attr('node', shape='circle', fixedsize='true', width='0.75')
         sn_uuid = str(uuid.uuid4())
-        sn = viz.node(sn_uuid, "", style="filled", fillcolor="green")
+        viz.node(sn_uuid, str(key), style="filled", fillcolor="green", shape='trapezium', fixedsize='true', width='0.75')
         en_uuid = str(uuid.uuid4())
-        en = viz.node(en_uuid, "", style="filled", fillcolor="orange")
+        viz.node(en_uuid, str(key), style="filled", fillcolor="orange", shape='invtrapezium', fixedsize='true', width='0.75')
 
         for act in model:
             act_id = str(id(act))
