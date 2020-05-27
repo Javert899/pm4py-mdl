@@ -12,11 +12,12 @@ def apply(file_path, return_obj_dataframe=False, parameters=None):
         eve_cols = [x for x in all_df.columns if not x.startswith("object_")]
         obj_cols = [x for x in all_df.columns if x.startswith("object_")]
         df = all_df[eve_cols]
-        df.type = "succint"
         obj_df = pd.DataFrame()
         if obj_cols:
             obj_df = all_df[obj_cols]
         df["event_timestamp"] = pd.to_datetime(df["event_timestamp"])
+        df = df.dropna(subset=["event_id"])
+        df.type = "succint"
     elif file_path.endswith(".parquet"):
         from pm4py.objects.log.importer.parquet import factory as parquet_importer
         all_df = parquet_importer.apply(file_path)
@@ -28,8 +29,8 @@ def apply(file_path, return_obj_dataframe=False, parameters=None):
         if obj_cols:
             obj_df = all_df[obj_cols]
         df["event_timestamp"] = pd.to_datetime(df["event_timestamp"])
-
-    df = df.dropna(subset=["event_id"])
+        df = df.dropna(subset=["event_id"])
+        df.type = "exploded"
 
     if return_obj_dataframe:
         obj_df = obj_df.dropna(subset=["object_id"])

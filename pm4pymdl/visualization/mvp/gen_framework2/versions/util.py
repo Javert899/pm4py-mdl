@@ -1,16 +1,44 @@
 from collections import Counter
+from statistics import median
 
 
 def get_events_edges_map_performance(key, res):
-    pass
+    edges = [x for x in res["edges"] if x[0] == key]
+    edges_map = {}
+    for x in edges:
+        k = (x[1], x[2])
+        if k not in edges_map:
+            edges_map[k] = dict()
+        edges_map[k][(x[3], x[4])] = x[7].timestamp() - x[6].timestamp()
+    for k in edges_map:
+        edges_map[k] = median(edges_map[k].values())
+    return edges_map
 
 
 def get_objects_edges_map_performance(key, res):
-    pass
+    edges = [x for x in res["edges"] if x[0] == key]
+    edges_map = {}
+    for x in edges:
+        k = (x[1], x[2])
+        if k not in edges_map:
+            edges_map[k] = dict()
+        edges_map[k][x[5]] = x[7].timestamp() - x[6].timestamp()
+    for k in edges_map:
+        edges_map[k] = median(edges_map[k].values())
+    return edges_map
 
 
 def get_eo_edges_map_performance(key, res):
-    pass
+    edges = [x for x in res["edges"] if x[0] == key]
+    edges_map = {}
+    for x in edges:
+        k = (x[1], x[2])
+        if k not in edges_map:
+            edges_map[k] = list()
+        edges_map[k].append(x[7].timestamp() - x[6].timestamp())
+    for k in edges_map:
+        edges_map[k] = median(edges_map[k])
+    return edges_map
 
 
 def get_edges_map_performance(key, res, variant="events"):
