@@ -17,6 +17,12 @@ def apply(res, measure="performance", freq="events", parameters=None):
     image_format = parameters["format"] if "format" in parameters else "png"
     acti_map = {}
 
+    freq_prefix = "E="
+    if freq == "objects":
+        freq_prefix = "O="
+    elif freq == "eo":
+        freq_prefix = "EO="
+
     count = 0
 
     edges_map = {}
@@ -46,9 +52,9 @@ def apply(res, measure="performance", freq="events", parameters=None):
             else:
                 acti_map[act] = act_id
                 if act in res["activities_repeated"]:
-                    viz.node(act_id, act+" ("+str(activ_freq_map[key][act])+")", style='filled', fillcolor="white", color=persp_color)
+                    viz.node(act_id, act+" ("+freq_prefix+str(activ_freq_map[key][act])+")", style='filled', fillcolor="white", color=persp_color)
                 else:
-                    viz.node(act_id, act+" ("+str(activ_freq_map[key][act])+")", style='filled', fillcolor=persp_color)
+                    viz.node(act_id, act+" ("+freq_prefix+str(activ_freq_map[key][act])+")", style='filled', fillcolor=persp_color)
 
             if act in res["start_activities"][key]:
                 viz.edge(sn_uuid, act_id, color=persp_color)
@@ -57,8 +63,10 @@ def apply(res, measure="performance", freq="events", parameters=None):
                 viz.edge(act_id, en_uuid, color=persp_color)
 
         for k in edges_map[key]:
-            viz.edge(acti_map[k[0]], acti_map[k[1]], xlabel=str(edges_map[key][k]), color=persp_color)
-
+            if measure == "frequency":
+                viz.edge(acti_map[k[0]], acti_map[k[1]], xlabel=freq_prefix+str(edges_map[key][k]), color=persp_color)
+            elif measure == "performance":
+                viz.edge(acti_map[k[0]], acti_map[k[1]], xlabel=freq_prefix+"P="+util.human_readable_stat(edges_map[key][k]), color=persp_color)
     viz.attr(overlap='false')
     viz.attr(fontsize='11')
     viz.format = image_format

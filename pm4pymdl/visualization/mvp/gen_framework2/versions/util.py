@@ -2,6 +2,40 @@ from collections import Counter
 from statistics import median
 
 
+def human_readable_stat(c):
+    """
+    Transform a timedelta expressed in seconds into a human readable string
+
+    Parameters
+    ----------
+    c
+        Timedelta expressed in seconds
+
+    Returns
+    ----------
+    string
+        Human readable string
+    """
+    c = int(float(c))
+    years = c // 31104000
+    months = c // 2592000
+    days = c // 86400
+    hours = c // 3600 % 24
+    minutes = c // 60 % 60
+    seconds = c % 60
+    if years > 0:
+        return str(years) + "Y"
+    if months > 0:
+        return str(months) + "MO"
+    if days > 0:
+        return str(days) + "D"
+    if hours > 0:
+        return str(hours) + "h"
+    if minutes > 0:
+        return str(minutes) + "m"
+    return str(seconds) + "s"
+
+
 def get_events_edges_map_performance(key, res):
     edges = [x for x in res["edges"] if x[0] == key]
     edges_map = {}
