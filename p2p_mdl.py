@@ -1,8 +1,10 @@
 import pandas as pd
 from frozendict import frozendict
-
+from copy import copy
+import uuid
 
 class Shared:
+    TSTCT = {}
     EKBE_ebeln_belnr = {}
     EKPO_ebeln_matnr = {}
     MSEG_mblnr_matnr = {}
@@ -10,6 +12,18 @@ class Shared:
     EKKO_events = {}
     MKPF_events = {}
     RBKP_events = {}
+    events = []
+
+def read_tstct():
+    df = pd.read_csv("TSTCT.tsv", sep="\t", dtype={"SPRSL": str, "TCODE": str, "TTEXT": str})
+    stream = df.to_dict('r')
+    for el in stream:
+        Shared.TSTCT[el["TCODE"]] = el["TTEXT"]
+
+
+def get_activity(tcode):
+    if tcode in Shared.TSTCT:
+        return Shared.TSTCT[tcode]
 
 
 def read_ekbe():
@@ -59,7 +73,7 @@ def read_ekko():
     for el in stream:
         if not el["EBELN"] in Shared.EKKO_events:
             Shared.EKKO_events[el["EBELN"]] = list()
-        Shared.EKKO_events[el["EBELN"]].append({"event_activity": "ME21N", "event_timestamp": el["AEDAT"]})
+        Shared.EKKO_events[el["EBELN"]].append({"event_activity": get_activity("ME21N"), "event_timestamp": el["AEDAT"]})
         Shared.EKKO_events[el["EBELN"]] = sorted(Shared.EKKO_events[el["EBELN"]], key=lambda x: x["event_timestamp"])
 
 
@@ -74,7 +88,7 @@ def read_mkpf():
             if not el["MBLNR"] in Shared.MKPF_events:
                 Shared.MKPF_events[el["MBLNR"]] = list()
             Shared.MKPF_events[el["MBLNR"]].append(
-                {"event_activity": el["TCODE"], "event_timestamp": el["event_timestamp"],
+                {"event_activity": get_activity(el["TCODE"]), "event_timestamp": el["event_timestamp"],
                  "event_resource": el["USNAM"]})
             Shared.MKPF_events[el["MBLNR"]] = sorted(Shared.MKPF_events[el["MBLNR"]],
                                                      key=lambda x: x["event_timestamp"])
@@ -90,13 +104,33 @@ def read_rbkp():
             if not el["BELNR"] in Shared.RBKP_events:
                 Shared.RBKP_events[el["BELNR"]] = list()
             Shared.RBKP_events[el["BELNR"]].append(
-                {"event_activity": el["TCODE"], "event_timestamp": el["event_timestamp"],
+                {"event_activity": get_activity(el["TCODE"]), "event_timestamp": el["event_timestamp"],
                  "event_resource": el["USNAM"]})
             Shared.RBKP_events[el["BELNR"]] = sorted(Shared.RBKP_events[el["BELNR"]],
                                                      key=lambda x: x["event_timestamp"])
 
 
+def write_events():
+    for evk in Shared.EKKO_events:
+        evs = Shared.EKKO_events[evk]
+        i = 0
+        while i < len(evs):
+            ev = evs[i]
+            ev["event_id"] = str(uuid.uuid4())
+            nev = copy(ev)
+            nev["EBELN"] = evk
+            Shared.events.append(nev)
+            if i == 0:
+                if evk in Shared.EKPO_ebeln_matnr:
+                    for mat in Shared.EKPO_ebeln_matnr[evk]:
+                        nev = copy(ev)
+                        nev["MATNR"] = mat
+                        Shared.events.append(nev)
+            i = i + 1
+
+
 if __name__ == "__main__":
+    read_tstct()
     read_ekbe()
     read_ekpo()
     read_mseg()
@@ -108,4 +142,5 @@ if __name__ == "__main__":
     # print(Shared.EKPO_ebeln_matnr)
     # print(Shared.MSEG_mblnr_matnr)
     # print(Shared.RSEG_belnr_matnr)
-    print(Shared.RBKP_events)
+    write_events()
+
