@@ -2,6 +2,8 @@ import pandas as pd
 from frozendict import frozendict
 from copy import copy
 import uuid
+from pm4pymdl.objects.mdl.exporter import factory as mdl_exporter
+
 
 class Shared:
     TSTCT = {}
@@ -126,6 +128,23 @@ def write_events():
                         nev = copy(ev)
                         nev["MATNR"] = mat
                         Shared.events.append(nev)
+            if i == len(evs)-1:
+                if evk in Shared.EKBE_ebeln_belnr:
+                    for doc in Shared.EKBE_ebeln_belnr[evk]:
+                        nev = copy(ev)
+                        nev["MBLNR"] = doc
+                        Shared.events.append(nev)
+            i = i + 1
+    for evk in Shared.MKPF_events:
+        evs = Shared.MKPF_events[evk]
+        i = 0
+        while i < len(evs):
+            ev = evs[i]
+            ev["event_id"] = str(uuid.uuid4())
+            nev = copy(ev)
+            nev["MBLNR"] = evk
+            Shared.events.append(nev)
+            print(nev)
             i = i + 1
 
 
@@ -143,4 +162,11 @@ if __name__ == "__main__":
     # print(Shared.MSEG_mblnr_matnr)
     # print(Shared.RSEG_belnr_matnr)
     write_events()
-
+    Shared.events = sorted(Shared.events, key=lambda x: x["event_timestamp"])
+    print("written events")
+    df = pd.DataFrame(Shared.events)
+    print("got dataframe")
+    df.type = "exploded"
+    print("exporting")
+    mdl_exporter.apply(df, "log_p2p.mdl")
+    print("exported")
