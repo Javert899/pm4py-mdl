@@ -15,6 +15,8 @@ class Shared:
     MSEG_mblnr_zeile = {}
     MSEG_objects = list()
     RSEG_belnr_matnr = {}
+    RSEG_belnr_ebeln_ebelp = {}
+    RSEG_objects = list()
     EKKO_events = {}
     MKPF_events = {}
     RBKP_events = {}
@@ -70,7 +72,7 @@ def read_mseg():
         Shared.MSEG_mblnr_zeile[el["MBLNR"]].add(el["MBLNR"] + "_" + el["ZEILE"])
         Shared.MSEG_objects.append({"object_id": el["MBLNR"] + "_" + el["ZEILE"], "object_type": "MBLNR_ZEILE", "object_matnr": el["MATNR"], "object_lifnr": el["LIFNR"], "object_kunnr": el["KUNNR"]})
     print("read mseg")
-    print(Shared.MSEG_objects)
+
 
 def read_rseg():
     df = pd.read_csv("RSEG.tsv", sep="\t", dtype={"BELNR": str, "EBELN": str, "EBELP": str, "MATNR": str, "WRBTR": float})
@@ -80,7 +82,12 @@ def read_rseg():
             if not el["BELNR"] in Shared.RSEG_belnr_matnr:
                 Shared.RSEG_belnr_matnr[el["BELNR"]] = set()
             Shared.RSEG_belnr_matnr[el["BELNR"]].add(el["MATNR"])
+        if not el["BELNR"] in Shared.RSEG_belnr_ebeln_ebelp:
+            Shared.RSEG_belnr_ebeln_ebelp[el["BELNR"]] = set()
+        Shared.RSEG_belnr_ebeln_ebelp[el["BELNR"]].add(el["BELNR"] + "_" + el["EBELN"] + "_" + el["EBELP"])
+        Shared.RSEG_objects.append({"object_id": el["BELNR"] + "_" + el["EBELN"] + "_" + el["EBELP"], "object_type": "BELNR_EBELN_EBELP", "object_matnr": el["MATNR"], "object_wrbtr": el["WRBTR"]})
     print("read rseg")
+
 
 def read_ekko():
     df = pd.read_csv("EKKO.tsv", sep="\t", dtype={"EBELN": str, "AEDAT": str, "ERNAM": str, "LIFNR": str})
