@@ -7,7 +7,7 @@ from pm4pymdl.objects.mdl.exporter import factory as mdl_exporter
 
 class Shared:
     TSTCT = {}
-    EKBE_ebeln_belnr = {}
+    EKBE_belnr_ebeln = {}
     EKPO_ebeln_matnr = {}
     EKPO_ebeln_ebelp = {}
     EKPO_objects = list()
@@ -46,9 +46,9 @@ def read_ekbe():
     stream = df.to_dict('r')
     for el in stream:
         if str(el["BELNR"]).lower() != "nan":
-            if not el["EBELN"] in Shared.EKBE_ebeln_belnr:
-                Shared.EKBE_ebeln_belnr[el["EBELN"]] = set()
-            Shared.EKBE_ebeln_belnr[el["EBELN"]].add(el["BELNR"])
+            if not el["BELNR"] in Shared.EKBE_belnr_ebeln:
+                Shared.EKBE_belnr_ebeln[el["BELNR"]] = set()
+            Shared.EKBE_belnr_ebeln[el["BELNR"]].add(el["EBELN"])
 
 
 def read_ekpo():
@@ -135,7 +135,7 @@ def read_mara():
     # TRAGR str
     stream = df.to_dict("r")
     for el in stream:
-        Shared.MARA_objects.append({"object_id": el["MATNR"], "object_type": "MATNR", "object_ersda": el["ERSDA"], "object_mbrsh": el["MBRSH"], "object_matkl": el["MATKL"], "object_ntgew": el["NTGEW"], "object_volumn": el["VOLUMN"], "object_tragr": el["TRAGR"]})
+        Shared.MARA_objects.append({"object_id": el["MATNR"], "object_type": "MATNR", "object_ersda": el["ERSDA"], "object_mbrsh": el["MBRSH"], "object_matkl": el["MATKL"], "object_ntgew": el["NTGEW"], "object_volum": el["VOLUM"], "object_tragr": el["TRAGR"]})
     print("read mara")
 
 
@@ -231,8 +231,8 @@ def write_events():
                         nev["EBELN_EBELP"] = it
                         Shared.events.append(nev)
             if i == len(evs) - 1:
-                if evk in Shared.EKBE_ebeln_belnr:
-                    for doc in Shared.EKBE_ebeln_belnr[evk]:
+                if evk in Shared.EKBE_belnr_ebeln:
+                    for doc in Shared.EKBE_belnr_ebeln[evk]:
                         nev = copy(ev)
                         nev["MBLNR"] = doc
                         Shared.events.append(nev)
@@ -277,6 +277,11 @@ def write_events():
                     for it in Shared.RSEG_belnr_ebeln_ebelp[evk]:
                         nev = copy(ev)
                         nev["BELNR_EBELN_EBELP"] = it
+                        Shared.events.append(nev)
+                if evk in Shared.EKBE_belnr_ebeln:
+                    for it in Shared.EKBE_belnr_ebeln[evk]:
+                        nev = copy(ev)
+                        nev["EBELN"] = it
                         Shared.events.append(nev)
             i = i + 1
     for evk in Shared.BKPF_events:
