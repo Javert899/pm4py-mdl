@@ -149,6 +149,11 @@ def write_events():
                         nev = copy(ev)
                         nev["MATNR"] = mat
                         Shared.events.append(nev)
+                if evk in Shared.EKPO_ebeln_ebelp:
+                    for it in Shared.EKPO_ebeln_ebelp:
+                        nev = copy(ev)
+                        nev["EBELN_EBELP"] = it
+                        Shared.events.append(nev)
             if i == len(evs)-1:
                 if evk in Shared.EKBE_ebeln_belnr:
                     for doc in Shared.EKBE_ebeln_belnr[evk]:
@@ -165,6 +170,17 @@ def write_events():
             nev = copy(ev)
             nev["MBLNR"] = evk
             Shared.events.append(nev)
+            if i == 0:
+                if evk in Shared.MSEG_mblnr_matnr:
+                    for mat in Shared.MSEG_mblnr_matnr[evk]:
+                        nev = copy(ev)
+                        nev["MATNR"] = mat
+                        Shared.events.append(nev)
+                if evk in Shared.MSEG_mblnr_zeile:
+                    for it in Shared.MSEG_mblnr_zeile[evk]:
+                        nev = copy(ev)
+                        nev["MBLNR_ZEILE"] = it
+                        Shared.events.append(nev)
             i = i + 1
 
 
