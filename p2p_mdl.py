@@ -150,7 +150,7 @@ def write_events():
                         nev["MATNR"] = mat
                         Shared.events.append(nev)
                 if evk in Shared.EKPO_ebeln_ebelp:
-                    for it in Shared.EKPO_ebeln_ebelp:
+                    for it in Shared.EKPO_ebeln_ebelp[evk]:
                         nev = copy(ev)
                         nev["EBELN_EBELP"] = it
                         Shared.events.append(nev)
