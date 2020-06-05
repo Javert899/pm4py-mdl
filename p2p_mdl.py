@@ -168,6 +168,8 @@ def read_rbkp():
 
 def read_bkpf():
     df = pd.read_csv("BKPF.tsv", sep="\t", dtype={"BELNR": str, "CPUDT": str, "CPUTM": str, "USNAM": str, "TCODE": str})
+    rbkp_df = pd.read_csv("RBKP.tsv", sep="\t", dtype={"BELNR": str, "USNAM": str, "TCODE": str, "CPUDT": str, "CPUTM": str})
+    df = df[df["BELNR"].isin(rbkp_df["BELNR"])]
     df["event_timestamp"] = df["CPUDT"] + " " + df["CPUTM"]
     df["event_timestamp"] = pd.to_datetime(df["event_timestamp"], format="%d.%m.%Y %H:%M:%S", errors='coerce')
     stream = df.to_dict('r')
@@ -251,13 +253,33 @@ def write_events():
                         nev["BELNR_EBELN_EBELP"] = it
                         Shared.events.append(nev)
             i = i + 1
+    for evk in Shared.BKPF_events:
+        evs = Shared.BKPF_events[evk]
+        i = 0
+        while i < len(evs):
+            ev = evs[i]
+            ev["event_id"] = str(uuid.uuid4())
+            nev = copy(ev)
+            nev["BELNR"] = evk
+            Shared.events.append(nev)
+            if i == 0:
+                if evk in Shared.BSEG_belnr_augbl:
+                    for it in Shared.BSEG_belnr_augbl[evk]:
+                        nev = copy(ev)
+                        nev["AUGBL"] = it
+                        Shared.events.append(nev)
+                if evk in Shared.BSEG_belnr_buzei:
+                    for it in Shared.BSEG_belnr_buzei[evk]:
+                        nev = copy(ev)
+                        nev["BELNR_BUZEI"] = it
+                        Shared.events.append(nev)
+            i = i + 1
 
 
 if __name__ == "__main__":
     read_bseg()
     read_tstct()
     read_bkpf()
-    print(Shared.BKPF_events)
     read_ekbe()
     read_ekpo()
     read_mseg()
