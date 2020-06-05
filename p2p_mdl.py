@@ -9,6 +9,7 @@ class Shared:
     TSTCT = {}
     EKBE_belnr_ebeln = {}
     EKPO_matnr_ebeln = {}
+    EKPO_ebeln_banfn = {}
     EKPO_ebeln_ebelp = {}
     EKPO_objects = list()
     MSEG_mblnr_matnr = {}
@@ -22,6 +23,7 @@ class Shared:
     BSEG_objects = list()
     MARA_objects = list()
     LFA1_objects = list()
+    EBAN_events = {}
     EKKO_events = {}
     MKPF_events = {}
     RBKP_events = {}
@@ -61,6 +63,10 @@ def read_ekpo():
             if not el["MATNR"] in Shared.EKPO_matnr_ebeln:
                 Shared.EKPO_matnr_ebeln[el["MATNR"]] = set()
             Shared.EKPO_matnr_ebeln[el["MATNR"]].add(el["EBELN"])
+        if str(el["BANFN"]).lower() != "nan":
+            if not el["EBELN"] in Shared.EKPO_ebeln_banfn:
+                Shared.EKPO_ebeln_ebelp[el["EBELN"]] = set()
+            Shared.EKPO_ebeln_ebelp[el["EBELN"]].add(el["BANFN"])
         if not el["EBELN"] in Shared.EKPO_ebeln_ebelp:
             Shared.EKPO_ebeln_ebelp[el["EBELN"]] = set()
         Shared.EKPO_ebeln_ebelp[el["EBELN"]].add(el["EBELN"] + "_" + el["EBELP"])
@@ -147,6 +153,18 @@ def read_lfa1():
     print("read lfa1")
 
 
+def read_eban():
+    df = pd.read_csv("EBAN.tsv", sep="\t", dtype={"BANFN": str, "BNFPO": str, "ERNAM": str, "ERDAT": str, "MATNR": str})
+    df["ERDAT"] = pd.to_datetime(df["ERDAT"], format="%d.%m.%Y", errors='coerce')
+    stream = df.to_dict('r')
+    for el in stream:
+        if not el["BANFN"] in Shared.EBAN_events:
+            Shared.EBAN_events[el["BANFN"]] = list()
+        Shared.EBAN_events[el["BANFN"]].append({"event_activity": get_activity("ME51N"), "event_timestamp": el["ERDAT"],
+                                                "event_table": "EBAN"})
+        Shared.EBAN_events[el["BANFN"]] = sorted(Shared.EBAN_events[el["BANFN"]], key=lambda x: x["event_timestamp"])
+
+
 def read_ekko():
     df = pd.read_csv("EKKO.tsv", sep="\t", dtype={"EBELN": str, "AEDAT": str, "ERNAM": str, "LIFNR": str})
     df["AEDAT"] = pd.to_datetime(df["AEDAT"], format="%d.%m.%Y", errors='coerce')
@@ -210,6 +228,16 @@ def read_bkpf():
 
 
 def write_events():
+    for evk in Shared.EBAN_events:
+        evs = Shared.EBAN_events[evk]
+        i = 0
+        while i < len(evs):
+            ev = evs[i]
+            ev["event_id"] = str(uuid.uuid4())
+            nev = copy(ev)
+            nev["BANFN"] = evk
+            Shared.events.append(nev)
+            i = i + 1
     for evk in Shared.EKKO_events:
         evs = Shared.EKKO_events[evk]
         i = 0
@@ -220,6 +248,11 @@ def write_events():
             nev["EBELN"] = evk
             Shared.events.append(nev)
             if i == 0:
+                if evk in Shared.EKPO_ebeln_banfn:
+                    for it in Shared.EKPO_ebeln_banfn[evk]:
+                        nev = copy(ev)
+                        nev["BANFN"] = it
+                        Shared.events.append(nev)
                 if evk in Shared.EKPO_ebeln_ebelp:
                     for it in Shared.EKPO_ebeln_ebelp[evk]:
                         nev = copy(ev)
@@ -310,6 +343,7 @@ def write_events():
 if __name__ == "__main__":
     read_bseg()
     read_tstct()
+    read_eban()
     read_bkpf()
     read_ekbe()
     read_ekpo()
