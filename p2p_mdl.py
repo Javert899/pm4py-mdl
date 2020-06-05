@@ -9,7 +9,11 @@ class Shared:
     TSTCT = {}
     EKBE_ebeln_belnr = {}
     EKPO_ebeln_matnr = {}
+    EKPO_ebeln_ebelp = {}
+    EKPO_objects = list()
     MSEG_mblnr_matnr = {}
+    MSEG_mblnr_zeile = {}
+    MSEG_objects = list()
     RSEG_belnr_matnr = {}
     EKKO_events = {}
     MKPF_events = {}
@@ -39,34 +43,44 @@ def read_ekbe():
 
 
 def read_ekpo():
-    df = pd.read_csv("EKPO.tsv", sep="\t", dtype={"EBELN": str, "EBELP": str, "MATNR": str, "BANFN": str, "BNFPO": str})
+    df = pd.read_csv("EKPO.tsv", sep="\t", dtype={"EBELN": str, "EBELP": str, "MATNR": str, "BANFN": str, "BNFPO": str, "NETPR": float, "PEINH": float, "NETWR": float, "BTWR": float})
     stream = df.to_dict('r')
     for el in stream:
         if str(el["MATNR"]).lower() != "nan":
             if not el["EBELN"] in Shared.EKPO_ebeln_matnr:
                 Shared.EKPO_ebeln_matnr[el["EBELN"]] = set()
             Shared.EKPO_ebeln_matnr[el["EBELN"]].add(el["MATNR"])
+        if not el["EBELN"] in Shared.EKPO_ebeln_ebelp:
+            Shared.EKPO_ebeln_ebelp[el["EBELN"]] = set()
+        Shared.EKPO_ebeln_ebelp[el["EBELN"]].add(el["EBELN"] + "_" + el["EBELP"])
+        Shared.EKPO_objects.append({"object_id": el["EBELN"] + "_" + el["EBELP"], "object_type": "EBELN_EBELP", "object_matnr": el["MATNR"], "object_netpr": el["NETPR"], "object_peinh": el["PEINH"], "object_netwr": el["NETWR"], "object_brtwr": el["BRTWR"]})
+    print("read ekpo")
 
 
 def read_mseg():
-    df = pd.read_csv("MSEG.tsv", sep="\t", dtype={"MBLNR": str, "MATNR": str})
+    df = pd.read_csv("MSEG.tsv", sep="\t", dtype={"MBLNR": str, "ZEILE": str, "MATNR": str, "LIFNR": str, "KUNNR": str})
     stream = df.to_dict('r')
     for el in stream:
         if str(el["MATNR"]).lower() != "nan":
             if not el["MBLNR"] in Shared.MSEG_mblnr_matnr:
                 Shared.MSEG_mblnr_matnr[el["MBLNR"]] = set()
             Shared.MSEG_mblnr_matnr[el["MBLNR"]].add(el["MATNR"])
-
+        if not el["MBLNR"] in Shared.MSEG_mblnr_zeile:
+            Shared.MSEG_mblnr_zeile[el["MBLNR"]] = set()
+        Shared.MSEG_mblnr_zeile[el["MBLNR"]].add(el["MBLNR"] + "_" + el["ZEILE"])
+        Shared.MSEG_objects.append({"object_id": el["MBLNR"] + "_" + el["ZEILE"], "object_type": "MBLNR_ZEILE", "object_matnr": el["MATNR"], "object_lifnr": el["LIFNR"], "object_kunnr": el["KUNNR"]})
+    print("read mseg")
+    print(Shared.MSEG_objects)
 
 def read_rseg():
-    df = pd.read_csv("RSEG.tsv", sep="\t", dtype={"BELNR": str, "EBELN": str, "EBELP": str, "MATNR": str})
+    df = pd.read_csv("RSEG.tsv", sep="\t", dtype={"BELNR": str, "EBELN": str, "EBELP": str, "MATNR": str, "WRBTR": float})
     stream = df.to_dict('r')
     for el in stream:
         if str(el["MATNR"]).lower() != "nan":
             if not el["BELNR"] in Shared.RSEG_belnr_matnr:
                 Shared.RSEG_belnr_matnr[el["BELNR"]] = set()
             Shared.RSEG_belnr_matnr[el["BELNR"]].add(el["MATNR"])
-
+    print("read rseg")
 
 def read_ekko():
     df = pd.read_csv("EKKO.tsv", sep="\t", dtype={"EBELN": str, "AEDAT": str, "ERNAM": str, "LIFNR": str})
@@ -144,7 +158,6 @@ def write_events():
             nev = copy(ev)
             nev["MBLNR"] = evk
             Shared.events.append(nev)
-            print(nev)
             i = i + 1
 
 
