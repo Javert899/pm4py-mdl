@@ -8,7 +8,7 @@ from pm4pymdl.objects.mdl.exporter import factory as mdl_exporter
 class Shared:
     TSTCT = {}
     EKBE_belnr_ebeln = {}
-    EKPO_ebeln_matnr = {}
+    EKPO_matnr_ebeln = {}
     EKPO_ebeln_ebelp = {}
     EKPO_objects = list()
     MSEG_mblnr_matnr = {}
@@ -58,9 +58,9 @@ def read_ekpo():
     stream = df.to_dict('r')
     for el in stream:
         if str(el["MATNR"]).lower() != "nan":
-            if not el["EBELN"] in Shared.EKPO_ebeln_matnr:
-                Shared.EKPO_ebeln_matnr[el["EBELN"]] = set()
-            Shared.EKPO_ebeln_matnr[el["EBELN"]].add(el["MATNR"])
+            if not el["MATNR"] in Shared.EKPO_matnr_ebeln:
+                Shared.EKPO_matnr_ebeln[el["MATNR"]] = set()
+            Shared.EKPO_matnr_ebeln[el["MATNR"]].add(el["EBELN"])
         if not el["EBELN"] in Shared.EKPO_ebeln_ebelp:
             Shared.EKPO_ebeln_ebelp[el["EBELN"]] = set()
         Shared.EKPO_ebeln_ebelp[el["EBELN"]].add(el["EBELN"] + "_" + el["EBELP"])
@@ -135,7 +135,7 @@ def read_mara():
     # TRAGR str
     stream = df.to_dict("r")
     for el in stream:
-        Shared.MARA_objects.append({"object_id": el["MATNR"], "object_type": "MATNR", "object_ersda": el["ERSDA"], "object_mbrsh": el["MBRSH"], "object_matkl": el["MATKL"], "object_ntgew": el["NTGEW"], "object_volum": el["VOLUM"], "object_tragr": el["TRAGR"]})
+        Shared.MARA_objects.append({"object_id": el["MATNR"], "object_type": "MATNR", "object_table": "MARA", "object_ersda": el["ERSDA"], "object_mbrsh": el["MBRSH"], "object_matkl": el["MATKL"], "object_ntgew": el["NTGEW"], "object_volum": el["VOLUM"], "object_tragr": el["TRAGR"]})
     print("read mara")
 
 
@@ -143,7 +143,7 @@ def read_lfa1():
     df = pd.read_csv("LFA1.tsv", sep="\t", dtype={"LIFNR": str, "LAND1": str, "NAME1": str, "ORT01": str, "REGIO": str})
     stream = df.to_dict("r")
     for el in stream:
-        Shared.LFA1_objects.append({"object_id": el["LIFNR"], "object_type": "LIFNR", "object_land1": el["LAND1"], "object_name1": el["NAME1"], "object_ort01": el["ORT01"], "object_regio": el["REGIO"]})
+        Shared.LFA1_objects.append({"object_id": el["LIFNR"], "object_type": "LIFNR", "object_table": "LFA1", "object_land1": el["LAND1"], "object_name1": el["NAME1"], "object_ort01": el["ORT01"], "object_regio": el["REGIO"]})
     print("read lfa1")
 
 
@@ -220,11 +220,6 @@ def write_events():
             nev["EBELN"] = evk
             Shared.events.append(nev)
             if i == 0:
-                if evk in Shared.EKPO_ebeln_matnr:
-                    for mat in Shared.EKPO_ebeln_matnr[evk]:
-                        nev = copy(ev)
-                        nev["MATNR"] = mat
-                        Shared.events.append(nev)
                 if evk in Shared.EKPO_ebeln_ebelp:
                     for it in Shared.EKPO_ebeln_ebelp[evk]:
                         nev = copy(ev)
@@ -247,6 +242,11 @@ def write_events():
             nev["MBLNR"] = evk
             Shared.events.append(nev)
             if i == 0:
+                if evk in Shared.EKPO_matnr_ebeln:
+                    for ord in Shared.EKPO_matnr_ebeln[evk]:
+                        nev = copy(ev)
+                        nev["EBELN"] = ord
+                        Shared.events.append(nev)
                 if evk in Shared.MSEG_mblnr_matnr:
                     for mat in Shared.MSEG_mblnr_matnr[evk]:
                         nev = copy(ev)
@@ -335,3 +335,4 @@ if __name__ == "__main__":
     print("exporting")
     mdl_exporter.apply(events_df, "log_p2p.mdl", obj_df=object_df)
     print("exported")
+    mdl_exporter.apply(events_df, "log_p2p.parquet", obj_df=object_df)
