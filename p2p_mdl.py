@@ -20,6 +20,8 @@ class Shared:
     BSEG_belnr_augbl = {}
     BSEG_belnr_buzei = {}
     BSEG_objects = list()
+    MARA_objects = list()
+    LFA1_objects = list()
     EKKO_events = {}
     MKPF_events = {}
     RBKP_events = {}
@@ -119,6 +121,30 @@ def read_bseg():
             {"object_id": el["BELNR"] + "_" + el["BUZEI"], "object_type": "BELNR_BUZEI", "object_augbl": el["AUGBL"],
              "object_wrbtr": el["WRBTR"], "object_table": "BSEG"})
     print("read bseg")
+
+
+def read_mara():
+    df = pd.read_csv("MARA.tsv", sep="\t", dtype={"MATNR": str, "ERSDA": str, "ERNAM": str, "MBRSH": str, "MATKL": str, "NTGEW": str, "VOLUMN": str, "TRAGR": str})
+    # MATNR str
+    # ERSDA str
+    # ERNAM str
+    # MBRSH str
+    # MATKL str
+    # NTGEW str
+    # VOLUMN str
+    # TRAGR str
+    stream = df.to_dict("r")
+    for el in stream:
+        Shared.MARA_objects.append({"object_id": el["MATNR"], "object_type": "MATNR", "object_ersda": el["ERSDA"], "object_mbrsh": el["MBRSH"], "object_matkl": el["MATKL"], "object_ntgew": el["NTGEW"], "object_volumn": el["VOLUMN"], "object_tragr": el["TRAGR"]})
+    print("read mara")
+
+
+def read_lfa1():
+    df = pd.read_csv("LFA1.tsv", sep="\t", dtype={"LIFNR": str, "LAND1": str, "NAME1": str, "ORT01": str, "REGIO": str})
+    stream = df.to_dict("r")
+    for el in stream:
+        Shared.LFA1_objects.append({"object_id": el["LIFNR"], "object_type": "LIFNR", "object_land1": el["LAND1"], "object_name1": el["NAME1"], "object_ort01": el["ORT01"], "object_regio": el["REGIO"]})
+    print("read lfa1")
 
 
 def read_ekko():
@@ -284,6 +310,8 @@ if __name__ == "__main__":
     read_ekpo()
     read_mseg()
     read_rseg()
+    read_mara()
+    read_lfa1()
     read_ekko()
     read_mkpf()
     read_rbkp()
@@ -296,7 +324,9 @@ if __name__ == "__main__":
     ekpo_objects = pd.DataFrame(Shared.EKPO_objects)
     mseg_objects = pd.DataFrame(Shared.MSEG_objects)
     rseg_objects = pd.DataFrame(Shared.RSEG_objects)
-    object_df = pd.concat([ekpo_objects, mseg_objects, rseg_objects])
+    mara_objects = pd.DataFrame(Shared.MARA_objects)
+    lfa1_objects = pd.DataFrame(Shared.LFA1_objects)
+    object_df = pd.concat([ekpo_objects, mseg_objects, rseg_objects, mara_objects, lfa1_objects])
     print("exporting")
     mdl_exporter.apply(events_df, "log_p2p.mdl", obj_df=object_df)
     print("exported")
