@@ -45,37 +45,38 @@ def apply(res, measure="frequency", freq="events", classifier="activity", projec
     edges_map = util.projection(edges_map, reference_map, type=projection)
 
     for key, model in res["models"].items():
-        persp_color = COLORS[count % len(COLORS)]
-        count = count + 1
+        if len(events_map[key]) > 0:
+            persp_color = COLORS[count % len(COLORS)]
+            count = count + 1
 
-        sn_uuid = str(uuid.uuid4())
-        viz.node(sn_uuid, str(key), style="filled", fillcolor="green", shape='trapezium', fixedsize='true', width='0.75')
-        en_uuid = str(uuid.uuid4())
-        viz.node(en_uuid, str(key), style="filled", fillcolor="orange", shape='invtrapezium', fixedsize='true', width='0.75')
+            sn_uuid = str(uuid.uuid4())
+            viz.node(sn_uuid, str(key), style="filled", fillcolor=persp_color, shape='trapezium', fixedsize='true', width='0.75')
+            en_uuid = str(uuid.uuid4())
+            viz.node(en_uuid, str(key), style="filled", fillcolor=persp_color, shape='invtrapezium', fixedsize='true', width='0.75')
 
-        for act in model:
-            act_id = str(id(act))
+            for act in model:
+                act_id = str(id(act))
 
-            if act in acti_map:
-                pass
-            else:
-                acti_map[act] = act_id
-                if act in res["activities_repeated"]:
-                    viz.node(act_id, act+" ("+freq_prefix+str(activ_freq_map[key][act])+")", style='filled', fillcolor="white", color=persp_color, shape=node_shape, width='3.8')
+                if act in acti_map:
+                    pass
                 else:
-                    viz.node(act_id, act+" ("+freq_prefix+str(activ_freq_map[key][act])+")", style='filled', fillcolor=persp_color, shape=node_shape, width='3.8')
+                    acti_map[act] = act_id
+                    if act in res["activities_repeated"]:
+                        viz.node(act_id, act+" ("+freq_prefix+str(activ_freq_map[key][act])+")", style='filled', fillcolor="white", color=persp_color, shape=node_shape, width='3.8')
+                    else:
+                        viz.node(act_id, act+" ("+freq_prefix+str(activ_freq_map[key][act])+")", style='filled', fillcolor=persp_color, shape=node_shape, width='3.8')
 
-            if act in res["start_activities"][key]:
-                viz.edge(sn_uuid, act_id, color=persp_color)
+                if act in res["start_activities"][key]:
+                    viz.edge(sn_uuid, act_id, color=persp_color)
 
-            if act in res["end_activities"][key]:
-                viz.edge(act_id, en_uuid, color=persp_color)
+                if act in res["end_activities"][key]:
+                    viz.edge(act_id, en_uuid, color=persp_color)
 
-        for k in edges_map[key]:
-            if measure == "frequency":
-                viz.edge(acti_map[k[0]], acti_map[k[1]], xlabel=freq_prefix+str(edges_map[key][k]), color=persp_color, fontcolor=persp_color)
-            elif measure == "performance":
-                viz.edge(acti_map[k[0]], acti_map[k[1]], xlabel=freq_prefix+"P="+util.human_readable_stat(edges_map[key][k]), color=persp_color, fontcolor=persp_color)
+            for k in edges_map[key]:
+                if measure == "frequency":
+                    viz.edge(acti_map[k[0]], acti_map[k[1]], xlabel=freq_prefix+str(edges_map[key][k]), color=persp_color, fontcolor=persp_color)
+                elif measure == "performance":
+                    viz.edge(acti_map[k[0]], acti_map[k[1]], xlabel=freq_prefix+"P="+util.human_readable_stat(edges_map[key][k]), color=persp_color, fontcolor=persp_color)
     viz.attr(overlap='false')
     viz.attr(fontsize='11')
     viz.format = image_format
