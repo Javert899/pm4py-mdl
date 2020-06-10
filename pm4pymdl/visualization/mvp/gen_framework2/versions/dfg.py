@@ -12,6 +12,8 @@ def apply(res, measure="frequency", freq="events", classifier="activity", projec
     if parameters is None:
         parameters = {}
 
+    min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 0
+
     filename = tempfile.NamedTemporaryFile(suffix='.gv')
     viz = Digraph("pt", filename=filename.name, engine='dot', graph_attr={'bgcolor': 'transparent'})
     image_format = parameters["format"] if "format" in parameters else "png"
@@ -28,6 +30,8 @@ def apply(res, measure="frequency", freq="events", classifier="activity", projec
     count = 0
 
     reference_map = {}
+    events_map = {}
+
     edges_map = {}
     activ_freq_map = {}
 
@@ -35,7 +39,9 @@ def apply(res, measure="frequency", freq="events", classifier="activity", projec
         edges_map[key] = util.get_edges_map(key, res, measure=measure, variant=freq)
         activ_freq_map[key] = util.get_activity_map_frequency(key, res, variant=freq)
         reference_map[key] = util.get_activity_map_frequency(key, res, variant="objects")
+        events_map[key] = util.get_edges_map(key, res, measure="frequency", variant="events")
 
+    edges_map = util.projection_edges_freq(edges_map, events_map, min_edge_freq)
     edges_map = util.projection(edges_map, reference_map, type=projection)
 
     for key, model in res["models"].items():

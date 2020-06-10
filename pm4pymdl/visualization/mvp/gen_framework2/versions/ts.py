@@ -13,6 +13,8 @@ def apply(res, measure="frequency", freq="events", classifier="activity", projec
     if parameters is None:
         parameters = {}
 
+    min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 0
+
     filename = tempfile.NamedTemporaryFile(suffix='.gv')
     viz = Digraph("pt", filename=filename.name, engine='dot', graph_attr={'bgcolor': 'transparent'})
     image_format = parameters["format"] if "format" in parameters else "png"

@@ -61,6 +61,7 @@ class Process(object):
         self.name = name
         self.mdl_path = mdl_path
         self.dataframe = mdl_importer.apply(self.mdl_path)
+        self.dataframe = self.dataframe.dropna(subset=["event_activity"])
         try:
             if self.dataframe.type == "succint":
                 self.dataframe = succint_mdl_to_exploded_mdl.apply(self.dataframe)
@@ -399,10 +400,12 @@ class Process(object):
             classifier_function = lambda x: x["event_activity"] + "+" + x["event_objtype"]
         model = mdfg_disc_factory2.apply(self.dataframe, classifier_function=classifier_function,
                                          variant=self.selected_model_type,
-                                         parameters={"min_acti_count": self.selected_min_acti_count,
-                                                     "min_edge_count": self.selected_min_edge_freq_count})
+                                         parameters={"min_acti_freq": self.selected_min_acti_count,
+                                                     "min_edge_freq": self.selected_min_edge_freq_count})
         gviz = mdfg_vis_factory2.apply(model, measure=self.selected_decoration_measure,
-                                       freq=self.selected_aggregation_measure, classifier=self.selected_classifier, parameters={"format": "svg"})
+                                       freq=self.selected_aggregation_measure, classifier=self.selected_classifier,
+                                       parameters={"format": "svg", "min_acti_freq": self.selected_min_acti_count,
+                                                   "min_edge_freq": self.selected_min_edge_freq_count})
         tfilepath = tempfile.NamedTemporaryFile(suffix='.svg')
         tfilepath.close()
         mdfg_vis_factory.save(gviz, tfilepath.name)

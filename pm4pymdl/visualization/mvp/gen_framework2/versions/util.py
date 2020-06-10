@@ -20,6 +20,15 @@ def projection(edges_map, reference_map, type="no"):
     return edges_map
 
 
+def projection_edges_freq(edges_map, events_map, min_edge_freq):
+    for k in events_map:
+        for k2 in events_map[k]:
+            if events_map[k][k2] < min_edge_freq:
+                del edges_map[k][k2]
+
+    return edges_map
+
+
 def human_readable_stat(c):
     """
     Transform a timedelta expressed in seconds into a human readable string
