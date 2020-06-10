@@ -14,6 +14,8 @@ class Shared:
     EKPO_objects = list()
     MSEG_mblnr_matnr = {}
     MSEG_mblnr_zeile = {}
+    MSEG_mblnr_ebeln = {}
+    MSEG_mblnr_ebeln_ebelp = {}
     MSEG_objects = list()
     RSEG_belnr_matnr = {}
     RSEG_belnr_ebeln_ebelp = {}
@@ -73,12 +75,15 @@ def read_ekpo():
         Shared.EKPO_objects.append(
             {"object_id": el["EBELN"] + "_" + el["EBELP"], "object_type": "EBELN_EBELP", "object_matnr": el["MATNR"],
              "object_netpr": el["NETPR"], "object_peinh": el["PEINH"], "object_netwr": el["NETWR"],
-             "object_brtwr": el["BRTWR"], "object_table": "EKPO"})
+             "object_brtwr": el["BRTWR"], "object_table": "EKPO", "object_ebeln": el["EBELN"],
+             "object_ebelp": el["EBELP"]})
     print("read ekpo")
 
 
 def read_mseg():
-    df = pd.read_csv("MSEG.tsv", sep="\t", dtype={"MBLNR": str, "ZEILE": str, "MATNR": str, "LIFNR": str, "KUNNR": str})
+    df = pd.read_csv("MSEG.tsv", sep="\t",
+                     dtype={"MBLNR": str, "ZEILE": str, "MATNR": str, "LIFNR": str, "KUNNR": str, "EBELN": str,
+                            "EBELP": str})
     stream = df.to_dict('r')
     for el in stream:
         if str(el["MATNR"]).lower() != "nan":
@@ -88,9 +93,17 @@ def read_mseg():
         if not el["MBLNR"] in Shared.MSEG_mblnr_zeile:
             Shared.MSEG_mblnr_zeile[el["MBLNR"]] = set()
         Shared.MSEG_mblnr_zeile[el["MBLNR"]].add(el["MBLNR"] + "_" + el["ZEILE"])
+        if str(el["EBELN"]).lower() != "nan" and str(el["EBELP"]).lower() != "nan":
+            if not el["MBLNR"] in Shared.MSEG_mblnr_ebeln:
+                Shared.MSEG_mblnr_ebeln[el["MBLNR"]] = set()
+            Shared.MSEG_mblnr_ebeln[el["MBLNR"]].add(el["EBELN"])
+            if not el["MBLNR"] in Shared.MSEG_mblnr_ebeln_ebelp:
+                Shared.MSEG_mblnr_ebeln_ebelp[el["MBLNR"]] = set()
+            Shared.MSEG_mblnr_ebeln_ebelp[el["MBLNR"]].add(el["EBELN"] + "_" + el["EBELP"])
         Shared.MSEG_objects.append(
             {"object_id": el["MBLNR"] + "_" + el["ZEILE"], "object_type": "MBLNR_ZEILE", "object_matnr": el["MATNR"],
-             "object_lifnr": el["LIFNR"], "object_kunnr": el["KUNNR"], "object_table": "MSEG"})
+             "object_lifnr": el["LIFNR"], "object_kunnr": el["KUNNR"], "object_table": "MSEG",
+             "object_mblnr": el["MBLNR"], "object_zeile": el["ZEILE"]})
     print("read mseg")
 
 
@@ -108,7 +121,9 @@ def read_rseg():
         Shared.RSEG_belnr_ebeln_ebelp[el["BELNR"]].add(el["BELNR"] + "_" + el["EBELN"] + "_" + el["EBELP"])
         Shared.RSEG_objects.append(
             {"object_id": el["BELNR"] + "_" + el["EBELN"] + "_" + el["EBELP"], "object_type": "BELNR_EBELN_EBELP",
-             "object_matnr": el["MATNR"], "object_wrbtr": el["WRBTR"], "object_table": "RSEG"})
+             "object_matnr": el["MATNR"], "object_wrbtr": el["WRBTR"], "object_table": "RSEG",
+             "object_belnr": el["BELNR"], "object_ebeln": el["EBELN"], "object_ebelp": el["EBELP"],
+             "object_ebeln_ebelp": el["EBELN"] + "_" + el["EBELP"]})
     print("read rseg")
 
 
@@ -125,12 +140,15 @@ def read_bseg():
         Shared.BSEG_belnr_buzei[el["BELNR"]].add(el["BELNR"] + "_" + el["BUZEI"])
         Shared.BSEG_objects.append(
             {"object_id": el["BELNR"] + "_" + el["BUZEI"], "object_type": "BELNR_BUZEI", "object_augbl": el["AUGBL"],
-             "object_wrbtr": el["WRBTR"], "object_table": "BSEG"})
+             "object_wrbtr": el["WRBTR"], "object_table": "BSEG", "object_belnr": el["BELNR"],
+             "object_buzei": el["BUZEI"]})
     print("read bseg")
 
 
 def read_mara():
-    df = pd.read_csv("MARA.tsv", sep="\t", dtype={"MATNR": str, "ERSDA": str, "ERNAM": str, "MBRSH": str, "MATKL": str, "NTGEW": str, "VOLUMN": str, "TRAGR": str})
+    df = pd.read_csv("MARA.tsv", sep="\t",
+                     dtype={"MATNR": str, "ERSDA": str, "ERNAM": str, "MBRSH": str, "MATKL": str, "NTGEW": str,
+                            "VOLUMN": str, "TRAGR": str})
     # MATNR str
     # ERSDA str
     # ERNAM str
@@ -141,7 +159,10 @@ def read_mara():
     # TRAGR str
     stream = df.to_dict("r")
     for el in stream:
-        Shared.MARA_objects.append({"object_id": el["MATNR"], "object_type": "MATNR", "object_table": "MARA", "object_ersda": el["ERSDA"], "object_mbrsh": el["MBRSH"], "object_matkl": el["MATKL"], "object_ntgew": el["NTGEW"], "object_volum": el["VOLUM"], "object_tragr": el["TRAGR"]})
+        Shared.MARA_objects.append(
+            {"object_id": el["MATNR"], "object_type": "MATNR", "object_table": "MARA", "object_ersda": el["ERSDA"],
+             "object_mbrsh": el["MBRSH"], "object_matkl": el["MATKL"], "object_ntgew": el["NTGEW"],
+             "object_volum": el["VOLUM"], "object_tragr": el["TRAGR"]})
     print("read mara")
 
 
@@ -149,7 +170,9 @@ def read_lfa1():
     df = pd.read_csv("LFA1.tsv", sep="\t", dtype={"LIFNR": str, "LAND1": str, "NAME1": str, "ORT01": str, "REGIO": str})
     stream = df.to_dict("r")
     for el in stream:
-        Shared.LFA1_objects.append({"object_id": el["LIFNR"], "object_type": "LIFNR", "object_table": "LFA1", "object_land1": el["LAND1"], "object_name1": el["NAME1"], "object_ort01": el["ORT01"], "object_regio": el["REGIO"]})
+        Shared.LFA1_objects.append(
+            {"object_id": el["LIFNR"], "object_type": "LIFNR", "object_table": "LFA1", "object_land1": el["LAND1"],
+             "object_name1": el["NAME1"], "object_ort01": el["ORT01"], "object_regio": el["REGIO"]})
     print("read lfa1")
 
 
@@ -212,7 +235,8 @@ def read_rbkp():
 
 def read_bkpf():
     df = pd.read_csv("BKPF.tsv", sep="\t", dtype={"BELNR": str, "CPUDT": str, "CPUTM": str, "USNAM": str, "TCODE": str})
-    rbkp_df = pd.read_csv("RBKP.tsv", sep="\t", dtype={"BELNR": str, "USNAM": str, "TCODE": str, "CPUDT": str, "CPUTM": str})
+    rbkp_df = pd.read_csv("RBKP.tsv", sep="\t",
+                          dtype={"BELNR": str, "USNAM": str, "TCODE": str, "CPUDT": str, "CPUTM": str})
     df = df[df["BELNR"].isin(rbkp_df["BELNR"])]
     df["event_timestamp"] = df["CPUDT"] + " " + df["CPUTM"]
     df["event_timestamp"] = pd.to_datetime(df["event_timestamp"], format="%d.%m.%Y %H:%M:%S", errors='coerce')
@@ -224,7 +248,8 @@ def read_bkpf():
             Shared.BKPF_events[el["BELNR"]].append(
                 {"event_activity": get_activity(el["TCODE"]), "event_timestamp": el["event_timestamp"],
                  "event_resource": el["USNAM"], "event_table": "BKPF"})
-            Shared.BKPF_events[el["BELNR"]] = sorted(Shared.BKPF_events[el["BELNR"]], key=lambda x: x["event_timestamp"])
+            Shared.BKPF_events[el["BELNR"]] = sorted(Shared.BKPF_events[el["BELNR"]],
+                                                     key=lambda x: x["event_timestamp"])
 
 
 def write_events():
@@ -275,10 +300,22 @@ def write_events():
             nev["MBLNR"] = evk
             Shared.events.append(nev)
             if i == 0:
+                """
                 if evk in Shared.EKPO_matnr_ebeln:
                     for ord in Shared.EKPO_matnr_ebeln[evk]:
                         nev = copy(ev)
                         nev["EBELN"] = ord
+                        Shared.events.append(nev)
+                """
+                if evk in Shared.MSEG_mblnr_ebeln:
+                    for it in Shared.MSEG_mblnr_ebeln[evk]:
+                        nev = copy(ev)
+                        nev["EBELN"] = it
+                        Shared.events.append(nev)
+                if evk in Shared.MSEG_mblnr_ebeln_ebelp:
+                    for it in Shared.MSEG_mblnr_ebeln_ebelp[evk]:
+                        nev = copy(ev)
+                        nev["EBELN_EBELP"] = it
                         Shared.events.append(nev)
                 if evk in Shared.MSEG_mblnr_matnr:
                     for mat in Shared.MSEG_mblnr_matnr[evk]:
@@ -310,6 +347,9 @@ def write_events():
                     for it in Shared.RSEG_belnr_ebeln_ebelp[evk]:
                         nev = copy(ev)
                         nev["BELNR_EBELN_EBELP"] = it
+                        Shared.events.append(nev)
+                        nev = copy(ev)
+                        nev["EBELN_EBELP"] = it.split("_")[1] + "_" + it.split("_")[2]
                         Shared.events.append(nev)
                 if evk in Shared.EKBE_belnr_ebeln:
                     for it in Shared.EKBE_belnr_ebeln[evk]:
