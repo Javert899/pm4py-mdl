@@ -12,8 +12,6 @@ def apply(res, measure="frequency", freq="events", classifier="activity", projec
     if parameters is None:
         parameters = {}
 
-    print(projection)
-
     min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 0
 
     filename = tempfile.NamedTemporaryFile(suffix='.gv')
@@ -44,6 +42,10 @@ def apply(res, measure="frequency", freq="events", classifier="activity", projec
         events_map[key] = util.get_edges_map(key, res, measure="frequency", variant="events")
 
     edges_map = util.projection_edges_freq(edges_map, events_map, min_edge_freq)
+    for k in edges_map:
+        if len(edges_map[k]) == 0:
+            if k in reference_map:
+                del reference_map[k]
     edges_map = util.projection(edges_map, reference_map, type=projection)
 
     for key, model in res["models"].items():

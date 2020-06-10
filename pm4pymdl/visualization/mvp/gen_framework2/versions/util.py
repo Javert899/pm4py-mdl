@@ -12,11 +12,11 @@ def projection(edges_map, reference_map, type="no"):
                 acti_assignation_score[a] = reference_map[k][a]
 
     if not type == "no":
-        if type == "source":
-            edges_map[k] = {x: y for x, y in edges_map[k].items() if acti_assignation_map[x[0]] == k}
-        elif type == "target":
-            edges_map[k] = {x: y for x, y in edges_map[k].items() if acti_assignation_map[x[1]] == k}
-
+        for k in edges_map:
+            if type == "source":
+                edges_map[k] = {x: y for x, y in edges_map[k].items() if acti_assignation_map[x[0]] == k}
+            elif type == "target":
+                edges_map[k] = {x: y for x, y in edges_map[k].items() if acti_assignation_map[x[1]] == k}
     return edges_map
 
 
