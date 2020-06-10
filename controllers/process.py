@@ -454,9 +454,9 @@ class Process(object):
         mvp_vis_factory.save(gviz, tfilepath.name)
         self.model_view = base64.b64encode(open(tfilepath.name, "rb").read()).decode('utf-8')
 
-    def apply_spec_path_filter(self, session, obytype, act1, act2):
+    def apply_spec_path_filter(self, session, obytype, act1, act2, minp, maxp):
         obj = copy(self.session_objects[session])
-        obj.dataframe = filter_specific_path.apply(obj.dataframe, obytype, act1, act2)
+        obj.dataframe = filter_specific_path.apply(obj.dataframe, obytype, act1, act2, minp, maxp)
         obj.reset_properties()
         obj.set_properties()
         self.session_objects[session] = obj

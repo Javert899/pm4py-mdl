@@ -135,7 +135,9 @@
         let objtype = window.prompt("Insert the object type that should be the target of the filter");
         let act1 = window.prompt("Insert the source activity of the path");
         let act2 = window.prompt("Insert the target activity of the path");
-        var url0 = "/applySpecPathFilter?objtype="+objtype+"&act1="+act1+"&act2="+act2+"&process="+window.location.pathname.split("/").pop();
+        let minp = window.prompt("Insert the minimum allowed performance for the path");
+        let maxp = window.prompt("Insert the maximum allowed performance for the path");
+        var url0 = "/applySpecPathFilter?objtype="+objtype+"&act1="+act1+"&act2="+act2+"&minp="+minp+"&maxp="+maxp+"&process="+window.location.pathname.split("/").pop();
         $.ajax({url: url0}).done(function() { window.location.reload(); }).fail(function() { alert("Something went wrong!"); });
     }
 

@@ -166,9 +166,11 @@ def apply_spec_path_filter():
     objtype = request.args.get('objtype')
     act1 = request.args.get('act1')
     act2 = request.args.get('act2')
+    minp = request.args.get('minp', type=float)
+    maxp = request.args.get('maxp', type=float)
 
     process = Shared.logs[process].get_controller(session)
-    process.apply_spec_path_filter(session, objtype, act1, act2)
+    process.apply_spec_path_filter(session, objtype, act1, act2, minp, maxp)
 
     return ""
 
