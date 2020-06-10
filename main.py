@@ -67,6 +67,7 @@ def process_view(process=None):
     classifier = request.cookies.get('classifier') if 'classifier' in request.cookies else "activity"
     aggregation_measure = request.cookies.get(
         "aggregation_measure") if "aggregation_measure" in request.cookies else "events"
+    projection = request.cookies.get('projection') if "projection" in request.cookies else "no"
     decoration_measure = request.cookies.get(
         "decoration_measure") if "decoration_measure" in request.cookies else "frequency"
 
@@ -79,7 +80,7 @@ def process_view(process=None):
         Process=process.get_visualization(min_acti_count=min_acti_count, min_paths_count=min_paths_count,
                                           model_type=model_type, classifier=classifier,
                                           aggregation_measure=aggregation_measure,
-                                          decoration_measure=decoration_measure)
+                                          decoration_measure=decoration_measure, projection=projection)
     ))
 
     if not request.cookies.get('session'):
@@ -98,6 +99,8 @@ def process_view(process=None):
         response.set_cookie('aggregation_measure', aggregation_measure)
     if not request.cookies.get('decoration_measure'):
         response.set_cookie('decoration_measure', decoration_measure)
+    if not request.cookies.get('projection'):
+        response.set_cookie('projection', projection)
     return response
 
 

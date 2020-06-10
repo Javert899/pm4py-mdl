@@ -12,6 +12,8 @@ def apply(res, measure="frequency", freq="events", classifier="activity", projec
     if parameters is None:
         parameters = {}
 
+    print(projection)
+
     min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 0
 
     filename = tempfile.NamedTemporaryFile(suffix='.gv')

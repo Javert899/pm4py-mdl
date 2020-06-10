@@ -62,6 +62,15 @@
               <button onclick="javascript:formCookie()">Set</button>
           </div>
           <div>
+              <b>Projection measure (DFG only):</b>
+              <select id="projection_measure" name="projection_measure">
+                  <option value="no">No</option>
+                  <option value="source">Source</option>
+                  <option value="target">Target</option>
+              </select>
+              <button onclick="javascript:formCookie()">Set</button>
+          </div>
+          <div>
               Filter activities (min. occurrences):<br />
               <input type="text" id="min_acti_count" />
               <button onclick="javascript:formCookie()">Set</button>
@@ -278,6 +287,7 @@
         document.getElementById("classifier").value = "{{ Process.selected_classifier }}";
         document.getElementById("aggregation_measure").value = "{{ Process.selected_aggregation_measure }}";
         document.getElementById("decoration_measure").value = "{{ Process.selected_decoration_measure }}";
+        document.getElementById("projection_measure").value = "{{ Process.selected_projection }}";
         document.getElementById("model_type").value = "{{ Process.selected_model_type }}";
         document.getElementById("min_acti_count").value = "{{ Process.selected_min_acti_count }}";
         document.getElementById("min_paths_count").value = "{{ Process.selected_min_edge_freq_count }}";
@@ -376,6 +386,9 @@
             }
             else if (cookie_name == "aggregation_measure") {
                 setCookie(cookie_name, document.getElementById("aggregation_measure").value, 1);
+            }
+            else if (cookie_name == "projection") {
+                setCookie(cookie_name, document.getElementById("projection_measure").value, 1);
             }
             else if (cookie_name == "decoration_measure") {
                 setCookie(cookie_name, document.getElementById("decoration_measure").value, 1);

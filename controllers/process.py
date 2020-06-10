@@ -82,6 +82,7 @@ class Process(object):
         self.selected_classifier = "activity"
         self.selected_aggregation_measure = "events"
         self.selected_decoration_measure = "frequency"
+        self.selected_projection = "no"
         self.selected_min_acti_count = 10
         self.selected_min_edge_freq_count = 10
         self.model_view = ""
@@ -357,7 +358,7 @@ class Process(object):
         return self
 
     def get_visualization(self, min_acti_count=0, min_paths_count=0, model_type=defaults.DEFAULT_MODEL_TYPE,
-                          classifier="activity", aggregation_measure="events",
+                          classifier="activity", aggregation_measure="events", projection="no",
                           decoration_measure="frequency"):
         obj = copy(self)
         obj.get_names()
@@ -366,6 +367,7 @@ class Process(object):
         obj.selected_model_type = model_type
         obj.selected_classifier = classifier
         obj.selected_aggregation_measure = aggregation_measure
+        obj.selected_projection = projection
         obj.selected_decoration_measure = decoration_measure
         reversed_dict = {}
         for act in obj.activities:
@@ -404,6 +406,7 @@ class Process(object):
                                                      "min_edge_freq": self.selected_min_edge_freq_count})
         gviz = mdfg_vis_factory2.apply(model, measure=self.selected_decoration_measure,
                                        freq=self.selected_aggregation_measure, classifier=self.selected_classifier,
+                                       projection=self.selected_projection,
                                        parameters={"format": "svg", "min_acti_freq": self.selected_min_acti_count,
                                                    "min_edge_freq": self.selected_min_edge_freq_count})
         tfilepath = tempfile.NamedTemporaryFile(suffix='.svg')
