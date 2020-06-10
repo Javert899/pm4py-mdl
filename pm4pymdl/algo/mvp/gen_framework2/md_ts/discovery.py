@@ -21,7 +21,7 @@ def apply(df0, classifier_function=None, parameters=None):
     df = general.preprocess(df, parameters=parameters)
 
     df = clean_frequency.apply(df, min_acti_freq=min_acti_freq)
-    #df = clean_arc_frequency.apply(df, min_freq=min_edge_freq)
+    df = clean_arc_frequency.apply(df, min_freq=min_edge_freq)
 
     models = {}
 
