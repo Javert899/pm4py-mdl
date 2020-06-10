@@ -22,6 +22,7 @@ def apply(df, persp, parameters=None):
     renaming[persp] = "case:concept:name"
 
     df = df.rename(columns=renaming)
+    df = df.dropna(subset=["concept:name"])
 
     log = log_conv_factory.apply(df)
 
