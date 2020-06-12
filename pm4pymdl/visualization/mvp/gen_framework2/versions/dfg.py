@@ -66,12 +66,12 @@ def apply(res, measure="frequency", freq="events", classifier="activity", projec
                 else:
                     acti_map[act] = act_id
                     if act in res["activities_repeated"]:
-                        label = act+" ("+freq_prefix+str(activ_freq_map[key][act])+")"
-                        print("AAA ", act_id, label)
+                        #label = act+" ("+freq_prefix+str(activ_freq_map[key][act])+")"
+                        label = act
                         viz.node(act_id, label, style='filled', fillcolor="white", color=persp_color, shape=node_shape, width='3.8')
                     else:
-                        label = act+" ("+freq_prefix+str(activ_freq_map[key][act])+")"
-                        print("BBB ", act_id, label)
+                        #label = act+" ("+freq_prefix+str(activ_freq_map[key][act])+")"
+                        label = act
                         viz.node(act_id, label, style='filled', fillcolor=persp_color, shape=node_shape, width='3.8')
 
                 if act in res["start_activities"][key]:
