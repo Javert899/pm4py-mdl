@@ -83,8 +83,8 @@ class Process(object):
         self.selected_aggregation_measure = "events"
         self.selected_decoration_measure = "frequency"
         self.selected_projection = "no"
-        self.selected_min_acti_count = 10
-        self.selected_min_edge_freq_count = 10
+        self.selected_min_acti_count = 30
+        self.selected_min_edge_freq_count = 30
         self.model_view = ""
 
     def get_stream(self):
