@@ -66,15 +66,19 @@ def apply(res, measure="frequency", freq="events", classifier="activity", projec
                 else:
                     acti_map[act] = act_id
                     if act in res["activities_repeated"]:
-                        viz.node(act_id, act+" ("+freq_prefix+str(activ_freq_map[key][act])+")", style='filled', fillcolor="white", color=persp_color, shape=node_shape, width='3.8')
+                        label = act+" ("+freq_prefix+str(activ_freq_map[key][act])+")"
+                        print("AAA ", act_id, label)
+                        viz.node(act_id, label, style='filled', fillcolor="white", color=persp_color, shape=node_shape, width='3.8')
                     else:
-                        viz.node(act_id, act+" ("+freq_prefix+str(activ_freq_map[key][act])+")", style='filled', fillcolor=persp_color, shape=node_shape, width='3.8')
+                        label = act+" ("+freq_prefix+str(activ_freq_map[key][act])+")"
+                        print("BBB ", act_id, label)
+                        viz.node(act_id, label, style='filled', fillcolor=persp_color, shape=node_shape, width='3.8')
 
                 if act in res["start_activities"][key]:
-                    viz.edge(sn_uuid, act_id, color=persp_color)
+                    viz.edge(sn_uuid, acti_map[act], color=persp_color)
 
                 if act in res["end_activities"][key]:
-                    viz.edge(act_id, en_uuid, color=persp_color)
+                    viz.edge(acti_map[act], en_uuid, color=persp_color)
 
             for k in edges_map[key]:
                 if measure == "frequency":
