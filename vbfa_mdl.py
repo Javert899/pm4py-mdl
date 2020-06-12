@@ -11,7 +11,7 @@ class Shared:
     vbeln = {}
     timestamp_column = "event_timestamp"
     activity_column = "event_activity"
-    dir = r"C:\Users\aless\Documents\sap_extraction"
+    dir = r"../sap_extraction"
     tcodes = {}
     associated_events = {}
     enable_filling_events = False
@@ -21,10 +21,11 @@ class Shared:
     bkpf = {}
     vbap = {}
     ekpo = {}
+    lips = {}
 
 
 def read_vbap():
-    vbap = pd.read_csv(os.path.join(Shared.dir, "vbap.tsv"), sep="\t", dtype={"VBELN": str, "MATNTR": str})
+    vbap = pd.read_csv(os.path.join(Shared.dir, "vbap.tsv"), sep="\t", dtype={"VBELN": str, "MATNR": str})
     vbap = vbap.dropna(subset=["VBELN"])
     vbap = vbap.dropna(subset=["MATNR"])
     vbap = vbap.to_dict("r")
@@ -47,6 +48,19 @@ def read_ekpo():
         if ebeln not in Shared.ekpo:
             Shared.ekpo[ebeln] = set()
         Shared.ekpo[ebeln].add(matnr)
+
+
+def read_lips():
+    lips = pd.read_csv(os.path.join(Shared.dir, "lips.tsv"), sep="\t", dtype={"VBELN": str, "MATNR": str})
+    lips = lips.dropna(subset=["VBELN"])
+    lips = lips.dropna(subset=["MATNR"])
+    lips = lips.to_dict("r")
+    for ev in lips:
+        vbeln = ev["VBELN"]
+        matnr = ev["MATNR"]
+        if vbeln not in Shared.lips:
+            Shared.lips[vbeln] = set()
+        Shared.lips[vbeln].add(matnr)
 
 
 def read_ekko():
@@ -161,11 +175,13 @@ def get_class_from_type(typ):
 
 
 if __name__ == "__main__":
+    read_lips()
     read_ekpo()
     ekko_events = read_ekko()
     read_vbap()
-    # eban_events = read_eban()
-    eban_events = set()
+    eban_events = read_eban()
+    print(eban_events)
+    #eban_events = set()
     extract_bkpf()
     read_activities()
     read_vbak()
@@ -217,8 +233,17 @@ if __name__ == "__main__":
                     event = deepcopy(basic_event)
                     event["MATERIAL"] = matnr
                     events.add(frozendict(event))
+            if node in Shared.lips:
+                for matnr in Shared.lips[node]:
+                    event = deepcopy(basic_event)
+                    event["MATERIAL"] = matnr
+                    events.add(frozendict(event))
     events_to_add = set()
-    for ev in events:
+    for awkey in Shared.bkpf:
+        for ev in Shared.bkpf[awkey]:
+            print(ev)
+            events_to_add.add(ev)
+    """for ev in events:
         if ev["event_objid"] in Shared.bkpf:
             for nev0 in Shared.bkpf[ev["event_objid"]]:
                 nev1 = dict(nev0)
@@ -226,7 +251,7 @@ if __name__ == "__main__":
                 events_to_add.add(frozendict(nev1))
                 nev2 = dict(nev0)
                 nev2[ev["event_objtype"]] = ev["event_objid"]
-                events_to_add.add(frozendict(nev2))
+                events_to_add.add(frozendict(nev2))"""
     for ev in events_to_add:
         events.add(ev)
     for ev in eban_events:
