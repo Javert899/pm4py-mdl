@@ -27,7 +27,7 @@ def apply(df, file_path, obj_df=None, parameters=None):
         for ot in OT:
             red_df = obj_df[obj_df["object_type"] == ot].dropna(how="all", axis=1)
 
-            red_df = red_df.dropna(subset=["object_id"])
+            red_df = red_df.dropna(subset=["object_id"]).drop(columns=["object_type"])
 
             red_df.to_sql(name=ot, con=cnx, index=False)
 

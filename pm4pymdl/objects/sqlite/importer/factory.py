@@ -28,7 +28,7 @@ def apply(file_path, return_obj_dataframe=False, parameters=None):
         for ot in OT:
             o_df = pd.read_sql_query("SELECT * FROM " + ot, db)
             o_df = o_df.dropna(subset=["object_id"])
-            o_df = o_df.dropna(subset=["object_type"])
+            o_df["object_type"] = ot
 
             o_df = dataframe_utils.convert_timestamp_columns_in_df(o_df)
 
