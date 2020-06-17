@@ -108,3 +108,4 @@ venv.bak/
 *.xes*
 *.tsv
 *test*.py
+*.csv
