@@ -17,6 +17,14 @@ def apply(file_path, return_obj_dataframe=False, parameters=None):
 
     df = dataframe_utils.convert_timestamp_columns_in_df(df)
 
+    """print(df)
+
+    ot_columns = [x for x in df.columns if not x.startswith("event_")]
+    for ot in ot_columns:
+        df[ot] = df[ot].apply(lambda x: eval(x))
+
+    print(df)"""
+
     if return_obj_dataframe:
         ot_df = pd.read_sql_query("SELECT * FROM __OBJECT_TYPES", db)
         ot_df = ot_df.dropna(subset=["NAME"])
