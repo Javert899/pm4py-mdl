@@ -2,7 +2,7 @@ from collections import Counter
 from statistics import mean
 
 
-def projection(edges_map, reference_map, type="no"):
+def projection(edges_map, reference_map, type="no", return_acti_map=False):
     acti_assignation_map = {}
     acti_assignation_score = {}
     for k in reference_map:
@@ -17,6 +17,9 @@ def projection(edges_map, reference_map, type="no"):
                 edges_map[k] = {x: y for x, y in edges_map[k].items() if acti_assignation_map[x[0]] == k}
             elif type == "target":
                 edges_map[k] = {x: y for x, y in edges_map[k].items() if acti_assignation_map[x[1]] == k}
+
+    if return_acti_map:
+        return edges_map, acti_assignation_map
     return edges_map
 
 
