@@ -326,7 +326,7 @@ def reset_filters():
 
 def main():
     if defaults.CONFIGURATION == 1:
-        #Shared.logs["orders"] = Process("orders", "example_logs/mdl/order_management.mdl", Shared.logs)
+        Shared.logs["orders"] = Process("orders", "example_logs/mdl/order_management.mdl", Shared.logs)
         # Shared.logs["orders2"] = Process("orders2", "example_logs/mdl/order_management.mdl", Shared.logs)
         Shared.logs["o2c"] = Process("o2c", "example_logs/mdl/o2c.mdl", Shared.logs)
         Shared.logs["p2p"] = Process("p2p", "example_logs/parquet/log_p2p.parquet", Shared.logs)
