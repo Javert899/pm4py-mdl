@@ -10,7 +10,7 @@ COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#30
 
 def get_label(act):
     if len(act) > 10:
-        return act[:10]
+        return act[:10]+"..."
     return act
 
 def apply(res, measure="frequency", freq="events", classifier="activity", projection="no", parameters=None):
@@ -61,8 +61,6 @@ def apply(res, measure="frequency", freq="events", classifier="activity", projec
                 act_id = str(id(act))
 
                 if key == acti_assignation_map[act]:
-                    print(act, acti_assignation_map[act])
-
                     acti_map[act] = act_id
                     if act in res["activities_repeated"]:
                         label = get_label(act)

@@ -336,9 +336,9 @@ class Process(object):
         self.graph = None
 
     def set_properties(self):
-        if len(self.dataframe) < 505:
+        """if len(self.dataframe) < 505:
             self.get_graph()
-            self.do_clustering()
+            self.do_clustering()"""
         self.activities = sorted(list(self.dataframe["event_activity"].unique()))
         attr_types = self.get_act_attr_types(self.activities)
         act_obj_types = self.get_act_obj_types(self.activities)

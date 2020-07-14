@@ -18,7 +18,7 @@
           <div>
               <button onclick="javascript:resetFilters()">Reset Filters</button><br />
               <button id="goback" onclick="javascript:goToCasesView()">Go to Events View</button><br />
-              <button id="activitysel" onclick="javascript:goToActOtSelection()">Act./Type Sel.</button><br /><br />
+              <!--<button id="activitysel" onclick="javascript:goToActOtSelection()">Act./Type Sel.</button><br /><br />-->
           </div>
           <div>
               Change log:
@@ -87,13 +87,13 @@
           <div>
               <a href="javascript:applySpecPathFilter()">Apply Paths filter</a>
           </div>
-          <div>
+          <!--<div>
               <p>Download log for type:</p>
               <select id="object_type_sel" name="object_type_sel">
 
               </select>
               <button onclick="javascript:getLogObjectType()">Download</button>
-          </div>
+          </div>-->
           <div style="display: none" id="clustersdiv">
               Cluster:
               <select id="clusterselector" name="clusterselector">
@@ -295,7 +295,7 @@
         clusters = '{{ Process.clustersrepr }}'.split("@@@");
         objtypes = '{{ Process.obj_types_str }}';
         objtypes = objtypes.split("@@@");
-        if (clusters.length > 0) {
+        /*if (clusters.length > 0) {
             var cluster_div = document.getElementById("clustersdiv");
             var cluster_selector = document.getElementById("clusterselector");
             let i = 0;
@@ -307,7 +307,7 @@
                 i++;
             }
             cluster_div.style.display = '';
-        }
+        }*/
         var log_selector = document.getElementById("logselector");
         let i = 0;
         while (i < pnames.length) {
@@ -326,7 +326,7 @@
             var option = document.createElement("option");
             option.text = objtypes[i];
             option.value = objtypes[i];
-            object_type_sel.add(option);
+            //object_type_sel.add(option);
             i++;
         }
         var x = document.cookie.split(";");

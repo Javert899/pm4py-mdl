@@ -5,8 +5,8 @@
 CONFIGURATION = 1
 
 if CONFIGURATION == 1:
-    DEFAULT_MODEL_TYPE = "process_tree"
+    DEFAULT_MODEL_TYPE = "dfg"
 elif CONFIGURATION == 2:
-    DEFAULT_MODEL_TYPE = "process_tree"
+    DEFAULT_MODEL_TYPE = "dfg"
 elif CONFIGURATION == 3:
-    DEFAULT_MODEL_TYPE = "process_tree"
+    DEFAULT_MODEL_TYPE = "dfg"

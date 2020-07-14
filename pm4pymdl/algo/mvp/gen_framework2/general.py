@@ -19,7 +19,7 @@ def preprocess(df, parameters=None):
     if conversion_needed:
         df = succint_mdl_to_exploded_mdl.apply(df)
 
-    df = clean_objtypes.perfom_cleaning(df, parameters=parameters)
+    #df = clean_objtypes.perfom_cleaning(df, parameters=parameters)
 
     if len(df) == 0:
         df = pd.DataFrame({"event_id": [], "event_activity": []})
