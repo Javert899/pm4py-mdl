@@ -9,8 +9,6 @@ COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#30
 
 
 def get_label(act):
-    if len(act) > 10:
-        return act[:10]+"..."
     return act
 
 def apply(res, measure="frequency", freq="events", classifier="activity", projection="no", parameters=None):
