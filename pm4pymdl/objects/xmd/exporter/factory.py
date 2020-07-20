@@ -112,7 +112,7 @@ def apply(df, file_path, obj_df=None, parameters=None):
     ret = {}
     ret[prefix+"att_types"] = att_types
     ret[prefix+"acti_mandatory"] = acti_mandatory
-    ret[prefix+"type_mandatory"] = ot_mandatory
+    ret[prefix+"ot_mandatory"] = ot_mandatory
     ret[prefix+"events"] = []
     ret[prefix+"objects"] = {}
 
