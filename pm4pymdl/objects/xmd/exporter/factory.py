@@ -22,7 +22,7 @@ def apply(df, file_path, obj_df=None, parameters=None):
     if parameters is None:
         parameters = {}
 
-    prefix = "aaa:"
+    prefix = "xmd:"
 
     conversion_needed = True
     try:
@@ -114,6 +114,7 @@ def apply(df, file_path, obj_df=None, parameters=None):
     ret[prefix+"acti_mandatory"] = acti_mandatory
     ret[prefix+"type_mandatory"] = ot_mandatory
     ret[prefix+"events"] = []
+    ret[prefix+"objects"] = {}
 
     for act in acti_df:
         stream = acti_df[act].to_dict('r')
@@ -135,6 +136,18 @@ def apply(df, file_path, obj_df=None, parameters=None):
                     el2[prefix+"vmap"][k] = el[k]
             ret[prefix+"events"].append(el2)
             break
+
+    for t in ot_df:
+        ret[prefix + "objects"][t] = []
+        stream = ot_df[t].to_dict('r')
+        for el in stream:
+            el2 = {}
+            el2[prefix + "id"] = el["id"]
+            el2[prefix + "vmap"] = {}
+            for k in el:
+                if not k in ["id", "type"]:
+                    el2[prefix + "vmap"][k] = el[k]
+            ret[prefix + "objects"][t].append(el2)
 
     ret[prefix+"events"] = sorted(ret[prefix+"events"], key=lambda x: x[prefix+"timestamp"])
     #print(ret["events"])
