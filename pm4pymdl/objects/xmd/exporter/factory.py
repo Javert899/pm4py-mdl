@@ -5,6 +5,10 @@ import json
 
 def json_serial(obj):
     """JSON serializer for objects not serializable by default json code"""
+    if "time" in str(type(obj)):
+        stru = str(obj)
+        stru = stru.replace(" ","T") + "Z"
+        return stru
     return str(obj)
 
 
@@ -14,7 +18,6 @@ def get_type(t0):
     elif "object" in str(t0).lower():
         return "string"
     else:
-        print(t0)
         return "string"
 
 
