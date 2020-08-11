@@ -1,9 +1,10 @@
 import networkx
 from pm4py.objects.log.log import EventLog, Trace, Event
 from datetime import datetime
+from pm4py.objects.log.util import sorting
 
 
-def apply(df, source_attr, target_attr, type_attr, timestamp_key):
+def apply(df, source_attr, target_attr, type_attr, timestamp_key, reverse=False):
     df[source_attr] = df[source_attr].astype(str)
     df[target_attr] = df[target_attr].astype(str)
     df[type_attr] = df[type_attr].astype(str)
@@ -26,7 +27,10 @@ def apply(df, source_attr, target_attr, type_attr, timestamp_key):
     for k in map_types:
         G.add_node(k)
     for el in map_source_target:
-        G.add_edge(el[0], el[1])
+        if reverse:
+            G.add_edge(el[1], el[0])
+        else:
+            G.add_edge(el[0], el[1])
 
     conn_comp = sorted(list(networkx.connected_components(networkx.Graph(G))), key=lambda x: len(x), reverse=True)
 
@@ -47,12 +51,12 @@ def create_log(G, conn_comp, timestamps, max_comp_len=50, include_loops=False):
                     SGG.remove_edge(e[0], e[1])
             sorted_nodes = list(networkx.topological_sort(SGG))
             for n in sorted_nodes:
+                selfloop = 1 if (n,n) in SG.edges else 0
                 trace.append(Event({'time:timestamp': timestamps[n.split("=")[1]], 'concept:name': n.split("=")[0],
-                                    'value': n.split("=")[1], 'typevalue': n}))
-                """if (n,n) in SG.edges:
-                    timest = timest + 1
-                    trace.append(Event(
-                        {'time:timestamp': datetime.fromtimestamp(timest), 'concept:name': n.split("=")[0],
-                         'value': n.split("=")[1], 'typevalue': n}))"""
+                                    'value': n.split("=")[1], 'typevalue': n, 'selfloop': selfloop}))
+                if include_loops and selfloop:
+                    trace.append(Event({'time:timestamp': timestamps[n.split("=")[1]], 'concept:name': n.split("=")[0],
+                                        'value': n.split("=")[1], 'typevalue': n, 'selfloop': selfloop}))
             log.append(trace)
+    log = sorting.sort_timestamp_log(log, "time:timestamp")
     return log
