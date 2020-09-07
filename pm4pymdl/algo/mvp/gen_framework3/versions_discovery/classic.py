@@ -11,7 +11,8 @@ def apply(df, parameters=None):
 
     ret = {}
 
-    df = succint_mdl_to_exploded_mdl.apply(df)
+    if df.type == "succint":
+        df = succint_mdl_to_exploded_mdl.apply(df)
 
     df = df.sort_values(["event_timestamp", "event_id"])
     columns = [x for x in df.columns if not x.startswith("event") or x == "event_activity" or x == "event_id"]
@@ -49,14 +50,15 @@ def apply(df, parameters=None):
                 if act not in activities:
                     activities[act] = {"events": set(), "objects": set(), "eo": set()}
                 if act not in activities_local:
-                    activities_local[act] = {"objects": set(), "preceded_by": dict(), "followed_by": dict()}
+                    activities_local[act] = {"objects": set(), "eo": set(), "preceded_by": dict(), "followed_by": dict()}
                 activities[act]["events"].add(ev["event_id"])
                 activities[act]["objects"].add(ev[t])
                 activities[act]["eo"].add((ev["event_id"], ev[t]))
                 activities_local[act]["objects"].add(ev[t])
+                activities_local[act]["eo"].add((ev["event_id"], ev[t]))
                 if i == 0:
                     if act not in start_activities:
-                        start_activities[act] = {"events": set(), "objects": set(), "eo": set()}
+                        start_activities[act] = {"events": set(), "objects": set(), "eo": set(), "must": False}
                     start_activities[act]["events"].add(ev["event_id"])
                     start_activities[act]["objects"].add(ev[t])
                     start_activities[act]["eo"].add((ev["event_id"], ev[t]))
@@ -70,7 +72,7 @@ def apply(df, parameters=None):
                     activities_local[act]["followed_by"][evs[i + 1]["event_activity"]].add(ev[t])
                 if i == len(evs) - 1:
                     if act not in end_activities:
-                        end_activities[act] = {"events": set(), "objects": set(), "eo": set()}
+                        end_activities[act] = {"events": set(), "objects": set(), "eo": set(), "must": False}
                     end_activities[act]["events"].add(ev["event_id"])
                     end_activities[act]["objects"].add(ev[t])
                     end_activities[act]["eo"].add((ev["event_id"], ev[t]))
@@ -110,10 +112,16 @@ def apply(df, parameters=None):
             start_activities[act]["objects"] = len(start_activities[act]["objects"])
             start_activities[act]["eo"] = len(start_activities[act]["eo"])
 
+            if start_activities[act]["eo"] == len(activities_local[act]["eo"]):
+                start_activities[act]["must"] = True
+
         for act in end_activities:
             end_activities[act]["events"] = len(end_activities[act]["events"])
             end_activities[act]["objects"] = len(end_activities[act]["objects"])
             end_activities[act]["eo"] = len(end_activities[act]["eo"])
+
+            if end_activities[act]["eo"] == len(activities_local[act]["eo"]):
+                end_activities[act]["must"] = True
 
         types_view[t] = {"start_activities": start_activities, "end_activities": end_activities,
                          "activities_local": activities_local, "edges": edges}

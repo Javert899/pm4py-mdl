@@ -16,14 +16,14 @@ class ObjCentricMultigraph(object):
             t = self.dictio["types_view"][tk]
             ret.append("\t\tstart activities: ")
             for act in t["start_activities"]:
-                ret.append("(%s,%d,%d,%d) " % (
+                ret.append("(%s,E=%d,O=%d,EO=%d,must=%s) " % (
                     act, t["start_activities"][act]["events"], t["start_activities"][act]["objects"],
-                    t["start_activities"][act]["eo"]))
+                    t["start_activities"][act]["eo"], t["start_activities"][act]["must"]))
             ret.append("\n\t\tend activities: ")
             for act in t["end_activities"]:
-                ret.append("(%s,%d,%d,%d) " % (
+                ret.append("(%s,E=%d,O=%d,EO=%d,must=%s) " % (
                     act, t["end_activities"][act]["events"], t["end_activities"][act]["objects"],
-                    t["end_activities"][act]["eo"]))
+                    t["end_activities"][act]["eo"], t["end_activities"][act]["must"]))
             ret.append("\n\t\tedges: \n")
             for edge in t["edges"]:
                 ret.append("\t\t\t%s->%s E=%d O=%d EO=%d min_obj=%d max_obj=%d must=%s\n" % (
