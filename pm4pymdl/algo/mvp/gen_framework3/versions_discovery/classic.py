@@ -102,19 +102,28 @@ def apply(df, parameters=None):
             min_obj = min(eo_dict[x] for x in eo_dict)
             max_obj = max(eo_dict[x] for x in eo_dict)
 
-            predecessors = sorted(list(activities_local[edge[1]]["preceded_by"]), reverse=True,
-                                  key=lambda x: len(activities_local[edge[1]]["preceded_by"][x]))
+            if not edge[0] == edge[1]:
+                predecessors = sorted(list(activities_local[edge[1]]["preceded_by"]), reverse=True,
+                                      key=lambda x: len(activities_local[edge[1]]["preceded_by"][x]))
+                num = activities_local[edge[1]]["preceded_by"][predecessors[0]]
+                den = activities_local[edge[1]]["preceded_by"][predecessors[0]]
 
-            set_difference = edges[edge]["eo"].difference(activities_local[edge[1]]["preceded_by"][predecessors[0]])
-            set_intersection = edges[edge]["eo"].intersection(activities_local[edge[1]]["preceded_by"][predecessors[0]])
+                for i in range(1, len(predecessors)):
+                    den = den.union(activities_local[edge[1]]["preceded_by"][predecessors[i]])
 
-            q1 = len(set_intersection)
-            q2 = len(set_difference) / len(set_intersection) if len(set_intersection) > 0 else sys.maxsize
+                q0 = 1 - len(num)/len(den) if len(den) > 0 else sys.maxsize
 
-            if debug:
-                print("edge ", edge, "q1=", q1, "q2=", q2)
-            if q1 >= support and q2 <= epsilon:
-                edges[edge]["must"] = True
+                if q0 <= epsilon:
+                    set_difference = edges[edge]["eo"].difference(activities_local[edge[1]]["preceded_by"][predecessors[0]])
+                    set_intersection = edges[edge]["eo"].intersection(activities_local[edge[1]]["preceded_by"][predecessors[0]])
+
+                    q1 = len(set_intersection)
+                    q2 = len(set_difference) / len(set_intersection) if len(set_intersection) > 0 else sys.maxsize
+
+                    if debug:
+                        print("edge ", edge, "q1=", q1, "q2=", q2)
+                    if q1 >= support and q2 <= epsilon:
+                        edges[edge]["must"] = True
 
             edges[edge]["min_obj"] = min_obj
             edges[edge]["max_obj"] = max_obj

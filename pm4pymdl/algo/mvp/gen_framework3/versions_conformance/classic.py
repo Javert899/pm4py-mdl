@@ -34,10 +34,8 @@ def apply(df, model, parameters=None):
         min_obj[t] = {}
         max_obj[t] = {}
         for ak in model["types_view"][t]["start_activities"]:
-            a = model["types_view"][t]["start_activities"][ak]
             must_start[t] = ak
         for ak in model["types_view"][t]["end_activities"]:
-            a = model["types_view"][t]["end_activities"][ak]
             must_end[t] = ak
         for ek in model["types_view"][t]["edges"]:
             e = model["types_view"][t]["edges"][ek]
@@ -66,10 +64,11 @@ def apply(df, model, parameters=None):
                     if t in must_end and prev["event_activity"] == must_end[t]:
                         ret[-1].add("object %s of type %s - %s should be end activity!" % (o, t, must_end[t]))
                     else:
-                        if not must_edges[t][this_edge[1]] == this_edge[0]:
-                            ret[-1].add(
-                                "object %s of type %s - %s should be preceded by %s, instead is preceded by %s!" % (
-                                o, t, this_edge[1], must_edges[t][this_edge[1]], this_edge[0]))
+                        if this_edge[1] in must_edges[t]:
+                            if not must_edges[t][this_edge[1]] == this_edge[0]:
+                                ret[-1].add(
+                                    "object %s of type %s - %s should be preceded by %s, instead is preceded by %s!" % (
+                                    o, t, this_edge[1], must_edges[t][this_edge[1]], this_edge[0]))
 
                 dictio_objs[t][o] = ev
     return ret
