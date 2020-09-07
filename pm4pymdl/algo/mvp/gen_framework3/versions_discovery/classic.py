@@ -9,6 +9,10 @@ def apply(df, parameters=None):
     if parameters is None:
         parameters = {}
 
+    support = parameters["support"] if "support" in parameters else 1
+    epsilon = parameters["epsilon"] if "epsilon" in parameters else 0
+    debug = parameters["debug"] if "debug" in parameters else False
+
     ret = {}
 
     if df.type == "succint":
@@ -50,7 +54,8 @@ def apply(df, parameters=None):
                 if act not in activities:
                     activities[act] = {"events": set(), "objects": set(), "eo": set()}
                 if act not in activities_local:
-                    activities_local[act] = {"objects": set(), "eo": set(), "preceded_by": dict(), "followed_by": dict()}
+                    activities_local[act] = {"objects": set(), "eo": set(), "preceded_by": dict(),
+                                             "followed_by": dict()}
                 activities[act]["events"].add(ev["event_id"])
                 activities[act]["objects"].add(ev[t])
                 activities[act]["eo"].add((ev["event_id"], ev[t]))
@@ -65,11 +70,11 @@ def apply(df, parameters=None):
                 if i > 0:
                     if not evs[i - 1]["event_activity"] in activities_local[act]["preceded_by"]:
                         activities_local[act]["preceded_by"][evs[i - 1]["event_activity"]] = set()
-                    activities_local[act]["preceded_by"][evs[i - 1]["event_activity"]].add(ev[t])
+                    activities_local[act]["preceded_by"][evs[i - 1]["event_activity"]].add((ev["event_id"], ev[t]))
                 if i < len(evs) - 1:
                     if not evs[i + 1]["event_activity"] in activities_local[act]["followed_by"]:
                         activities_local[act]["followed_by"][evs[i + 1]["event_activity"]] = set()
-                    activities_local[act]["followed_by"][evs[i + 1]["event_activity"]].add(ev[t])
+                    activities_local[act]["followed_by"][evs[i + 1]["event_activity"]].add((ev["event_id"], ev[t]))
                 if i == len(evs) - 1:
                     if act not in end_activities:
                         end_activities[act] = {"events": set(), "objects": set(), "eo": set(), "must": False}
@@ -97,31 +102,57 @@ def apply(df, parameters=None):
             min_obj = min(eo_dict[x] for x in eo_dict)
             max_obj = max(eo_dict[x] for x in eo_dict)
 
+            predecessors = sorted(list(activities_local[edge[1]]["preceded_by"]), reverse=True,
+                                  key=lambda x: len(activities_local[edge[1]]["preceded_by"][x]))
+
+            set_difference = edges[edge]["eo"].difference(activities_local[edge[1]]["preceded_by"][predecessors[0]])
+            set_intersection = edges[edge]["eo"].intersection(activities_local[edge[1]]["preceded_by"][predecessors[0]])
+
+            q1 = len(set_intersection)
+            q2 = len(set_difference) / len(set_intersection) if len(set_intersection) > 0 else sys.maxsize
+
+            if debug:
+                print("edge ", edge, "q1=", q1, "q2=", q2)
+            if q1 >= support and q2 <= epsilon:
+                edges[edge]["must"] = True
+
             edges[edge]["min_obj"] = min_obj
             edges[edge]["max_obj"] = max_obj
             edges[edge]["events"] = len(edges[edge]["events"])
             edges[edge]["objects"] = len(edges[edge]["objects"])
             edges[edge]["eo"] = len(edges[edge]["eo"])
 
-            predecessors = list(activities_local[edge[1]]["preceded_by"])
-            if len(predecessors) == 1 and len(activities_local[edge[1]]["preceded_by"][predecessors[0]]) == edges[edge]["objects"]:
-                edges[edge]["must"] = True
-
         for act in start_activities:
+            set_intersection = start_activities[act]["eo"].intersection(activities_local[act]["eo"])
+            set_difference = start_activities[act]["eo"].difference(activities_local[act]["eo"])
+
+            q1 = len(set_intersection)
+            q2 = len(set_difference) / len(set_intersection) if len(set_intersection) > 0 else sys.maxsize
+
+            if debug:
+                print("start_activity ", act, "q1=", q1, "q2=", q2)
+            if q1 >= support and q2 <= epsilon:
+                start_activities[act]["must"] = True
+
             start_activities[act]["events"] = len(start_activities[act]["events"])
             start_activities[act]["objects"] = len(start_activities[act]["objects"])
             start_activities[act]["eo"] = len(start_activities[act]["eo"])
 
-            if start_activities[act]["eo"] == len(activities_local[act]["eo"]):
-                start_activities[act]["must"] = True
-
         for act in end_activities:
+            set_intersection = end_activities[act]["eo"].intersection(activities_local[act]["eo"])
+            set_difference = end_activities[act]["eo"].difference(activities_local[act]["eo"])
+
+            q1 = len(set_intersection)
+            q2 = len(set_difference) / len(set_intersection) if len(set_intersection) > 0 else sys.maxsize
+
+            if debug:
+                print("end_activity ", act, "q1=", q1, "q2=", q2)
+            if q1 >= support and q2 <= epsilon:
+                end_activities[act]["must"] = True
+
             end_activities[act]["events"] = len(end_activities[act]["events"])
             end_activities[act]["objects"] = len(end_activities[act]["objects"])
             end_activities[act]["eo"] = len(end_activities[act]["eo"])
-
-            if end_activities[act]["eo"] == len(activities_local[act]["eo"]):
-                end_activities[act]["must"] = True
 
         types_view[t] = {"start_activities": start_activities, "end_activities": end_activities,
                          "activities_local": activities_local, "edges": edges}
@@ -135,4 +166,3 @@ def apply(df, parameters=None):
     ret["types_view"] = types_view
 
     return model.ObjCentricMultigraph(ret)
-
