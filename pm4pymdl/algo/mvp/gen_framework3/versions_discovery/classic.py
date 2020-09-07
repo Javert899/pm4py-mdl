@@ -49,7 +49,7 @@ def apply(df, parameters=None):
                 if act not in activities:
                     activities[act] = {"events": set(), "objects": set(), "eo": set()}
                 if act not in activities_local:
-                    activities_local[act] = {"objects": set(), "preceded_by": Counter(), "followed_by": Counter()}
+                    activities_local[act] = {"objects": set(), "preceded_by": dict(), "followed_by": dict()}
                 activities[act]["events"].add(ev["event_id"])
                 activities[act]["objects"].add(ev[t])
                 activities[act]["eo"].add((ev["event_id"], ev[t]))
@@ -61,9 +61,13 @@ def apply(df, parameters=None):
                     start_activities[act]["objects"].add(ev[t])
                     start_activities[act]["eo"].add((ev["event_id"], ev[t]))
                 if i > 0:
-                    activities_local[act]["preceded_by"][evs[i - 1]["event_activity"]] += 1
+                    if not evs[i - 1]["event_activity"] in activities_local[act]["preceded_by"]:
+                        activities_local[act]["preceded_by"][evs[i - 1]["event_activity"]] = set()
+                    activities_local[act]["preceded_by"][evs[i - 1]["event_activity"]].add(ev[t])
                 if i < len(evs) - 1:
-                    activities_local[act]["followed_by"][evs[i - 1]["event_activity"]] += 1
+                    if not evs[i + 1]["event_activity"] in activities_local[act]["followed_by"]:
+                        activities_local[act]["followed_by"][evs[i + 1]["event_activity"]] = set()
+                    activities_local[act]["followed_by"][evs[i + 1]["event_activity"]].add(ev[t])
                 if i == len(evs) - 1:
                     if act not in end_activities:
                         end_activities[act] = {"events": set(), "objects": set(), "eo": set()}
@@ -78,11 +82,28 @@ def apply(df, parameters=None):
                                                                                "eo": set(),
                                                                                "min_obj": 1, "max_obj": sys.maxsize,
                                                                                "must": False}
+                edges[(ev0["event_activity"], ev1["event_activity"])]["events"].add(ev1["event_id"])
+                edges[(ev0["event_activity"], ev1["event_activity"])]["objects"].add(ev1[t])
+                edges[(ev0["event_activity"], ev1["event_activity"])]["eo"].add((ev1["event_id"], ev1[t]))
 
         for edge in edges:
+            eo_dict = {x: set() for x in edges[edge]["events"]}
+            for eo in edges[edge]["eo"]:
+                eo_dict[eo[0]].add(eo[1])
+            for e in eo_dict:
+                eo_dict[e] = len(eo_dict[e])
+            min_obj = min(eo_dict[x] for x in eo_dict)
+            max_obj = max(eo_dict[x] for x in eo_dict)
+
+            edges[edge]["min_obj"] = min_obj
+            edges[edge]["max_obj"] = max_obj
             edges[edge]["events"] = len(edges[edge]["events"])
             edges[edge]["objects"] = len(edges[edge]["objects"])
             edges[edge]["eo"] = len(edges[edge]["eo"])
+
+            predecessors = list(activities_local[edge[1]]["preceded_by"])
+            if len(predecessors) == 1 and len(activities_local[edge[1]]["preceded_by"][predecessors[0]]) == edges[edge]["objects"]:
+                edges[edge]["must"] = True
 
         for act in start_activities:
             start_activities[act]["events"] = len(start_activities[act]["events"])

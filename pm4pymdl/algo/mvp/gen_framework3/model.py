@@ -7,7 +7,7 @@ class ObjCentricMultigraph(object):
         ret.append("\nObject-Centric Multigraph\n\n")
         ret.append("Activities (Events, Objects, EO):\n")
         for act in self.dictio["activities"]:
-            ret.append("\t%s\t%d\t%d\t%d\n" % (
+            ret.append("\t%s\tE=%d\tO=%d\tEO=%d\n" % (
                 act, self.dictio["activities"][act]["events"], self.dictio["activities"][act]["objects"],
                 self.dictio["activities"][act]["eo"]))
         ret.append("\nTypes:\n")
@@ -17,12 +17,16 @@ class ObjCentricMultigraph(object):
             ret.append("\t\tstart activities: ")
             for act in t["start_activities"]:
                 ret.append("(%s,%d,%d,%d) " % (
-                act, t["start_activities"][act]["events"], t["start_activities"][act]["objects"],
-                t["start_activities"][act]["eo"]))
+                    act, t["start_activities"][act]["events"], t["start_activities"][act]["objects"],
+                    t["start_activities"][act]["eo"]))
             ret.append("\n\t\tend activities: ")
             for act in t["end_activities"]:
                 ret.append("(%s,%d,%d,%d) " % (
-                act, t["end_activities"][act]["events"], t["end_activities"][act]["objects"],
-                t["end_activities"][act]["eo"]))
-            ret.append("\n")
+                    act, t["end_activities"][act]["events"], t["end_activities"][act]["objects"],
+                    t["end_activities"][act]["eo"]))
+            ret.append("\n\t\tedges: \n")
+            for edge in t["edges"]:
+                ret.append("\t\t\t%s->%s E=%d O=%d EO=%d min_obj=%d max_obj=%d must=%s\n" % (
+                    edge[0], edge[1], t["edges"][edge]["events"], t["edges"][edge]["objects"], t["edges"][edge]["eo"],
+                    t["edges"][edge]["min_obj"], t["edges"][edge]["max_obj"], t["edges"][edge]["must"]))
         return "".join(ret)
