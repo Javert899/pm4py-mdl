@@ -15,10 +15,11 @@ def apply(df, parameters=None):
 
     ret = {}
 
-    if df.type == "succint":
+    df_type = df.type
+    df = df.sort_values(["event_timestamp", "event_id"])
+    if df_type == "succint":
         df = succint_mdl_to_exploded_mdl.apply(df)
 
-    df = df.sort_values(["event_timestamp", "event_id"])
     columns = [x for x in df.columns if not x.startswith("event") or x == "event_activity" or x == "event_id"]
     df = df[columns]
 
@@ -148,8 +149,8 @@ def apply(df, parameters=None):
             start_activities[act]["eo"] = len(start_activities[act]["eo"])
 
         for act in end_activities:
-            set_intersection = end_activities[act]["eo"].intersection(activities_local[act]["eo"])
-            set_difference = end_activities[act]["eo"].difference(activities_local[act]["eo"])
+            set_intersection = activities_local[act]["eo"].intersection(end_activities[act]["eo"])
+            set_difference = activities_local[act]["eo"].difference(end_activities[act]["eo"])
 
             q1 = len(set_intersection)
             q2 = len(set_difference) / len(set_intersection) if len(set_intersection) > 0 else sys.maxsize

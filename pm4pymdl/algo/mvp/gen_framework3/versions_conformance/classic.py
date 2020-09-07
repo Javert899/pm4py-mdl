@@ -8,7 +8,9 @@ def apply(df, model, parameters=None):
     ret = []
     model = model.dictio
 
-    if df.type == "exploded":
+    df_type = df.type
+    df = df.sort_values(["event_timestamp", "event_id"])
+    if df_type == "exploded":
         stream = exploded_mdl_to_stream.apply(df)
     else:
         stream = df.to_dict('r')
@@ -34,9 +36,15 @@ def apply(df, model, parameters=None):
         min_obj[t] = {}
         max_obj[t] = {}
         for ak in model["types_view"][t]["start_activities"]:
-            must_start[t] = ak
+            if model["types_view"][t]["start_activities"][ak]["must"]:
+                if t not in must_start:
+                    must_start[t] = set()
+                must_start[t].add(ak)
         for ak in model["types_view"][t]["end_activities"]:
-            must_end[t] = ak
+            if model["types_view"][t]["end_activities"][ak]["must"]:
+                if t not in must_end:
+                    must_end[t] = set()
+                must_end[t].add(ak)
         for ek in model["types_view"][t]["edges"]:
             e = model["types_view"][t]["edges"][ek]
             if e["must"]:
@@ -51,18 +59,21 @@ def apply(df, model, parameters=None):
         for t in class_keys:
             for o in ev[t]:
                 if not o in dictio_objs[t]:
-                    if t in must_start and not ev["event_activity"] == must_start[t]:
+                    if t in must_start and not ev["event_activity"] in must_start[t]:
                         ret[-1].add("start activity for object %s of type %s - should be %s instead is %s" % (
                             o, t, must_start[t], ev["event_activity"]))
                 else:
                     prev = dictio_objs[t][o]
                     this_edge = (prev["event_activity"], ev["event_activity"])
-                    if not (min_obj[t][this_edge] <= len(ev[t]) <= max_obj[t][this_edge]):
-                        ret[-1].add("number of related objects should be between %d and %d - instead is %d" % (
-                            min_obj[t][this_edge], max_obj[t][this_edge], len(ev[t])))
+                    inte = set(ev[t]).intersection(set(prev[t]))
+                    """if not (min_obj[t][this_edge] <= len(inte) <= max_obj[t][this_edge]):
+                        ret[-1].add("number of related objects of type %s should be between %d and %d - instead is %d" % (
+                            t, min_obj[t][this_edge], max_obj[t][this_edge], len(inte)))"""
 
-                    if t in must_end and prev["event_activity"] == must_end[t]:
-                        ret[-1].add("object %s of type %s - %s should be end activity!" % (o, t, must_end[t]))
+                    if t in must_end and prev["event_activity"] in must_end[t]:
+                        ret[-1].add(
+                            "object %s of type %s - %s should be an end activity, instead is followed by %s!" % (
+                                o, t, prev["event_activity"], ev["event_activity"]))
                     else:
                         if this_edge[1] in must_edges[t]:
                             if not must_edges[t][this_edge[1]] == this_edge[0]:
