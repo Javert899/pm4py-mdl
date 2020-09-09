@@ -65,10 +65,10 @@ def apply(df, model, parameters=None):
                 else:
                     prev = dictio_objs[t][o]
                     this_edge = (prev["event_activity"], ev["event_activity"])
-                    inte = set(ev[t]).intersection(set(prev[t]))
-                    """if not (min_obj[t][this_edge] <= len(inte) <= max_obj[t][this_edge]):
+                    rel_ev_obj = [o2 for o2 in ev[t] if dictio_objs[t][o2] == prev]
+                    if not (min_obj[t][this_edge] <= len(rel_ev_obj) <= max_obj[t][this_edge]):
                         ret[-1].add("number of related objects of type %s should be between %d and %d - instead is %d" % (
-                            t, min_obj[t][this_edge], max_obj[t][this_edge], len(inte)))"""
+                            t, min_obj[t][this_edge], max_obj[t][this_edge], len(rel_ev_obj)))
 
                     if t in must_end and prev["event_activity"] in must_end[t]:
                         ret[-1].add(
@@ -80,6 +80,6 @@ def apply(df, model, parameters=None):
                                 ret[-1].add(
                                     "object %s of type %s - %s should be preceded by %s, instead is preceded by %s!" % (
                                     o, t, this_edge[1], must_edges[t][this_edge[1]], this_edge[0]))
-
+            for o in ev[t]:
                 dictio_objs[t][o] = ev
     return ret

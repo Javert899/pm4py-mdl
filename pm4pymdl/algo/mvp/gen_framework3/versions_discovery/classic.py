@@ -87,16 +87,20 @@ def apply(df, parameters=None):
                 ev1 = evs[i + 1]
                 if (ev0["event_activity"], ev1["event_activity"]) not in edges:
                     edges[((ev0["event_activity"], ev1["event_activity"]))] = {"events": set(), "objects": set(),
-                                                                               "eo": set(),
+                                                                               "eo": set(), "eeo": set(),
                                                                                "min_obj": 1, "max_obj": sys.maxsize,
                                                                                "must": False}
                 edges[(ev0["event_activity"], ev1["event_activity"])]["events"].add(ev1["event_id"])
                 edges[(ev0["event_activity"], ev1["event_activity"])]["objects"].add(ev1[t])
                 edges[(ev0["event_activity"], ev1["event_activity"])]["eo"].add((ev1["event_id"], ev1[t]))
+                edges[(ev0["event_activity"], ev1["event_activity"])]["eeo"].add(
+                    (ev0["event_id"] + "@@@" + ev1["event_id"], ev1[t]))
 
         for edge in edges:
             eo_dict = {x: set() for x in edges[edge]["events"]}
-            for eo in edges[edge]["eo"]:
+            for eo in edges[edge]["eeo"]:
+                eo_dict[eo[0]] = set()
+            for eo in edges[edge]["eeo"]:
                 eo_dict[eo[0]].add(eo[1])
             for e in eo_dict:
                 eo_dict[e] = len(eo_dict[e])
@@ -112,11 +116,13 @@ def apply(df, parameters=None):
                 for i in range(1, len(predecessors)):
                     den = den.union(activities_local[edge[1]]["preceded_by"][predecessors[i]])
 
-                q0 = 1 - len(num)/len(den) if len(den) > 0 else sys.maxsize
+                q0 = 1 - len(num) / len(den) if len(den) > 0 else sys.maxsize
 
                 if q0 <= epsilon:
-                    set_difference = edges[edge]["eo"].difference(activities_local[edge[1]]["preceded_by"][predecessors[0]])
-                    set_intersection = edges[edge]["eo"].intersection(activities_local[edge[1]]["preceded_by"][predecessors[0]])
+                    set_difference = edges[edge]["eo"].difference(
+                        activities_local[edge[1]]["preceded_by"][predecessors[0]])
+                    set_intersection = edges[edge]["eo"].intersection(
+                        activities_local[edge[1]]["preceded_by"][predecessors[0]])
 
                     q1 = len(set_intersection)
                     q2 = len(set_difference) / len(set_intersection) if len(set_intersection) > 0 else sys.maxsize
@@ -131,6 +137,7 @@ def apply(df, parameters=None):
             edges[edge]["events"] = len(edges[edge]["events"])
             edges[edge]["objects"] = len(edges[edge]["objects"])
             edges[edge]["eo"] = len(edges[edge]["eo"])
+            edges[edge]["eeo"] = len(edges[edge]["eeo"])
 
         for act in start_activities:
             set_intersection = start_activities[act]["eo"].intersection(activities_local[act]["eo"])
