@@ -52,7 +52,6 @@ def apply(model, measure="frequency", freq="semantics", classifier="activity", p
             act_nodes[act] = this_uuid
             viz.node(this_uuid, label=label, shape="box")
 
-
     for index, tk in enumerate(types_keys):
         t = model["types_view"][tk]
         for edge in t["edges"]:
@@ -67,6 +66,28 @@ def apply(model, measure="frequency", freq="semantics", classifier="activity", p
                 if fr >= min_edge_freq:
                     label = prefix + str(ann)
                     viz.edge(act_nodes[source], act_nodes[target], label=label, color=types_colors[tk])
+
+        frk = "events" if freq == "semantics" else freq
+        start_activities = [a for a in t["start_activities"] if
+                            a in act_nodes and t["start_activities"][a][frk] >= min_edge_freq]
+        end_activities = [a for a in t["end_activities"] if
+                          a in act_nodes and t["end_activities"][a][frk] >= min_edge_freq]
+
+        if start_activities:
+            sa_uuid = str(uuid.uuid4())
+            viz.node(sa_uuid, label="", shape="circle", style="filled", fillcolor=types_colors[tk])
+            for sa in start_activities:
+                sav = t["start_activities"][sa]
+                label = prefix + str(sav[freq])
+                viz.edge(sa_uuid, act_nodes[sa], label=label, color=types_colors[tk])
+
+        if end_activities:
+            ea_uuid = str(uuid.uuid4())
+            viz.node(ea_uuid, label="", shape="circle", style="filled", fillcolor=types_colors[tk])
+            for ea in end_activities:
+                eav = t["end_activities"][ea]
+                label = prefix + str(eav[freq])
+                viz.edge(act_nodes[ea], ea_uuid, label=label, color=types_colors[tk])
 
     viz.attr(overlap='false')
     viz.attr(fontsize='11')

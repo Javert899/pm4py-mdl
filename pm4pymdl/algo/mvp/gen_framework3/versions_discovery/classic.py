@@ -173,6 +173,9 @@ def apply(df, parameters=None):
             start_activities[act]["events"] = len(start_activities[act]["events"])
             start_activities[act]["objects"] = len(start_activities[act]["objects"])
             start_activities[act]["eo"] = len(start_activities[act]["eo"])
+            start_activities[act]["semantics"] = "%d..%d" % (start_activities[act]["min_obj"], start_activities[act]["max_obj"])
+            if start_activities[act]["must"]:
+                start_activities[act]["semantics"] = "(M) " + start_activities[act]["semantics"]
 
         for act in end_activities:
             eo_dict = {}
@@ -202,6 +205,9 @@ def apply(df, parameters=None):
             end_activities[act]["events"] = len(end_activities[act]["events"])
             end_activities[act]["objects"] = len(end_activities[act]["objects"])
             end_activities[act]["eo"] = len(end_activities[act]["eo"])
+            end_activities[act]["semantics"] = "%d..%d" % (end_activities[act]["min_obj"], end_activities[act]["max_obj"])
+            if end_activities[act]["must"]:
+                end_activities[act]["semantics"] = "(M) " + end_activities[act]["semantics"]
 
         types_view[t] = {"start_activities": start_activities, "end_activities": end_activities,
                          "activities_local": activities_local, "edges": edges}
