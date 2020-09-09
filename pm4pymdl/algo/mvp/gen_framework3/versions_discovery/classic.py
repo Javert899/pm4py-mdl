@@ -192,7 +192,7 @@ def apply_stream(stream, parameters=None):
 
             if debug:
                 print("start_activity ", act, "q1=", q1, "q2=", q2)
-            if q1 >= support and q2 <= epsilon:
+            if q1 >= support and q2 <= epsilon and len(start_activities) == 1:
                 start_activities[act]["must"] = True
 
             start_activities[act]["events"] = len(start_activities[act]["events"])
@@ -224,7 +224,7 @@ def apply_stream(stream, parameters=None):
 
             if debug:
                 print("end_activity ", act, "q1=", q1, "q2=", q2)
-            if q1 >= support and q2 <= epsilon:
+            if q1 >= support and q2 <= epsilon and len(end_activities) == 1:
                 end_activities[act]["must"] = True
 
             end_activities[act]["events"] = len(end_activities[act]["events"])
