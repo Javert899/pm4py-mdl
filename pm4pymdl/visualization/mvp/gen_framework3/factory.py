@@ -95,27 +95,31 @@ def apply(model, measure="frequency", freq="semantics", classifier="activity", p
         for edge in t["edges"]:
             source = edge[0]
             target = edge[1]
+            source_type = model["activities_mapping"][source][0]
+            target_type = model["activities_mapping"][target][0]
+
             if source in act_nodes and target in act_nodes:
-                ann = t["edges"][edge][freq]
-                if t["edges"][edge]["must"]:
-                    style = "solid"
-                else:
-                    style = "dashed"
-                if not freq == "semantics":
-                    fr = t["edges"][edge][freq]
-                else:
-                    fr = t["edges"][edge]["events"]
-                if fr >= min_edge_freq:
-                    if measure == "frequency":
-                        label = prefix + str(ann)
+                if projection == "no" or (projection == "source" and source_type == tk) or (projection == "target" and target_type == tk):
+                    ann = t["edges"][edge][freq]
+                    if t["edges"][edge]["must"]:
+                        style = "solid"
                     else:
-                        if freq == "events":
-                            label = "E=%s" % (human_readable_stat(t["edges"][edge]["performance_events"]))
-                        elif freq == "semantics":
-                            label = ""
+                        style = "dashed"
+                    if not freq == "semantics":
+                        fr = t["edges"][edge][freq]
+                    else:
+                        fr = t["edges"][edge]["events"]
+                    if fr >= min_edge_freq:
+                        if measure == "frequency":
+                            label = prefix + str(ann)
                         else:
-                            label = "EO=%s" % (human_readable_stat(t["edges"][edge]["performance_eo"]))
-                    viz.edge(act_nodes[source], act_nodes[target], style=style, label=label, color=types_colors[tk])
+                            if freq == "events":
+                                label = "E=%s" % (human_readable_stat(t["edges"][edge]["performance_events"]))
+                            elif freq == "semantics":
+                                label = ""
+                            else:
+                                label = "EO=%s" % (human_readable_stat(t["edges"][edge]["performance_eo"]))
+                        viz.edge(act_nodes[source], act_nodes[target], style=style, label=label, color=types_colors[tk])
 
         frk = "events" if freq == "semantics" else freq
         start_activities = [a for a in t["start_activities"] if
