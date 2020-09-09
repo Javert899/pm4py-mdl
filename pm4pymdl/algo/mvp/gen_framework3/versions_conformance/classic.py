@@ -11,6 +11,9 @@ def apply(df, model, parameters=None):
 
 
 def get_conf_stream_from_dataframe(df, parameters=None):
+    if parameters is None:
+        parameters = {}
+
     df_type = df.type
     df = df.sort_values(["event_timestamp", "event_id"])
     if df_type == "exploded":
