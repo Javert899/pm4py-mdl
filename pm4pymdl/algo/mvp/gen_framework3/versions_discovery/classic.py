@@ -10,11 +10,14 @@ def apply(df, parameters=None):
     if parameters is None:
         parameters = {}
 
-    support = parameters["support"] if "support" in parameters else 1
-    epsilon = parameters["epsilon"] if "epsilon" in parameters else 0
-    debug = parameters["debug"] if "debug" in parameters else False
+    stream = get_stream_from_dataframe(df, parameters=parameters)
 
-    ret = {}
+    return apply_stream(stream, parameters=parameters)
+
+
+def get_stream_from_dataframe(df, parameters=None):
+    if parameters is None:
+        parameters = {}
 
     df_type = df.type
     df = df.sort_values(["event_timestamp", "event_id"])
@@ -26,8 +29,21 @@ def apply(df, parameters=None):
 
     stream = converter.apply(df, variant=converter.Variants.TO_EVENT_STREAM)
 
+    return stream
+
+
+def apply_stream(stream, parameters=None):
+    if parameters is None:
+        parameters = {}
+
+    support = parameters["support"] if "support" in parameters else 1
+    epsilon = parameters["epsilon"] if "epsilon" in parameters else 0
+    debug = parameters["debug"] if "debug" in parameters else False
+
     types_lifecycle = {}
     types_view = {}
+
+    ret = {}
 
     for ev in stream:
         cl = [k for k in ev if not k.startswith("event_") and str(ev[k]) != "nan"][0]
