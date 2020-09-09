@@ -64,7 +64,8 @@ def apply(df, parameters=None):
                 activities_local[act]["eo"].add((ev["event_id"], ev[t]))
                 if i == 0:
                     if act not in start_activities:
-                        start_activities[act] = {"events": set(), "objects": set(), "eo": set(), "must": False}
+                        start_activities[act] = {"events": set(), "objects": set(), "eo": set(), "must": False,
+                                                 "min_obj": 1, "max_obj": sys.maxsize}
                     start_activities[act]["events"].add(ev["event_id"])
                     start_activities[act]["objects"].add(ev[t])
                     start_activities[act]["eo"].add((ev["event_id"], ev[t]))
@@ -78,7 +79,8 @@ def apply(df, parameters=None):
                     activities_local[act]["followed_by"][evs[i + 1]["event_activity"]].add((ev["event_id"], ev[t]))
                 if i == len(evs) - 1:
                     if act not in end_activities:
-                        end_activities[act] = {"events": set(), "objects": set(), "eo": set(), "must": False}
+                        end_activities[act] = {"events": set(), "objects": set(), "eo": set(), "must": False,
+                                               "min_obj": 1, "max_obj": sys.maxsize}
                     end_activities[act]["events"].add(ev["event_id"])
                     end_activities[act]["objects"].add(ev[t])
                     end_activities[act]["eo"].add((ev["event_id"], ev[t]))
@@ -97,7 +99,7 @@ def apply(df, parameters=None):
                     (ev0["event_id"] + "@@@" + ev1["event_id"], ev1[t]))
 
         for edge in edges:
-            eo_dict = {x: set() for x in edges[edge]["events"]}
+            eo_dict = {}
             for eo in edges[edge]["eeo"]:
                 eo_dict[eo[0]] = set()
             for eo in edges[edge]["eeo"]:
@@ -140,6 +142,19 @@ def apply(df, parameters=None):
             edges[edge]["eeo"] = len(edges[edge]["eeo"])
 
         for act in start_activities:
+            eo_dict = {}
+            for eo in start_activities[act]["eo"]:
+                eo_dict[eo[0]] = set()
+            for eo in start_activities[act]["eo"]:
+                eo_dict[eo[0]].add(eo[1])
+            for e in eo_dict:
+                eo_dict[e] = len(eo_dict[e])
+            min_obj = min(eo_dict[x] for x in eo_dict)
+            max_obj = max(eo_dict[x] for x in eo_dict)
+
+            start_activities[act]["min_obj"] = min_obj
+            start_activities[act]["max_obj"] = max_obj
+
             set_intersection = start_activities[act]["eo"].intersection(activities_local[act]["eo"])
             set_difference = start_activities[act]["eo"].difference(activities_local[act]["eo"])
 
@@ -156,6 +171,19 @@ def apply(df, parameters=None):
             start_activities[act]["eo"] = len(start_activities[act]["eo"])
 
         for act in end_activities:
+            eo_dict = {}
+            for eo in end_activities[act]["eo"]:
+                eo_dict[eo[0]] = set()
+            for eo in end_activities[act]["eo"]:
+                eo_dict[eo[0]].add(eo[1])
+            for e in eo_dict:
+                eo_dict[e] = len(eo_dict[e])
+            min_obj = min(eo_dict[x] for x in eo_dict)
+            max_obj = max(eo_dict[x] for x in eo_dict)
+
+            end_activities[act]["min_obj"] = min_obj
+            end_activities[act]["max_obj"] = max_obj
+
             set_intersection = activities_local[act]["eo"].intersection(end_activities[act]["eo"])
             set_difference = activities_local[act]["eo"].difference(end_activities[act]["eo"])
 
