@@ -2,6 +2,7 @@ from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl
 from pm4pymdl.algo.mvp.gen_framework3 import model
 from pm4py.objects.conversion.log import converter
 from collections import Counter
+from statistics import median
 import sys
 
 
@@ -20,7 +21,7 @@ def apply(df, parameters=None):
     if df_type == "succint":
         df = succint_mdl_to_exploded_mdl.apply(df)
 
-    columns = [x for x in df.columns if not x.startswith("event") or x == "event_activity" or x == "event_id"]
+    columns = [x for x in df.columns if not x.startswith("event") or x == "event_activity" or x == "event_id" or x == "event_timestamp"]
     df = df[columns]
 
     stream = converter.apply(df, variant=converter.Variants.TO_EVENT_STREAM)
@@ -91,12 +92,16 @@ def apply(df, parameters=None):
                     edges[((ev0["event_activity"], ev1["event_activity"]))] = {"events": set(), "objects": set(),
                                                                                "eo": set(), "eeo": set(),
                                                                                "min_obj": 1, "max_obj": sys.maxsize,
-                                                                               "must": False}
+                                                                               "must": False, "performance_events": set(),
+                                                                               "performance_eo": []}
                 edges[(ev0["event_activity"], ev1["event_activity"])]["events"].add(ev1["event_id"])
                 edges[(ev0["event_activity"], ev1["event_activity"])]["objects"].add(ev1[t])
                 edges[(ev0["event_activity"], ev1["event_activity"])]["eo"].add((ev1["event_id"], ev1[t]))
                 edges[(ev0["event_activity"], ev1["event_activity"])]["eeo"].add(
                     (str(ev0["event_id"]) + "@@@" + str(ev1["event_id"]), ev1[t]))
+                diff = ev1["event_timestamp"].timestamp() - ev0["event_timestamp"].timestamp()
+                edges[(ev0["event_activity"], ev1["event_activity"])]["performance_events"].add((ev1["event_id"], diff))
+                edges[(ev0["event_activity"], ev1["event_activity"])]["performance_eo"].append(diff)
 
         for edge in edges:
             eo_dict = {}
@@ -144,6 +149,10 @@ def apply(df, parameters=None):
             edges[edge]["semantics"] = "%d..%d" % (edges[edge]["min_obj"], edges[edge]["max_obj"])
             if edges[edge]["must"]:
                 edges[edge]["semantics"] = "(M) " + edges[edge]["semantics"]
+
+            edges[edge]["performance_eo"] = median(edges[edge]["performance_eo"])
+            edges[edge]["performance_events"] = list(x[1] for x in edges[edge]["performance_events"])
+            edges[edge]["performance_events"] = median(edges[edge]["performance_events"])
 
         for act in start_activities:
             eo_dict = {}

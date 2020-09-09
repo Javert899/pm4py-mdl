@@ -9,6 +9,39 @@ COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#30
           "#13ADA5", "#2DD8C1", "#2E53D7", "#EF9B77", "#06924F", "#AC2C4D", "#82193F", "#0140D3"]
 
 
+def human_readable_stat(c):
+    """
+    Transform a timedelta expressed in seconds into a human readable string
+
+    Parameters
+    ----------
+    c
+        Timedelta expressed in seconds
+
+    Returns
+    ----------
+    string
+        Human readable string
+    """
+    c = int(float(c))
+    years = c // 31104000
+    months = c // 2592000
+    days = c // 86400
+    hours = c // 3600 % 24
+    minutes = c // 60 % 60
+    seconds = c % 60
+    if years > 0:
+        return str(years) + "Y"
+    if months > 0:
+        return str(months) + "MO"
+    if days > 0:
+        return str(days) + "D"
+    if hours > 0:
+        return str(hours) + "h"
+    if minutes > 0:
+        return str(minutes) + "m"
+    return str(seconds) + "s"
+
 def apply(model, measure="frequency", freq="semantics", classifier="activity", projection="no", parameters=None):
     if parameters is None:
         parameters = {}
@@ -44,13 +77,18 @@ def apply(model, measure="frequency", freq="semantics", classifier="activity", p
         else:
             fr = model["activities"][act]["events"]
         if fr >= min_act_freq:
+            map_act = model["activities_mapping"][act]
+            act_type_color = types_colors[map_act[0]]
             if not freq == "semantics":
                 label = act + "\n(" + prefix + str(fr) + ")"
             else:
                 label = act
             this_uuid = str(uuid.uuid4())
             act_nodes[act] = this_uuid
-            viz.node(this_uuid, label=label, shape="box")
+            if map_act[1] == model["activities"][act]["events"]:
+                viz.node(this_uuid, label=label, fillcolor=act_type_color, shape="box", style="filled")
+            else:
+                viz.node(this_uuid, label=label, color=act_type_color, shape="box")
 
     for index, tk in enumerate(types_keys):
         t = model["types_view"][tk]
@@ -68,7 +106,15 @@ def apply(model, measure="frequency", freq="semantics", classifier="activity", p
                 else:
                     fr = t["edges"][edge]["events"]
                 if fr >= min_edge_freq:
-                    label = prefix + str(ann)
+                    if measure == "frequency":
+                        label = prefix + str(ann)
+                    else:
+                        if freq == "events":
+                            label = "E=%s" % (human_readable_stat(t["edges"][edge]["performance_events"]))
+                        elif freq == "semantics":
+                            label = ""
+                        else:
+                            label = "EO=%s" % (human_readable_stat(t["edges"][edge]["performance_eo"]))
                     viz.edge(act_nodes[source], act_nodes[target], style=style, label=label, color=types_colors[tk])
 
         frk = "events" if freq == "semantics" else freq
@@ -82,7 +128,11 @@ def apply(model, measure="frequency", freq="semantics", classifier="activity", p
             viz.node(sa_uuid, label="", shape="circle", style="filled", fillcolor=types_colors[tk])
             for sa in start_activities:
                 sav = t["start_activities"][sa]
-                label = prefix + str(sav[freq])
+                if measure == "frequency":
+                    label = prefix + str(sav[freq])
+                else:
+                    label = ""
+
                 if sav["must"]:
                     style = "solid"
                 else:
@@ -94,7 +144,11 @@ def apply(model, measure="frequency", freq="semantics", classifier="activity", p
             viz.node(ea_uuid, label="", shape="circle", style="filled", fillcolor=types_colors[tk])
             for ea in end_activities:
                 eav = t["end_activities"][ea]
-                label = prefix + str(eav[freq])
+                if measure == "frequency":
+                    label = prefix + str(eav[freq])
+                else:
+                    label = ""
+
                 if eav["must"]:
                     style = "solid"
                 else:
