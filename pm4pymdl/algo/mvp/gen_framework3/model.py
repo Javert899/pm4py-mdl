@@ -31,4 +31,7 @@ class ObjCentricMultigraph(object):
                 ret.append("\t\t\t%s->%s E=%d O=%d EO=%d min_obj=%d max_obj=%d must=%s\n" % (
                     edge[0], edge[1], t["edges"][edge]["events"], t["edges"][edge]["objects"], t["edges"][edge]["eo"],
                     t["edges"][edge]["min_obj"], t["edges"][edge]["max_obj"], t["edges"][edge]["must"]))
+        ret.append("\nMapping:\n")
+        for act in self.dictio["activities_mapping"]:
+            ret.append("\t%s\t%s\n" % (act, self.dictio["activities_mapping"][act]))
         return "".join(ret)

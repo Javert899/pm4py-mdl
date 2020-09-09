@@ -207,7 +207,14 @@ def apply(df, parameters=None):
         activities[act]["objects"] = len(activities[act]["objects"])
         activities[act]["eo"] = len(activities[act]["eo"])
 
+    activities_mapping = {}
+    for t in types_view:
+        for act in types_view[t]["activities_local"]:
+            act_detail = types_view[t]["activities_local"][act]
+            if not act in activities_mapping or activities_mapping[act][1] < len(act_detail["eo"]):
+                activities_mapping[act] = (t, len(act_detail["eo"]))
     ret["activities"] = activities
     ret["types_view"] = types_view
+    ret["activities_mapping"] = activities_mapping
 
     return model.ObjCentricMultigraph(ret)
