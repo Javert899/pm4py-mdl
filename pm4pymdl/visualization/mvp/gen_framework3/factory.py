@@ -80,7 +80,7 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
             map_act = model["activities_mapping"][act]
             act_type_color = types_colors[map_act[0]]
             if not freq == "semantics":
-                label = act + "\n(" + prefix + str(fr) + ")"
+                label = act + "\n" + prefix + str(fr) + ""
             else:
                 label = act
             this_uuid = str(uuid.uuid4())
@@ -119,7 +119,7 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
                                 label = ""
                             else:
                                 label = "EO=%s" % (human_readable_stat(t["edges"][edge]["performance_eo"]))
-                        viz.edge(act_nodes[source], act_nodes[target], style=style, label=label, color=types_colors[tk])
+                        viz.edge(act_nodes[source], act_nodes[target], style=style, label=label, color=types_colors[tk], fontcolor=types_colors[tk])
 
         frk = "events" if freq == "semantics" else freq
         start_activities = [a for a in t["start_activities"] if
@@ -129,7 +129,7 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
 
         if start_activities:
             sa_uuid = str(uuid.uuid4())
-            viz.node(sa_uuid, label="", shape="circle", style="filled", fillcolor=types_colors[tk])
+            viz.node(sa_uuid, label=tk, shape="underline", fillcolor=types_colors[tk], color=types_colors[tk], fontcolor=types_colors[tk])
             for sa in start_activities:
                 sav = t["start_activities"][sa]
                 if measure == "frequency":
@@ -141,11 +141,11 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
                     style = "solid"
                 else:
                     style = "dashed"
-                viz.edge(sa_uuid, act_nodes[sa], style=style, label=label, color=types_colors[tk])
+                viz.edge(sa_uuid, act_nodes[sa], style=style, label=label, color=types_colors[tk], fontcolor=types_colors[tk])
 
         if end_activities:
             ea_uuid = str(uuid.uuid4())
-            viz.node(ea_uuid, label="", shape="circle", style="filled", fillcolor=types_colors[tk])
+            viz.node(ea_uuid, label=tk, shape="none", fillcolor=types_colors[tk], color=types_colors[tk], fontcolor=types_colors[tk])
             for ea in end_activities:
                 eav = t["end_activities"][ea]
                 if measure == "frequency":
@@ -157,10 +157,10 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
                     style = "solid"
                 else:
                     style = "dashed"
-                viz.edge(act_nodes[ea], ea_uuid, style=style, label=label, color=types_colors[tk])
+                viz.edge(act_nodes[ea], ea_uuid, style=style, label=label, color=types_colors[tk], fontcolor=types_colors[tk])
 
     viz.attr(overlap='false')
-    viz.attr(fontsize='11')
+    viz.attr(fontsize='9')
     viz.format = image_format
 
     return viz
