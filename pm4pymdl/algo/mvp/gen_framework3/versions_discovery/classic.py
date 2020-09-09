@@ -96,7 +96,7 @@ def apply(df, parameters=None):
                 edges[(ev0["event_activity"], ev1["event_activity"])]["objects"].add(ev1[t])
                 edges[(ev0["event_activity"], ev1["event_activity"])]["eo"].add((ev1["event_id"], ev1[t]))
                 edges[(ev0["event_activity"], ev1["event_activity"])]["eeo"].add(
-                    (ev0["event_id"] + "@@@" + ev1["event_id"], ev1[t]))
+                    (str(ev0["event_id"]) + "@@@" + str(ev1["event_id"]), ev1[t]))
 
         for edge in edges:
             eo_dict = {}

@@ -65,10 +65,11 @@ def apply(df, model, parameters=None):
                 else:
                     prev = dictio_objs[t][o]
                     this_edge = (prev["event_activity"], ev["event_activity"])
-                    rel_ev_obj = [o2 for o2 in ev[t] if dictio_objs[t][o2] == prev]
+                    rel_ev_obj = [o2 for o2 in ev[t] if o2 in dictio_objs[t] and dictio_objs[t][o2] == prev]
                     if not (min_obj[t][this_edge] <= len(rel_ev_obj) <= max_obj[t][this_edge]):
-                        ret[-1].add("number of related objects of type %s should be between %d and %d - instead is %d" % (
-                            t, min_obj[t][this_edge], max_obj[t][this_edge], len(rel_ev_obj)))
+                        if False:
+                            ret[-1].add("number of related objects of type %s should be between %d and %d - instead is %d" % (
+                                t, min_obj[t][this_edge], max_obj[t][this_edge], len(rel_ev_obj)))
 
                     if t in must_end and prev["event_activity"] in must_end[t]:
                         ret[-1].add(
