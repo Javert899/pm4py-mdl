@@ -37,7 +37,7 @@ def apply_stream(stream, parameters=None):
         parameters = {}
 
     support = parameters["support"] if "support" in parameters else 1
-    epsilon = parameters["epsilon"] if "epsilon" in parameters else 0
+    epsilon = parameters["epsilon"] if "epsilon" in parameters else 0.0
     debug = parameters["debug"] if "debug" in parameters else False
 
     types_lifecycle = {}
@@ -170,6 +170,9 @@ def apply_stream(stream, parameters=None):
             edges[edge]["performance_events"] = list(x[1] for x in edges[edge]["performance_events"])
             edges[edge]["performance_events"] = median(edges[edge]["performance_events"])
 
+        max_start_act_occ = max(len(start_activities[x]["events"]) for x in start_activities)
+        start_activities_within_support = {x: y for x, y in start_activities.items() if len(y["events"]) >= max_start_act_occ * epsilon}
+
         for act in start_activities:
             eo_dict = {}
             for eo in start_activities[act]["eo"]:
@@ -192,7 +195,7 @@ def apply_stream(stream, parameters=None):
 
             if debug:
                 print("start_activity ", act, "q1=", q1, "q2=", q2)
-            if q1 >= support and q2 <= epsilon and len(start_activities) == 1:
+            if q1 >= support and q2 <= epsilon and len(start_activities_within_support) == 1:
                 start_activities[act]["must"] = True
 
             start_activities[act]["events"] = len(start_activities[act]["events"])
@@ -201,6 +204,9 @@ def apply_stream(stream, parameters=None):
             start_activities[act]["semantics"] = "%d..%d" % (start_activities[act]["min_obj"], start_activities[act]["max_obj"])
             if start_activities[act]["must"]:
                 start_activities[act]["semantics"] = "(M) " + start_activities[act]["semantics"]
+
+        max_end_act_occ = max(len(end_activities[x]["events"]) for x in end_activities)
+        end_activities_within_support = {x: y for x, y in end_activities.items()  if len(y["events"]) >= max_end_act_occ * epsilon}
 
         for act in end_activities:
             eo_dict = {}
@@ -224,7 +230,7 @@ def apply_stream(stream, parameters=None):
 
             if debug:
                 print("end_activity ", act, "q1=", q1, "q2=", q2)
-            if q1 >= support and q2 <= epsilon and len(end_activities) == 1:
+            if q1 >= support and q2 <= epsilon and len(end_activities_within_support) == 1:
                 end_activities[act]["must"] = True
 
             end_activities[act]["events"] = len(end_activities[act]["events"])
