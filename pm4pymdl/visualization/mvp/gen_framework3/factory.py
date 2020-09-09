@@ -59,13 +59,17 @@ def apply(model, measure="frequency", freq="semantics", classifier="activity", p
             target = edge[1]
             if source in act_nodes and target in act_nodes:
                 ann = t["edges"][edge][freq]
+                if t["edges"][edge]["must"]:
+                    style = "solid"
+                else:
+                    style = "dashed"
                 if not freq == "semantics":
                     fr = t["edges"][edge][freq]
                 else:
                     fr = t["edges"][edge]["events"]
                 if fr >= min_edge_freq:
                     label = prefix + str(ann)
-                    viz.edge(act_nodes[source], act_nodes[target], label=label, color=types_colors[tk])
+                    viz.edge(act_nodes[source], act_nodes[target], style=style, label=label, color=types_colors[tk])
 
         frk = "events" if freq == "semantics" else freq
         start_activities = [a for a in t["start_activities"] if
@@ -79,7 +83,11 @@ def apply(model, measure="frequency", freq="semantics", classifier="activity", p
             for sa in start_activities:
                 sav = t["start_activities"][sa]
                 label = prefix + str(sav[freq])
-                viz.edge(sa_uuid, act_nodes[sa], label=label, color=types_colors[tk])
+                if sav["must"]:
+                    style = "solid"
+                else:
+                    style = "dashed"
+                viz.edge(sa_uuid, act_nodes[sa], style=style, label=label, color=types_colors[tk])
 
         if end_activities:
             ea_uuid = str(uuid.uuid4())
@@ -87,7 +95,11 @@ def apply(model, measure="frequency", freq="semantics", classifier="activity", p
             for ea in end_activities:
                 eav = t["end_activities"][ea]
                 label = prefix + str(eav[freq])
-                viz.edge(act_nodes[ea], ea_uuid, label=label, color=types_colors[tk])
+                if eav["must"]:
+                    style = "solid"
+                else:
+                    style = "dashed"
+                viz.edge(act_nodes[ea], ea_uuid, style=style, label=label, color=types_colors[tk])
 
     viz.attr(overlap='false')
     viz.attr(fontsize='11')
