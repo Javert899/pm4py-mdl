@@ -141,6 +141,10 @@ def apply(df, parameters=None):
             edges[edge]["eo"] = len(edges[edge]["eo"])
             edges[edge]["eeo"] = len(edges[edge]["eeo"])
 
+            edges[edge]["semantics"] = "%d..%d" % (edges[edge]["min_obj"], edges[edge]["max_obj"])
+            if edges[edge]["must"]:
+                edges[edge]["semantics"] = "(M) " + edges[edge]["semantics"]
+
         for act in start_activities:
             eo_dict = {}
             for eo in start_activities[act]["eo"]:
