@@ -4,6 +4,7 @@ from pm4py.objects.conversion.log import converter
 from collections import Counter
 from statistics import median
 import sys
+import math
 
 
 def apply(df, parameters=None):
@@ -38,6 +39,7 @@ def apply_stream(stream, parameters=None):
 
     support = parameters["support"] if "support" in parameters else 1
     epsilon = parameters["epsilon"] if "epsilon" in parameters else 0.0
+    noise_obj_number = parameters["noise_obj_number"] if "noise_obj_number" in parameters else 0.0
     debug = parameters["debug"] if "debug" in parameters else False
 
     types_lifecycle = {}
@@ -127,8 +129,12 @@ def apply_stream(stream, parameters=None):
                 eo_dict[eo[0]].add(eo[1])
             for e in eo_dict:
                 eo_dict[e] = len(eo_dict[e])
-            min_obj = min(eo_dict[x] for x in eo_dict)
-            max_obj = max(eo_dict[x] for x in eo_dict)
+
+            all_values = sorted(list(eo_dict.values()))
+            if all_values:
+                all_values = all_values[:math.ceil(len(all_values)*(1.0-noise_obj_number))]
+            min_obj = min(all_values)
+            max_obj = max(all_values)
 
             if not edge[0] == edge[1]:
                 predecessors = sorted(list(activities_local[edge[1]]["preceded_by"]), reverse=True,
@@ -181,8 +187,13 @@ def apply_stream(stream, parameters=None):
                 eo_dict[eo[0]].add(eo[1])
             for e in eo_dict:
                 eo_dict[e] = len(eo_dict[e])
-            min_obj = min(eo_dict[x] for x in eo_dict)
-            max_obj = max(eo_dict[x] for x in eo_dict)
+
+
+            all_values = sorted(list(eo_dict.values()))
+            if all_values:
+                all_values = all_values[:math.ceil(len(all_values)*(1.0-noise_obj_number))]
+            min_obj = min(all_values)
+            max_obj = max(all_values)
 
             start_activities[act]["min_obj"] = min_obj
             start_activities[act]["max_obj"] = max_obj
@@ -216,8 +227,12 @@ def apply_stream(stream, parameters=None):
                 eo_dict[eo[0]].add(eo[1])
             for e in eo_dict:
                 eo_dict[e] = len(eo_dict[e])
-            min_obj = min(eo_dict[x] for x in eo_dict)
-            max_obj = max(eo_dict[x] for x in eo_dict)
+
+            all_values = sorted(list(eo_dict.values()))
+            if all_values:
+                all_values = all_values[:math.ceil(len(all_values)*(1.0-noise_obj_number))]
+            min_obj = min(all_values)
+            max_obj = max(all_values)
 
             end_activities[act]["min_obj"] = min_obj
             end_activities[act]["max_obj"] = max_obj
