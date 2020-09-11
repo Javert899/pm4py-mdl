@@ -388,11 +388,13 @@ class Process(object):
         return obj
 
     def get_multigraph_visualization(self):
+        self.epsilon = float(self.epsilon)
+        self.noise_threshold = float(self.noise_threshold)
         model = mdfg_disc_factory3.apply(self.succint_dataframe,
                                          parameters={"min_act_freq": self.selected_min_acti_count,
                                                      "min_edge_freq": self.selected_min_edge_freq_count,
-                                                     "epislon": self.epsilon,
-                                                     "noise_threshold": self.noise_threshold})
+                                                     "epsilon": self.epsilon,
+                                                     "noise_obj_number": self.noise_threshold})
         gviz = mdfg_vis_factory3.apply(model, measure=self.selected_decoration_measure,
                                        freq=self.selected_aggregation_measure,
                                        projection=self.selected_projection,
