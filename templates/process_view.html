@@ -35,7 +35,6 @@
                   <option value="inductive_petri">oc-Net-Inductive</option>
                   <option value="dfg">oc-DFG</option>
               </select>
-              <button onclick="javascript:formCookie()">Set</button>
           </div>
           <div style="display: none">
               <b>Classifier:</b>
@@ -43,7 +42,6 @@
                   <option value="activity">Activity Classifier</option>
                   <option value="combined">Combined Classifier</option>
               </select>
-              <button onclick="javascript:formCookie()">Set</button>
           </div>
           <div>
               <b>Aggregation:</b>
@@ -52,7 +50,6 @@
                   <option value="objects">Objects</option>
                   <option value="eo">E+O Combo</option>
               </select>
-              <button onclick="javascript:formCookie()">Set</button>
           </div>
           <div>
               <b>Decoration:</b>
@@ -60,7 +57,6 @@
                   <option value="frequency">Frequency</option>
                   <option value="performance">Performance</option>
               </select>
-              <button onclick="javascript:formCookie()">Set</button>
           </div>
           <div>
               <b>Project:</b>
@@ -69,17 +65,17 @@
                   <option value="source">Source</option>
                   <option value="target">Target</option>
               </select>
-              <button onclick="javascript:formCookie()">Set</button>
           </div>
           <div>
               Filter activ. (min.):<br />
               <input type="text" id="min_acti_count" />
-              <button onclick="javascript:formCookie()">Set</button>
           </div>
           <div>
               Filter paths (min.):<br />
               <input type="text" id="min_paths_count" />
-              <button onclick="javascript:formCookie()">Set</button>
+          </div>
+          <div>
+             <button onclick="javascript:formCookie()">Apply Settings</button>
           </div>
           <div style="display: none">
               <a href="javascript:getTimestampDistribution()">Get Timestamp distribution</a><br />
