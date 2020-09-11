@@ -29,6 +29,7 @@
           <div>
               <b>Model:</b>
               <select id="model_type" name="model_type">
+                  <option value="multigraph">OC Multigraph</option>
                   <option value="process_tree">oc-PTree</option>
                   <option value="alpha_petri">oc-Net-Alpha</option>
                   <option value="inductive_petri">oc-Net-Inductive</option>
@@ -36,7 +37,7 @@
               </select>
               <button onclick="javascript:formCookie()">Set</button>
           </div>
-          <div>
+          <div style="display: none">
               <b>Classifier:</b>
               <select id="classifier" name="classifier">
                   <option value="activity">Activity Classifier</option>
@@ -54,7 +55,7 @@
               <button onclick="javascript:formCookie()">Set</button>
           </div>
           <div>
-              <b>Decoration measure (DFG only):</b>
+              <b>Decoration measure:</b>
               <select id="decoration_measure" name="decoration_measure">
                   <option value="frequency">Frequency</option>
                   <option value="performance">Performance</option>
@@ -62,7 +63,7 @@
               <button onclick="javascript:formCookie()">Set</button>
           </div>
           <div>
-              <b>Projection measure (DFG only):</b>
+              <b>Projection measure:</b>
               <select id="projection_measure" name="projection_measure">
                   <option value="no">No</option>
                   <option value="source">Source</option>
@@ -80,7 +81,7 @@
               <input type="text" id="min_paths_count" />
               <button onclick="javascript:formCookie()">Set</button>
           </div>
-          <div>
+          <div style="display: none">
               <a href="javascript:getTimestampDistribution()">Get Timestamp distribution</a><br />
               <a href="javascript:filterByTimestamp()">Filter by Timestamp (keep events)</a>
           </div>

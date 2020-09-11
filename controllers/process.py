@@ -3,9 +3,11 @@ from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl, exploded_mdl_to
 from pm4py.algo.discovery.dfg.adapters.pandas import df_statistics
 from pm4pymdl.algo.mvp.gen_framework import factory as mdfg_disc_factory
 from pm4pymdl.algo.mvp.gen_framework2 import factory as mdfg_disc_factory2
+from pm4pymdl.algo.mvp.gen_framework3 import discovery as mdfg_disc_factory3
 from pm4pymdl.algo.mvp.get_logs_and_replay import factory as petri_disc_factory
 from pm4pymdl.visualization.mvp.gen_framework import factory as mdfg_vis_factory
 from pm4pymdl.visualization.mvp.gen_framework2 import factory as mdfg_vis_factory2
+from pm4pymdl.visualization.mvp.gen_framework3 import factory as mdfg_vis_factory3
 from pm4pymdl.visualization.petrinet import factory as pn_vis_factory
 from pm4pymdl.algo.mvp.utils import get_activ_attrs_with_type, get_activ_otypes
 from pm4pymdl.algo.mvp.utils import filter_act_attr_val, filter_act_ot, filter_timestamp, filter_metaclass, \
@@ -71,7 +73,7 @@ class Process(object):
 
         self.possible_model_types = {"mvp_frequency": "MVP (frequency)", "mvp_performance": "MVP (performance)",
                                      "process_tree": "oc-PTree", "petri_alpha": "oc-Net-Alpha",
-                                     "petri_inductive": "oc-Net-Inductive", "dfg": "oc-DFG"}
+                                     "petri_inductive": "oc-Net-Inductive", "dfg": "oc-DFG", "multigraph": "OC Multigraph"}
         """
         self.possible_model_types = {"model1": "mDFGs type 1", "model2": "mDFGs type 2", "model3": "mDFGs type 3",
                                      "petri": "Object-centric Petri net", "mvp_frequency": "MVP frequency",
@@ -390,9 +392,26 @@ class Process(object):
             obj.get_petri_visualization()
         elif obj.selected_model_type.startswith("mvp"):
             obj.get_mvp_visualization()
+        elif obj.selected_model_type.startswith("multigraph"):
+            obj.get_multigraph_visualization()
         else:
             obj.get_new_visualization()
         return obj
+
+    def get_multigraph_visualization(self):
+        self.dataframe.type = "succint"
+        model = mdfg_disc_factory3.apply(self.dataframe,
+                                         parameters={"min_act_freq": self.selected_min_acti_count,
+                                                     "min_edge_freq": self.selected_min_edge_freq_count})
+        gviz = mdfg_vis_factory3.apply(model, measure=self.selected_decoration_measure,
+                                       freq=self.selected_aggregation_measure,
+                                       projection=self.selected_projection,
+                                       parameters={"format": "svg", "min_act_freq": self.selected_min_acti_count,
+                                                   "min_edge_freq": self.selected_min_edge_freq_count})
+        tfilepath = tempfile.NamedTemporaryFile(suffix='.svg')
+        tfilepath.close()
+        mdfg_vis_factory.save(gviz, tfilepath.name)
+        self.model_view = base64.b64encode(open(tfilepath.name, "rb").read()).decode('utf-8')
 
     def get_new_visualization(self):
         classifier_function = None
