@@ -88,6 +88,8 @@ class Process(object):
         self.selected_projection = "no"
         self.selected_min_acti_count = 40
         self.selected_min_edge_freq_count = 20
+        self.epsilon = 0.0
+        self.noise_threshold = 0.0
         self.model_view = ""
 
     def get_stream(self):
@@ -362,7 +364,7 @@ class Process(object):
 
     def get_visualization(self, min_acti_count=0, min_paths_count=0, model_type=defaults.DEFAULT_MODEL_TYPE,
                           classifier="activity", aggregation_measure="events", projection="no",
-                          decoration_measure="frequency"):
+                          decoration_measure="frequency", epsilon=0.0, noise_threshold=0.0):
         obj = copy(self)
         obj.get_names()
         obj.selected_min_acti_count = min_acti_count
@@ -372,6 +374,8 @@ class Process(object):
         obj.selected_aggregation_measure = aggregation_measure
         obj.selected_projection = projection
         obj.selected_decoration_measure = decoration_measure
+        obj.epsilon = epsilon
+        obj.noise_threshold = noise_threshold
         reversed_dict = {}
         for act in obj.activities:
             if act in obj.selected_act_obj_types:
@@ -403,7 +407,9 @@ class Process(object):
         self.dataframe.type = "succint"
         model = mdfg_disc_factory3.apply(self.dataframe,
                                          parameters={"min_act_freq": self.selected_min_acti_count,
-                                                     "min_edge_freq": self.selected_min_edge_freq_count})
+                                                     "min_edge_freq": self.selected_min_edge_freq_count,
+                                                     "epislon": self.epsilon,
+                                                     "noise_threshold": self.noise_threshold})
         gviz = mdfg_vis_factory3.apply(model, measure=self.selected_decoration_measure,
                                        freq=self.selected_aggregation_measure,
                                        projection=self.selected_projection,

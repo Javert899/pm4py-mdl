@@ -70,6 +70,8 @@ def process_view(process=None):
     projection = request.cookies.get('projection') if "projection" in request.cookies else "no"
     decoration_measure = request.cookies.get(
         "decoration_measure") if "decoration_measure" in request.cookies else "performance"
+    epsilon = request.cookies.get('noise_must') if 'noise_must' in request.cookies else 0.1
+    noise_threshold = request.cookies.get('noise_threshold') if 'noise_threshold' in request.cookies else 0.05
 
     if 'exponent' in request.cookies:
         pc_controller.DEFAULT_EXPONENT = int(request.cookies['exponent'])
@@ -80,7 +82,8 @@ def process_view(process=None):
         Process=process.get_visualization(min_acti_count=min_acti_count, min_paths_count=min_paths_count,
                                           model_type=model_type, classifier=classifier,
                                           aggregation_measure=aggregation_measure,
-                                          decoration_measure=decoration_measure, projection=projection)
+                                          decoration_measure=decoration_measure, projection=projection,
+                                          epsilon=epsilon, noise_threshold=noise_threshold)
     ))
 
     if not request.cookies.get('session'):
@@ -101,6 +104,10 @@ def process_view(process=None):
         response.set_cookie('decoration_measure', decoration_measure)
     if not request.cookies.get('projection'):
         response.set_cookie('projection', projection)
+    if not request.cookies.get('epsilon'):
+        response.set_cookie('epsilon', str(epsilon))
+    if not request.cookies.get('noise_threshold'):
+        response.set_cookie('noise_threshold', str(noise_threshold))
     return response
 
 

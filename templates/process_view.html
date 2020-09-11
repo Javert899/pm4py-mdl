@@ -75,6 +75,14 @@
               <input type="text" id="min_paths_count" />
           </div>
           <div>
+              Must-edges Noise:<br />
+              <input type="text" id="noise_must" />
+          </div>
+          <div>
+              N.Objects Noise:<br />
+              <input type="text" id="noise_objects" />
+          </div>
+          <div>
              <button onclick="javascript:formCookie()">Apply Settings</button>
           </div>
           <div style="display: none">
@@ -288,6 +296,8 @@
         document.getElementById("model_type").value = "{{ Process.selected_model_type }}";
         document.getElementById("min_acti_count").value = "{{ Process.selected_min_acti_count }}";
         document.getElementById("min_paths_count").value = "{{ Process.selected_min_edge_freq_count }}";
+        document.getElementById("noise_must").value = "{{ Process.epsilon }}";
+        document.getElementById("noise_objects").value = "{{ Process.noise_threshold }}";
         pnames = '{{ Process.shared_logs_names }}'.split("@@@");
         clusters = '{{ Process.clustersrepr }}'.split("@@@");
         objtypes = '{{ Process.obj_types_str }}';
@@ -389,6 +399,12 @@
             }
             else if (cookie_name == "decoration_measure") {
                 setCookie(cookie_name, document.getElementById("decoration_measure").value, 1);
+            }
+            else if (cookie_name == "noise_must") {
+                setCookie(cookie_name, document.getElementById("noise_must").value, 1);
+            }
+            else if (cookie_name == "noise_objects") {
+                setCookie(cookie_name, document.getElementById("noise_objects").value, 1);
             }
             i++;
         }
