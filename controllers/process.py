@@ -67,6 +67,7 @@ class Process(object):
         try:
             if self.dataframe.type == "succint":
                 self.dataframe = succint_mdl_to_exploded_mdl.apply(self.dataframe)
+                self.dataframe.type = "exploded"
         except:
             pass
         self.session_objects = {}

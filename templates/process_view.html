@@ -20,16 +20,16 @@
               <button id="goback" onclick="javascript:goToCasesView()">Go to Events View</button><br />
               <!--<button id="activitysel" onclick="javascript:goToActOtSelection()">Act./Type Sel.</button><br /><br />-->
           </div>
-          <div>
-              Change log:
+          <div style="display: none">
+              Log:
               <select id="logselector" name="logselector">
               </select>
               <button onclick="javascript:performLogChange()">Set</button>
           </div>
           <div>
-              <b>Model:</b>
+              <b>Model:</b><br />
               <select id="model_type" name="model_type">
-                  <option value="multigraph">OC Multigraph</option>
+                  <option value="multigraph">Multigraph</option>
                   <option value="process_tree">oc-PTree</option>
                   <option value="alpha_petri">oc-Net-Alpha</option>
                   <option value="inductive_petri">oc-Net-Inductive</option>
@@ -46,7 +46,7 @@
               <button onclick="javascript:formCookie()">Set</button>
           </div>
           <div>
-              <b>Aggregation measure:</b>
+              <b>Aggregation:</b>
               <select id="aggregation_measure" name="aggregation_measure">
                   <option value="events">Events</option>
                   <option value="objects">Objects</option>
@@ -55,7 +55,7 @@
               <button onclick="javascript:formCookie()">Set</button>
           </div>
           <div>
-              <b>Decoration measure:</b>
+              <b>Decoration:</b>
               <select id="decoration_measure" name="decoration_measure">
                   <option value="frequency">Frequency</option>
                   <option value="performance">Performance</option>
@@ -63,7 +63,7 @@
               <button onclick="javascript:formCookie()">Set</button>
           </div>
           <div>
-              <b>Projection measure:</b>
+              <b>Project:</b>
               <select id="projection_measure" name="projection_measure">
                   <option value="no">No</option>
                   <option value="source">Source</option>
@@ -72,12 +72,12 @@
               <button onclick="javascript:formCookie()">Set</button>
           </div>
           <div>
-              Filter activities (min. occurrences):<br />
+              Filter activ. (min.):<br />
               <input type="text" id="min_acti_count" />
               <button onclick="javascript:formCookie()">Set</button>
           </div>
           <div>
-              Filter paths (min. occurrences):<br />
+              Filter paths (min.):<br />
               <input type="text" id="min_paths_count" />
               <button onclick="javascript:formCookie()">Set</button>
           </div>
