@@ -86,8 +86,8 @@ class Process(object):
         self.selected_aggregation_measure = "events"
         self.selected_decoration_measure = "frequency"
         self.selected_projection = "no"
-        self.selected_min_acti_count = 40
-        self.selected_min_edge_freq_count = 20
+        self.selected_min_acti_count = 500
+        self.selected_min_edge_freq_count = 500
         self.epsilon = 0.0
         self.noise_threshold = 0.0
         self.model_view = ""

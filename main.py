@@ -333,7 +333,7 @@ def reset_filters():
 
 def main():
     if defaults.CONFIGURATION == 1:
-        Shared.logs["orders"] = Process("orders", "example_logs/mdl/order_management.mdl", Shared.logs)
+        #Shared.logs["orders"] = Process("orders", "example_logs/mdl/order_management.mdl", Shared.logs)
         Shared.logs["o2c"] = Process("o2c", "example_logs/mdl/o2c_red.mdl", Shared.logs)
     elif defaults.CONFIGURATION == 2:
         Shared.logs["bkpf"] = Process("bkpf", "sap/bkpf_bseg.mdl", Shared.logs)
