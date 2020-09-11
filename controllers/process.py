@@ -62,24 +62,16 @@ class Process(object):
         self.selected_act_obj_types = None
         self.name = name
         self.mdl_path = mdl_path
-        self.dataframe = mdl_importer.apply(self.mdl_path)
-        self.dataframe = self.dataframe.dropna(subset=["event_activity"])
-        try:
-            if self.dataframe.type == "succint":
-                self.dataframe = succint_mdl_to_exploded_mdl.apply(self.dataframe)
-                self.dataframe.type = "exploded"
-        except:
-            pass
+        self.succint_dataframe = mdl_importer.apply(self.mdl_path)
+        self.succint_dataframe = self.succint_dataframe.dropna(subset=["event_activity"])
+        self.succint_dataframe.type = "succint"
+        self.exploded_dataframe = succint_mdl_to_exploded_mdl.apply(self.succint_dataframe)
+        self.exploded_dataframe.type = "exploded"
         self.session_objects = {}
 
         self.possible_model_types = {"mvp_frequency": "MVP (frequency)", "mvp_performance": "MVP (performance)",
                                      "process_tree": "oc-PTree", "petri_alpha": "oc-Net-Alpha",
                                      "petri_inductive": "oc-Net-Inductive", "dfg": "oc-DFG", "multigraph": "OC Multigraph"}
-        """
-        self.possible_model_types = {"model1": "mDFGs type 1", "model2": "mDFGs type 2", "model3": "mDFGs type 3",
-                                     "petri": "Object-centric Petri net", "mvp_frequency": "MVP frequency",
-                                     "mvp_performance": "MVP performance""}
-        """
         self.selected_model_type = defaults.DEFAULT_MODEL_TYPE
         self.possible_classifiers = {"activity", "combined"}
         self.selected_classifier = "activity"
@@ -94,12 +86,12 @@ class Process(object):
 
     def get_stream(self):
         if self.stream is None:
-            self.stream = self.dataframe.to_dict('r')
+            self.stream = self.exploded_dataframe.to_dict('r')
         return self.stream
 
     def get_log_obj_type(self, objtype):
-        columns = [x for x in self.dataframe.columns if x.startswith("event_")] + [objtype]
-        dataframe = self.dataframe[columns].dropna(how="any", subset=[objtype])
+        columns = [x for x in self.exploded_dataframe.columns if x.startswith("event_")] + [objtype]
+        dataframe = self.exploded_dataframe[columns].dropna(how="any", subset=[objtype])
         dataframe = succint_mdl_to_exploded_mdl.apply(dataframe)
         dataframe = dataframe.rename(columns={"event_activity": "concept:name", "event_timestamp": "time:timestamp",
                                               objtype: "case:concept:name"})
@@ -126,14 +118,13 @@ class Process(object):
                     ivec = list(self.powered_matrix[i, :] * self.row_sum[i] / self.overall_sum)
                     idxs.append({"event_id": self.events_corr_inv[self.nodes_inv[i]],
                                  "@@distance": spatial.distance.cosine(jvec, ivec)})
-        dataframe = self.dataframe[self.dataframe["event_id"].isin([x["event_id"] for x in idxs])]
+        dataframe = self.exploded_dataframe[self.exploded_dataframe["event_id"].isin([x["event_id"] for x in idxs])]
         dataframe = dataframe.set_index('event_id')
         dataframe2 = pd.DataFrame(idxs).set_index('event_id')
         dataframe["event_ZZdistance"] = dataframe2["@@distance"]
         dataframe = dataframe.reset_index()
         dataframe.type = "exploded"
-        succint_table = exploded_mdl_to_succint_mdl.apply(dataframe)
-        succint_table = succint_table.sort_values("event_ZZdistance", ascending=True)
+        succint_table = self.succint_dataframe.sort_values("event_ZZdistance", ascending=True)
         events, columns = self.get_columns_events(succint_table)
         ret = {"events": events, "columns": columns}
         return ret
@@ -251,15 +242,14 @@ class Process(object):
     def events_list(self, dataframe=None):
         obj = copy(self)
         if dataframe is None:
-            dataframe = obj.dataframe
-        succint_table = exploded_mdl_to_succint_mdl.apply(dataframe)
-        obj.events, obj.columns = self.get_columns_events(succint_table)
+            dataframe = obj.exploded_dataframe
+        obj.events, obj.columns = self.get_columns_events(self.succint_dataframe)
         return obj
 
     def events_list_spec_objt(self, obj_id, obj_type):
         obj = copy(self)
-        filtered_df = obj.dataframe[obj.dataframe[obj_type] == obj_id]
-        considered_df = filter_metaclass.do_filtering(obj.dataframe, filtered_df)
+        filtered_df = obj.exploded_dataframe[obj.exploded_dataframe[obj_type] == obj_id]
+        considered_df = filter_metaclass.do_filtering(obj.exploded_dataframe, filtered_df)
         succint_table = exploded_mdl_to_succint_mdl.apply(considered_df)
         events, columns = self.get_columns_events(succint_table)
         ret = {"events": events, "columns": columns}
@@ -303,15 +293,15 @@ class Process(object):
     def get_act_attr_types(self, activities):
         activities_attr_types = {}
         for act in activities:
-            activities_attr_types[act] = [(x, y) for x, y in get_activ_attrs_with_type.get(self.dataframe, act).items()]
+            activities_attr_types[act] = [(x, y) for x, y in get_activ_attrs_with_type.get(self.exploded_dataframe, act).items()]
         return activities_attr_types
 
     def get_act_obj_types(self, activities):
         activities_object_types = {}
         for act in activities:
-            activities_object_types[act] = get_activ_otypes.get(self.dataframe, act)
+            activities_object_types[act] = get_activ_otypes.get(self.exploded_dataframe, act)
         self.act_obj_types = activities_object_types
-        self.obj_types_str = "@@@".join([x for x in self.dataframe.columns if not x.startswith("event_")])
+        self.obj_types_str = "@@@".join([x for x in self.exploded_dataframe.columns if not x.startswith("event_")])
         if self.initial_act_obj_types is None:
             self.initial_act_obj_types = deepcopy(activities_object_types)
         if self.selected_act_obj_types is None:
@@ -341,10 +331,7 @@ class Process(object):
         self.graph = None
 
     def set_properties(self):
-        """if len(self.dataframe) < 505:
-            self.get_graph()
-            self.do_clustering()"""
-        self.activities = sorted(list(self.dataframe["event_activity"].unique()))
+        self.activities = sorted(list(self.exploded_dataframe["event_activity"].unique()))
         attr_types = self.get_act_attr_types(self.activities)
         act_obj_types = self.get_act_obj_types(self.activities)
         self.obj_types = set()
@@ -356,7 +343,7 @@ class Process(object):
                    "all_otypes": self.obj_types, "act_obj_types": self.act_obj_types,
                    "selected_act_obj_types": self.selected_act_obj_types}
         self.cobject = base64.b64encode(json.dumps(cobject).encode('utf-8')).decode('utf-8')
-        self.dataframe_length = self.dataframe["event_id"].nunique()
+        self.dataframe_length = self.exploded_dataframe["event_id"].nunique()
 
     def get_names(self):
         self.shared_logs_names = "@@@".join([x for x in self.shared_logs])
@@ -388,9 +375,6 @@ class Process(object):
         param = {}
         param["allowed_activities"] = reversed_dict
 
-        obj.dataframe = clean_objtypes.perfom_cleaning(obj.dataframe, parameters=param)
-        obj.dataframe = obj.dataframe.dropna(how="all", axis=1)
-
         if obj.selected_model_type.startswith("model"):
             obj.get_dfg_visualization()
         elif obj.selected_model_type.startswith("petri"):
@@ -404,8 +388,7 @@ class Process(object):
         return obj
 
     def get_multigraph_visualization(self):
-        self.dataframe.type = "succint"
-        model = mdfg_disc_factory3.apply(self.dataframe,
+        model = mdfg_disc_factory3.apply(self.succint_dataframe,
                                          parameters={"min_act_freq": self.selected_min_acti_count,
                                                      "min_edge_freq": self.selected_min_edge_freq_count,
                                                      "epislon": self.epsilon,
@@ -426,7 +409,7 @@ class Process(object):
             classifier_function = lambda x: x["event_activity"]
         elif self.selected_classifier == "combined":
             classifier_function = lambda x: x["event_activity"] + "+" + x["event_objtype"]
-        model = mdfg_disc_factory2.apply(self.dataframe, classifier_function=classifier_function,
+        model = mdfg_disc_factory2.apply(self.exploded_dataframe, classifier_function=classifier_function,
                                          variant=self.selected_model_type,
                                          parameters={"min_acti_freq": self.selected_min_acti_count,
                                                      "min_edge_freq": self.selected_min_edge_freq_count})
@@ -442,13 +425,13 @@ class Process(object):
 
     def get_dfg_visualization(self):
         if self.selected_model_type == "model1":
-            model = mdfg_disc_factory.apply(self.dataframe, model_type_variant=self.selected_model_type,
+            model = mdfg_disc_factory.apply(self.exploded_dataframe, model_type_variant=self.selected_model_type,
                                             node_freq_variant="type1", edge_freq_variant="type11")
         elif self.selected_model_type == "model2":
-            model = mdfg_disc_factory.apply(self.dataframe, model_type_variant=self.selected_model_type,
+            model = mdfg_disc_factory.apply(self.exploded_dataframe, model_type_variant=self.selected_model_type,
                                             node_freq_variant="type21", edge_freq_variant="type211")
         elif self.selected_model_type == "model3":
-            model = mdfg_disc_factory.apply(self.dataframe, model_type_variant=self.selected_model_type,
+            model = mdfg_disc_factory.apply(self.exploded_dataframe, model_type_variant=self.selected_model_type,
                                             node_freq_variant="type31", edge_freq_variant="type11")
         gviz = mdfg_vis_factory.apply(model, parameters={"min_node_freq": self.selected_min_acti_count,
                                                          "min_edge_freq": self.selected_min_edge_freq_count,
@@ -459,7 +442,7 @@ class Process(object):
         self.model_view = base64.b64encode(open(tfilepath.name, "rb").read()).decode('utf-8')
 
     def get_petri_visualization(self):
-        model = petri_disc_factory.apply(self.dataframe, parameters={"min_node_freq": self.selected_min_acti_count,
+        model = petri_disc_factory.apply(self.exploded_dataframe, parameters={"min_node_freq": self.selected_min_acti_count,
                                                                      "min_edge_freq": self.selected_min_edge_freq_count})
         gviz = pn_vis_factory.apply(model, parameters={"format": "svg"})
         tfilepath = tempfile.NamedTemporaryFile(suffix='.svg')
@@ -476,7 +459,7 @@ class Process(object):
             parameters["performance"] = True
         else:
             parameters["performance"] = False
-        model = mvp_discovery.apply(self.dataframe, parameters=parameters)
+        model = mvp_discovery.apply(self.exploded_dataframe, parameters=parameters)
         gviz = mvp_vis_factory.apply(model, parameters=parameters)
         tfilepath = tempfile.NamedTemporaryFile(suffix='.svg')
         tfilepath.close()
@@ -485,58 +468,72 @@ class Process(object):
 
     def apply_spec_path_filter(self, session, obytype, act1, act2, minp, maxp):
         obj = copy(self.session_objects[session])
-        obj.dataframe = filter_specific_path.apply(obj.dataframe, obytype, act1, act2, minp, maxp)
+        obj.exploded_dataframe = self.exploded_dataframe.copy()
+        obj.exploded_dataframe = filter_specific_path.apply(obj.exploded_dataframe, obytype, act1, act2, minp, maxp)
+        obj.succint_dataframe = exploded_mdl_to_succint_mdl.apply(obj.exploded_dataframe)
         obj.reset_properties()
         obj.set_properties()
         self.session_objects[session] = obj
 
     def apply_activity_filter(self, session, activity, positive):
         obj = copy(self.session_objects[session])
-        fd0 = obj.dataframe[obj.dataframe["event_activity"] == activity]
+        obj.exploded_dataframe = self.exploded_dataframe.copy()
+        fd0 = obj.exploded_dataframe[obj.exploded_dataframe["event_activity"] == activity]
         if positive == "1":
-            obj.dataframe = filter_metaclass.do_filtering(obj.dataframe, fd0)
+            obj.exploded_dataframe = filter_metaclass.do_filtering(obj.exploded_dataframe, fd0)
         else:
-            obj.dataframe = filter_metaclass.do_negative_filtering(obj.dataframe, fd0)
+            obj.exploded_dataframe = filter_metaclass.do_negative_filtering(obj.exploded_dataframe, fd0)
+        obj.succint_dataframe = exploded_mdl_to_succint_mdl.apply(obj.exploded_dataframe)
         obj.reset_properties()
         obj.set_properties()
         self.session_objects[session] = obj
 
     def apply_float_filter(self, session, activity, attr_name, v1, v2):
         obj = copy(self.session_objects[session])
-        obj.dataframe = filter_act_attr_val.filter_float(obj.dataframe, activity, attr_name, v1, v2)
+        obj.exploded_dataframe = self.exploded_dataframe.copy()
+        obj.exploded_dataframe = filter_act_attr_val.filter_float(obj.exploded_dataframe, activity, attr_name, v1, v2)
+        obj.succint_dataframe = exploded_mdl_to_succint_mdl.apply(obj.exploded_dataframe)
         obj.reset_properties()
         obj.set_properties()
         self.session_objects[session] = obj
 
     def apply_ot_filter(self, session, activity, ot, v1, v2):
         obj = copy(self.session_objects[session])
-        obj.dataframe = filter_act_ot.filter_ot(self.dataframe.copy(), activity, ot, v1, v2)
+        obj.exploded_dataframe = self.exploded_dataframe.copy()
+        obj.exploded_dataframe = filter_act_ot.filter_ot(obj.exploded_dataframe, activity, ot, v1, v2)
+        obj.succint_dataframe = exploded_mdl_to_succint_mdl.apply(obj.exploded_dataframe)
         obj.reset_properties()
         obj.set_properties()
         self.session_objects[session] = obj
 
     def apply_timestamp_filter(self, session, dt1, dt2):
         obj = copy(self.session_objects[session])
-        obj.dataframe = filter_timestamp.apply(obj.dataframe, dt1, dt2)
+        obj.exploded_dataframe = self.exploded_dataframe.copy()
+        obj.succint_dataframe = exploded_mdl_to_succint_mdl.apply(obj.exploded_dataframe)
+        obj.exploded_dataframe = filter_timestamp.apply(obj.exploded_dataframe, dt1, dt2)
+        obj.succint_dataframe = exploded_mdl_to_succint_mdl.apply(obj.exploded_dataframe)
         obj.reset_properties()
         obj.set_properties()
         self.session_objects[session] = obj
 
     def filter_on_cluster(self, session, cluster):
         obj = copy(self.session_objects[session])
-        obj.dataframe = obj.dataframe[obj.dataframe["event_id"].isin(self.clusters[cluster])]
+        obj.exploded_dataframe = self.exploded_dataframe.copy()
+        obj.succint_dataframe = exploded_mdl_to_succint_mdl.apply(obj.exploded_dataframe)
+        obj.exploded_dataframe = obj.exploded_dataframe[obj.exploded_dataframe["event_id"].isin(self.clusters[cluster])]
+        obj.succint_dataframe = exploded_mdl_to_succint_mdl.apply(obj.exploded_dataframe)
         obj.reset_properties()
         obj.set_properties()
         self.session_objects[session] = obj
 
     def get_float_attr_summary(self, session, activity, attr_name):
-        return distr_act_attrname.get(self.session_objects[session].dataframe, activity, attr_name)
+        return distr_act_attrname.get(self.session_objects[session].exploded_dataframe, activity, attr_name)
 
     def get_timestamp_summary(self, session):
-        return dist_timestamp.get(self.session_objects[session].dataframe)
+        return dist_timestamp.get(self.session_objects[session].exploded_dataframe)
 
     def get_ot_distr_summary(self, session, activity, ot):
-        return distr_act_otype.get(self.session_objects[session].dataframe, activity, ot)
+        return distr_act_otype.get(self.session_objects[session].exploded_dataframe, activity, ot)
 
     def reset_filters(self, session):
         self.session_objects[session] = self.parent
