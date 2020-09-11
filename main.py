@@ -74,10 +74,10 @@ def process_view(process=None):
     model_type = request.cookies.get('model_type') if 'model_type' in request.cookies else defaults.DEFAULT_MODEL_TYPE
     classifier = request.cookies.get('classifier') if 'classifier' in request.cookies else "activity"
     aggregation_measure = request.cookies.get(
-        "aggregation_measure") if "aggregation_measure" in request.cookies else "events"
+        "aggregation_measure") if "aggregation_measure" in request.cookies else "semantics"
     projection = request.cookies.get('projection') if "projection" in request.cookies else "no"
     decoration_measure = request.cookies.get(
-        "decoration_measure") if "decoration_measure" in request.cookies else "performance"
+        "decoration_measure") if "decoration_measure" in request.cookies else "frequency"
     epsilon = request.cookies.get('noise_must') if 'noise_must' in request.cookies else 0.1
     noise_threshold = request.cookies.get('noise_threshold') if 'noise_threshold' in request.cookies else 0.05
 
@@ -112,8 +112,8 @@ def process_view(process=None):
         response.set_cookie('decoration_measure', decoration_measure)
     if not request.cookies.get('projection'):
         response.set_cookie('projection', projection)
-    if not request.cookies.get('epsilon'):
-        response.set_cookie('epsilon', str(epsilon))
+    if not request.cookies.get('noise_must'):
+        response.set_cookie('noise_must', str(epsilon))
     if not request.cookies.get('noise_threshold'):
         response.set_cookie('noise_threshold', str(noise_threshold))
     return response
