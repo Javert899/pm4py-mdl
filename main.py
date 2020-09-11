@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, make_response, jsonify
+from flask import Flask, render_template, request, make_response, jsonify, redirect, url_for
 import base64
 from pm4pymdl.objects.mdl.importer import factory as mdl_importer
 from controllers import process as pc_controller
@@ -14,6 +14,14 @@ class Shared:
 
 app = Flask(__name__)
 
+
+@app.route('/')
+def empty_path():
+    return redirect(url_for('welcome'))
+
+@app.route('/index.html')
+def index():
+    return redirect(url_for('welcome'))
 
 @app.route("/welcome")
 def welcome():
