@@ -138,7 +138,6 @@ def apply(df, file_path, obj_df=None, parameters=None):
                 elif not k in ["id", "activity", "timestamp"]:
                     el2[prefix+"vmap"][k] = el[k]
             ret[prefix+"events"].append(el2)
-            break
 
     for t in ot_df:
         ret[prefix + "objects"][t] = []
