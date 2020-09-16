@@ -16,6 +16,8 @@ def apply(file_path, return_obj_dataframe=False, parameters=None):
         if obj_cols:
             obj_df = all_df[obj_cols]
         df["event_timestamp"] = pd.to_datetime(df["event_timestamp"])
+        if "event_start_timestamp" in df.columns:
+            df["event_start_timestamp"] = pd.to_datetime(df["event_start_timestamp"])
         df = df.dropna(subset=["event_id"])
         df.type = "succint"
     elif file_path.endswith(".parquet"):
