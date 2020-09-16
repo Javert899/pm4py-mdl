@@ -1,5 +1,6 @@
 from frozendict import frozendict
 
+
 def create_index(succint_dataframe):
     events = succint_dataframe.to_dict("r")
     index = {}
@@ -9,7 +10,7 @@ def create_index(succint_dataframe):
             if not k in index:
                 index[k] = {}
             events[idx][k] = tuple(eval(events[idx][k]))
-        #events[idx] = frozendict(events[idx])
+        # events[idx] = frozendict(events[idx])
 
     for ev in events:
         keys = [x for x in ev.keys() if not x.startswith("event_")]
@@ -41,6 +42,11 @@ def apply(events_dict, index, event, provided_keys=None):
                             curr.append(evv)
         i = i + 1
     return set(curr)
+
+
+def filter_dataframe(dataframe, events_dict, index, event, provided_keys=None):
+    X_result = apply(events_dict, index, event, provided_keys=provided_keys)
+    return dataframe[dataframe["event_id"].isin(X_result)]
 
 
 def signature(events_dict, index, event, provided_keys=None):
