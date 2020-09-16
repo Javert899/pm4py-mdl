@@ -41,3 +41,19 @@ def apply(events_dict, index, event, provided_keys=None):
                             curr.append(evv)
         i = i + 1
     return set(curr)
+
+
+def signature(events_dict, index, event, provided_keys=None):
+    X_result = apply(events_dict, index, event, provided_keys=provided_keys)
+    sign = dict()
+
+    for evk in X_result:
+        ev = events_dict[evk]
+        keys = set(x for x in ev.keys() if not x.startswith("event_"))
+        if provided_keys is not None:
+            keys = keys.intersection(provided_keys)
+        for k in keys:
+            if not k in sign or sign[k] < len(ev[k]):
+                sign[k] = len(ev[k])
+
+    return frozendict(sign)
