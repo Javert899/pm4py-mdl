@@ -63,3 +63,15 @@ def signature(events_dict, index, event, provided_keys=None):
                 sign[k] = len(ev[k])
 
     return frozendict(sign)
+
+
+def equivalence_classes(events_dict, index, activity_to_consider=None, provided_keys=None):
+    classes = {}
+    for evk in events_dict:
+        ev = events_dict[evk]
+        if activity_to_consider is None or ev["event_activity"] == activity_to_consider:
+            sign = signature(events_dict, index, ev, provided_keys=provided_keys)
+            if not sign in classes:
+                classes[sign] = set()
+            classes[sign].add(evk)
+    return classes
