@@ -62,7 +62,8 @@ def signature(events_dict, index, event, provided_keys=None):
             if not k in sign or sign[k] < len(ev[k]):
                 sign[k] = len(ev[k])
 
-    return frozendict(sign)
+    sign = tuple(sorted([(x, y) for x, y in sign.items()]))
+    return sign
 
 
 def equivalence_classes(events_dict, index, activity_to_consider=None, provided_keys=None):
