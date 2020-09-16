@@ -19,6 +19,7 @@ def apply(file_path, return_obj_dataframe=False, parameters=None):
         if "event_start_timestamp" in df.columns:
             df["event_start_timestamp"] = pd.to_datetime(df["event_start_timestamp"])
         df = df.dropna(subset=["event_id"])
+        df["event_id"] = df["event_id"].astype(str)
         df.type = "succint"
     elif file_path.endswith(".parquet"):
         from pm4py.objects.log.importer.parquet import factory as parquet_importer
