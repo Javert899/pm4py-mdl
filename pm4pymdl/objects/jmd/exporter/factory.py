@@ -145,7 +145,6 @@ def apply(df, file_path, obj_df=None, parameters=None):
             ret[prefix+"events"][el["id"]] = el2
 
     for t in ot_df:
-        ret[prefix + "objects"][t] = {}
         stream = ot_df[t].to_dict('r')
         for el in stream:
             el2 = {}
@@ -155,7 +154,7 @@ def apply(df, file_path, obj_df=None, parameters=None):
             for k in el:
                 if not k in ["id", "type"]:
                     el2[prefix + "ovmap"][k] = el[k]
-            ret[prefix + "objects"][t][el["id"]] = el2
+            ret[prefix + "objects"][el["id"]] = el2
 
     #ret[prefix+"events"] = sorted(ret[prefix+"events"], key=lambda x: x[prefix+"timestamp"])
     #print(ret["events"])
