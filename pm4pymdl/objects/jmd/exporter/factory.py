@@ -127,7 +127,6 @@ def apply(df, file_path, obj_df=None, parameters=None):
     stream = df.dropna(how="all", axis=1).to_dict("r")
     for el in stream:
         el2 = {}
-        # el2[prefix+"id"] = el["id"]
         el2[prefix + "activity"] = el["activity"]
         el2[prefix + "timestamp"] = el["timestamp"]
         el2[prefix + "omap"] = {}
@@ -155,14 +154,7 @@ def apply(df, file_path, obj_df=None, parameters=None):
                     el2[prefix + "ovmap"][k] = el[k]
             ret[prefix + "objects"][el["id"]] = el2
 
-    #ret[prefix+"events"] = sorted(ret[prefix+"events"], key=lambda x: x[prefix+"timestamp"])
-    #print(ret["events"])
-
     F = open(file_path, "w")
     json.dump(ret, F, default=json_serial, indent=2)
     F.close()
 
-    #print(activities)
-    #print(obj_types)
-    #print(acti_df_types)
-    #print(ot_df_types)

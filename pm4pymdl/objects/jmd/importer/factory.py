@@ -11,7 +11,6 @@ def apply(file_path, return_obj_df=True, parameters=None):
     F = open(file_path, "rb")
     obj = json.load(F)
     F.close()
-    object_types = obj[prefix+"object_types"]
     eve_stream = obj[prefix+"events"]
     for el in eve_stream:
         eve_stream[el]["event_id"] = el
@@ -40,8 +39,6 @@ def apply(file_path, return_obj_df=True, parameters=None):
 
     eve_df = pd.DataFrame(eve_stream)
     obj_df = pd.DataFrame(obj_stream)
-
-    #eve_df = eve_df.sort_values("event_timestamp")
 
     if return_obj_df:
         return eve_df, obj_df
