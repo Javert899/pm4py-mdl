@@ -25,7 +25,7 @@ def apply(df, file_path, obj_df=None, parameters=None):
     if parameters is None:
         parameters = {}
 
-    prefix = "xmd:"
+    prefix = "jmd:"
 
     conversion_needed = True
     try:
@@ -79,7 +79,6 @@ def apply(df, file_path, obj_df=None, parameters=None):
         acti_mandatory[act] = []
         for col in red_df2.columns:
             if not col.startswith("case_") and not col in ["id", "activity", "timestamp"]:
-                #acti_mandatory[act][col] = get_type(red_df2[col].dtype)
                 acti_mandatory[act].append(col)
 
     if obj_df is not None:
@@ -113,17 +112,23 @@ def apply(df, file_path, obj_df=None, parameters=None):
             ot_df[ot] = red_df
 
     ret = {}
-    ret[prefix+"att_types"] = att_types
-    ret[prefix+"acti_mandatory"] = acti_mandatory
-    ret[prefix+"ot_mandatory"] = ot_mandatory
-    ret[prefix+"events"] = []
+    att_names = sorted(list(att_types.keys()))
+    att_typ_values = sorted(list(att_types.values()))
+    object_types = sorted(list(ot_df.keys()))
+    ret[prefix+"att_names"] = att_names
+    ret[prefix+"att_types"] = att_typ_values
+    ret[prefix+"object_types"] = object_types
+    ret[prefix+"types_corr"] = att_types
+    ret[prefix+"events"] = {}
     ret[prefix+"objects"] = {}
+    ret[prefix+"att_mand"] = acti_mandatory
+    ret[prefix+"ot_mand"] = ot_mandatory
 
     for act in acti_df:
         stream = acti_df[act].to_dict('r')
         for el in stream:
             el2 = {}
-            el2[prefix+"id"] = el["id"]
+            #el2[prefix+"id"] = el["id"]
             el2[prefix+"activity"] = el["activity"]
             el2[prefix+"timestamp"] = el["timestamp"]
             el2[prefix+"omap"] = {}
@@ -137,21 +142,22 @@ def apply(df, file_path, obj_df=None, parameters=None):
                             el2[prefix + "omap"][k.split("case_")[1]] = y
                 elif not k in ["id", "activity", "timestamp"]:
                     el2[prefix+"vmap"][k] = el[k]
-            ret[prefix+"events"].append(el2)
+            ret[prefix+"events"][el["id"]] = el2
 
     for t in ot_df:
-        ret[prefix + "objects"][t] = []
+        ret[prefix + "objects"][t] = {}
         stream = ot_df[t].to_dict('r')
         for el in stream:
             el2 = {}
-            el2[prefix + "id"] = el["id"]
-            el2[prefix + "vmap"] = {}
+            #el2[prefix + "id"] = el["id"]
+            el2[prefix + "otyp"] = t
+            el2[prefix + "ovmap"] = {}
             for k in el:
                 if not k in ["id", "type"]:
-                    el2[prefix + "vmap"][k] = el[k]
-            ret[prefix + "objects"][t].append(el2)
+                    el2[prefix + "ovmap"][k] = el[k]
+            ret[prefix + "objects"][t][el["id"]] = el2
 
-    ret[prefix+"events"] = sorted(ret[prefix+"events"], key=lambda x: x[prefix+"timestamp"])
+    #ret[prefix+"events"] = sorted(ret[prefix+"events"], key=lambda x: x[prefix+"timestamp"])
     #print(ret["events"])
 
     F = open(file_path, "w")
