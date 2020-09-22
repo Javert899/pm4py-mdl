@@ -40,6 +40,8 @@ def apply(file_path, return_obj_df=True, parameters=None):
     eve_df = pd.DataFrame(eve_stream)
     obj_df = pd.DataFrame(obj_stream)
 
+    eve_df.type = "succint"
+
     if return_obj_df:
         return eve_df, obj_df
     return eve_df

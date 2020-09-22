@@ -64,6 +64,7 @@ def apply(df, file_path, obj_df=None, parameters=None):
 
     acti_mandatory = {}
     ot_mandatory = {}
+    objects_from_df_type = {}
 
     att_types = {}
 
@@ -138,6 +139,8 @@ def apply(df, file_path, obj_df=None, parameters=None):
                 if y:
                     if len(y) > 1 or len(y[0]) > 0:
                         el2[prefix + "omap"][k.split("case_")[1]] = y
+                    for subel in y:
+                        objects_from_df_type[subel] = k.split("case_")[1]
             elif not k in ["id", "activity", "timestamp"]:
                 el2[prefix + "vmap"][k] = el[k]
         ret[prefix + "events"][el["id"]] = el2
@@ -146,15 +149,15 @@ def apply(df, file_path, obj_df=None, parameters=None):
         stream = ot_df[t].to_dict('r')
         for el in stream:
             el2 = {}
-            #el2[prefix + "id"] = el["id"]
             el2[prefix + "otyp"] = t
             el2[prefix + "ovmap"] = {}
             for k in el:
                 if not k in ["id", "type"]:
                     el2[prefix + "ovmap"][k] = el[k]
             ret[prefix + "objects"][el["id"]] = el2
-
+    for o in objects_from_df_type:
+        if not o in ret[prefix + "objects"]:
+            ret[prefix + "objects"][o] = {prefix+"otyp": objects_from_df_type[o], prefix+"ovmap": {}}
     F = open(file_path, "w")
     json.dump(ret, F, default=json_serial, indent=2)
     F.close()
-
