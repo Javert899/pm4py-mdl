@@ -112,9 +112,9 @@ def apply(df, file_path, obj_df=None, parameters=None):
             ot_df[ot] = red_df
 
     ret = {}
-    att_names = sorted(list(att_types.keys()))
-    att_typ_values = sorted(list(att_types.values()))
-    object_types = sorted(list(ot_df.keys()))
+    att_names = sorted(list(set(att_types.keys())))
+    att_typ_values = sorted(list(set(att_types.values())))
+    object_types = sorted(list(obj_types))
     ret[prefix+"att_names"] = att_names
     ret[prefix+"att_types"] = att_typ_values
     ret[prefix+"object_types"] = object_types
