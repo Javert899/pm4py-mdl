@@ -124,25 +124,24 @@ def apply(df, file_path, obj_df=None, parameters=None):
     ret[prefix+"att_mand"] = acti_mandatory
     ret[prefix+"ot_mand"] = ot_mandatory
 
-    for act in acti_df:
-        stream = acti_df[act].to_dict('r')
-        for el in stream:
-            el2 = {}
-            #el2[prefix+"id"] = el["id"]
-            el2[prefix+"activity"] = el["activity"]
-            el2[prefix+"timestamp"] = el["timestamp"]
-            el2[prefix+"omap"] = {}
-            el2[prefix+"vmap"] = {}
+    stream = df.dropna(how="all", axis=1).to_dict("r")
+    for el in stream:
+        el2 = {}
+        # el2[prefix+"id"] = el["id"]
+        el2[prefix + "activity"] = el["activity"]
+        el2[prefix + "timestamp"] = el["timestamp"]
+        el2[prefix + "omap"] = {}
+        el2[prefix + "vmap"] = {}
 
-            for k in el:
-                if k.startswith("case_"):
-                    y = eval(el[k])
-                    if y:
-                        if len(y) > 1 or len(y[0]) > 0:
-                            el2[prefix + "omap"][k.split("case_")[1]] = y
-                elif not k in ["id", "activity", "timestamp"]:
-                    el2[prefix+"vmap"][k] = el[k]
-            ret[prefix+"events"][el["id"]] = el2
+        for k in el:
+            if k.startswith("case_"):
+                y = eval(el[k])
+                if y:
+                    if len(y) > 1 or len(y[0]) > 0:
+                        el2[prefix + "omap"][k.split("case_")[1]] = y
+            elif not k in ["id", "activity", "timestamp"]:
+                el2[prefix + "vmap"][k] = el[k]
+        ret[prefix + "events"][el["id"]] = el2
 
     for t in ot_df:
         stream = ot_df[t].to_dict('r')
