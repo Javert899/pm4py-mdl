@@ -135,12 +135,16 @@ def apply(df, file_path, obj_df=None, parameters=None):
 
         for k in el:
             if k.startswith("case_"):
-                y = eval(el[k])
-                if y:
-                    if len(y) > 1 or len(y[0]) > 0:
-                        el2[prefix + "omap"][k.split("case_")[1]] = y
-                    for subel in y:
-                        objects_from_df_type[subel] = k.split("case_")[1]
+                if str(el[k]).lower() != "nan":
+                    if type(el[k]) is str:
+                        y = eval(el[k])
+                    else:
+                        y = el[k]
+                    if y:
+                        if len(y) > 1 or len(y[0]) > 0:
+                            el2[prefix + "omap"][k.split("case_")[1]] = y
+                        for subel in y:
+                            objects_from_df_type[subel] = k.split("case_")[1]
             elif not k in ["id", "activity", "timestamp"]:
                 el2[prefix + "vmap"][k] = el[k]
         ret[prefix + "events"][el["id"]] = el2
