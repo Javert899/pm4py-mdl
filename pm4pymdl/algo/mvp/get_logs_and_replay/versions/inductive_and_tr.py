@@ -154,7 +154,7 @@ def apply(df, parameters=None):
             print(persp, "got variants")
 
         aligned_traces, place_fitness_per_trace, transition_fitness_per_trace, notexisting_activities_in_model = tr_factory.apply(
-            log, net, im, fm, parameters={"enable_place_fitness": True, "disable_variants": True})
+            log, net, im, fm, parameters={"enable_pltr_fitness": True, "disable_variants": True})
 
         if debug:
             print(persp, "done tbr")
