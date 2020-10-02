@@ -48,7 +48,8 @@ setup(
         "pyarrow==0.15.1",
         "Flask",
         "flask-cors",
-        "setuptools"
+        "setuptools",
+        "frozendict"
     ],
     project_urls={
         'Documentation': 'http://pm4py.pads.rwth-aachen.de/documentation/',

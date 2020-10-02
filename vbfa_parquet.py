@@ -3,7 +3,7 @@ import os
 import networkx
 import datetime
 from pm4py.objects.log.log import EventLog, Trace, Event
-from pm4py.objects.conversion.log import factory as log_conv_factory
+from pm4py.objects.conversion.log import converter as log_conv_factory
 from pm4py.algo.filtering.pandas.start_activities import start_activities_filter
 from frozendict import frozendict
 

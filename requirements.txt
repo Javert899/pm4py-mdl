@@ -3,3 +3,4 @@ pyarrow==0.15.1
 Flask
 flask-cors
 setuptools
+frozendict

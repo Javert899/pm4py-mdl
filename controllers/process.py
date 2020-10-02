@@ -28,8 +28,8 @@ from networkx.algorithms.community import quality
 from scipy.linalg.blas import sgemm
 from scipy import spatial
 from pm4py.objects.log.log import EventStream
-from pm4py.objects.conversion.log import factory as log_conv_factory
-from pm4py.objects.log.exporter.xes import factory as xes_exporter
+from pm4py.objects.conversion.log import converter as log_conv_factory
+from pm4py.objects.log.exporter.xes import exporter as xes_exporter
 from pm4py.objects.log.util import sorting
 from collections import Counter
 
