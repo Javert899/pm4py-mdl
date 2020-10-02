@@ -147,6 +147,7 @@ def apply(df, file_path, obj_df=None, parameters=None):
                             objects_from_df_type[subel] = k.split("case_")[1]
             elif not k in ["id", "activity", "timestamp"]:
                 el2[prefix + "vmap"][k] = el[k]
+        el2[prefix + "omap"] = list(set(z for y in el2[prefix+"omap"].values() for z in y))
         ret[prefix + "events"][el["id"]] = el2
 
     for t in ot_df:
