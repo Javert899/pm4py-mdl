@@ -27,5 +27,5 @@ bkpf = bkpf[[x for x in bkpf.columns if not "named:" in x]]
 bkpf = start_activities_filter.apply(bkpf, ["Create Billing Document"])
 #print(end_activities_filter.get_end_activities(bkpf))
 bkpf = end_activities_filter.apply(bkpf, ["Post Document"])
-parquet_exporter.apply(bkpf, "bkpf.parquet", variant="pandas")
+parquet_exporter.apply(bkpf, "bkpf.parquet")
 bkpf.to_csv("bkpf.csv", index=False)
