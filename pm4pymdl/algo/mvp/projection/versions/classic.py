@@ -1,5 +1,5 @@
 from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl
-from pm4py.objects.conversion.log import factory as log_conv_factory
+from pm4py.objects.conversion.log import converter as log_conv_factory
 
 
 def apply(df, persp, parameters=None):

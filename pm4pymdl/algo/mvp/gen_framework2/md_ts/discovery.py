@@ -1,10 +1,10 @@
 import pandas as pd
 from pm4pymdl.algo.mvp.gen_framework2 import general
 from pm4pymdl.algo.mvp.utils import clean_frequency, clean_arc_frequency
-from pm4py.objects.conversion.log import factory as log_conv_factory
+from pm4py.objects.conversion.log import converter as log_conv_factory
 from pm4py.objects.log.log import EventStream
 from collections import Counter
-from pm4py.algo.discovery.transition_system import factory as tsystem
+from pm4py.algo.discovery.transition_system import algorithm as tsystem
 
 
 def apply(df0, classifier_function=None, parameters=None):

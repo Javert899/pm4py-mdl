@@ -1,9 +1,9 @@
 import pm4py
 from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl, clean_frequency, clean_arc_frequency
 from pm4pymdl.algo.mvp.projection import factory
-from pm4py.algo.discovery.alpha import factory as alpha_miner
-from pm4py.algo.discovery.inductive import factory as inductive_miner
-from pm4py.algo.conformance.tokenreplay import factory as tr_factory
+from pm4py.algo.discovery.alpha import algorithm as alpha_miner
+from pm4py.algo.discovery.inductive import algorithm as inductive_miner
+from pm4py.algo.conformance.tokenreplay import algorithm as tr_factory
 from pm4py.visualization.petrinet.util import performance_map
 from pm4py.algo.filtering.log.variants import variants_filter as variants_module
 from pm4py.algo.filtering.log.paths import paths_filter
