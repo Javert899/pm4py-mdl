@@ -157,6 +157,4 @@ if __name__ == "__main__":
     df = df[[x for x in df.columns if "named:" not in x]]
     df.type = "exploded"
     df.to_csv("sales_document_flow.csv", index=False)
-    #from pm4py.objects.log.exporter.parquet import factory as parquet_exporter
 
-    #parquet_exporter.apply(df, "sales_document_flow.parquet")

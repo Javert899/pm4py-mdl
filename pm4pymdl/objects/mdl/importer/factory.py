@@ -22,7 +22,7 @@ def apply(file_path, return_obj_dataframe=False, parameters=None):
         df["event_id"] = df["event_id"].astype(str)
         df.type = "succint"
     elif file_path.endswith(".parquet"):
-        from pm4py.objects.log.importer.parquet import factory as parquet_importer
+        from pm4pydistr.util.parquet_importer import importer as parquet_importer
         all_df = parquet_importer.apply(file_path)
         eve_cols = [x for x in all_df.columns if not x.startswith("object_")]
         obj_cols = [x for x in all_df.columns if x.startswith("object_")]

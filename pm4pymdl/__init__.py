@@ -1,4 +1,4 @@
-from pm4pymdl import algo, objects, visualization, order_log_generation
+from pm4pymdl import algo, objects, visualization, order_log_generation, util
 
 __version__ = '0.0.26'
 __doc__ = "Process Mining for Python - Multi-Dimensional Event Logs"
