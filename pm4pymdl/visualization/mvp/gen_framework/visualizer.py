@@ -3,7 +3,7 @@ from pm4pymdl.visualization.mvp.gen_framework.versions import model2 as model2_v
 from pm4pymdl.visualization.mvp.gen_framework.versions import model3 as model3_visualization
 from pm4pymdl.visualization.mvp.gen_framework.versions import procl_der_model
 
-from pm4pymdl.algo.mvp.gen_framework.models import factory as model_factory
+from pm4pymdl.algo.mvp.gen_framework.models import model_builder as model_factory
 
 from graphviz import Digraph
 from pm4py.visualization.common import gview

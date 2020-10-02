@@ -1,4 +1,4 @@
-from pm4pymdl.algo.mvp.gen_framework import factory as gen_fram_factory
+from pm4pymdl.algo.mvp.gen_framework import algorithm as gen_fram_factory
 from pm4py.algo.discovery.inductive import algorithm as inductive_miner
 from pm4py.algo.discovery.dfg.utils import dfg_utils
 

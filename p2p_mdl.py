@@ -2,7 +2,7 @@ import pandas as pd
 from frozendict import frozendict
 from copy import copy
 import uuid
-from pm4pymdl.objects.mdl.exporter import factory as mdl_exporter
+from pm4pymdl.objects.mdl.exporter import exporter as mdl_exporter
 
 
 class Shared:

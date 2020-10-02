@@ -313,6 +313,6 @@ if __name__ == "__main__":
     df = df.sort_values(Shared.timestamp_column)
     print(df)
     df.type = "exploded"
-    from pm4pymdl.objects.mdl.exporter import factory as mdl_exporter
+    from pm4pymdl.objects.mdl.exporter import exporter as mdl_exporter
 
     mdl_exporter.apply(df, "sap.mdl")

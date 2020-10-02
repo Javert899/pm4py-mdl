@@ -1,1 +1,1 @@
-from pm4pymdl.objects.openslex.importer import versions, factory
+from pm4pymdl.objects.openslex.importer import versions, importer

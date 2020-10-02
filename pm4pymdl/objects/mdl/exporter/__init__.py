@@ -1,1 +1,1 @@
-from pm4pymdl.objects.mdl.exporter import factory
+from pm4pymdl.objects.mdl.exporter import exporter

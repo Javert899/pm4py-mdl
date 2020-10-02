@@ -1,7 +1,7 @@
 import pandas as pd
 from dateutil import parser
-from pm4pymdl.objects.mdl.exporter import factory as mdl_exporter
-from pm4pymdl.objects.mdl.importer import factory as mdl_importer
+from pm4pymdl.objects.mdl.exporter import exporter as mdl_exporter
+from pm4pymdl.objects.mdl.importer import importer as mdl_importer
 import os
 
 

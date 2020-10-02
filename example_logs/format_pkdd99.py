@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-from pm4pymdl.objects.mdl.exporter import factory as mdl_exporter
+from pm4pymdl.objects.mdl.exporter import exporter as mdl_exporter
 from pm4pymdl.algo.mvp.utils.exploded_mdl_to_succint_mdl import apply
 
 logs = os.listdir("pkdd99")

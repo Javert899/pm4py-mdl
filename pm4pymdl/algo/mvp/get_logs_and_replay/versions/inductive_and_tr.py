@@ -1,6 +1,6 @@
 import pm4py
 from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl, clean_frequency, clean_arc_frequency
-from pm4pymdl.algo.mvp.projection import factory
+from pm4pymdl.algo.mvp.projection import algorithm
 from pm4py.algo.discovery.alpha import algorithm as alpha_miner
 from pm4py.algo.discovery.inductive import algorithm as inductive_miner
 from pm4py.algo.conformance.tokenreplay import algorithm as tr_factory
@@ -98,7 +98,7 @@ def apply(df, parameters=None):
         aa = time.time()
         if debug:
             print(persp, "getting log")
-        log = factory.apply(df, persp, parameters=parameters)
+        log = algorithm.apply(df, persp, parameters=parameters)
         if debug:
             print(len(log))
 
@@ -140,7 +140,7 @@ def apply(df, parameters=None):
             print(persp, "got model")
 
         xx1 = time.time()
-        activ_count = factory.apply(df, persp, variant="activity_occurrence", parameters=parameters)
+        activ_count = algorithm.apply(df, persp, variant="activity_occurrence", parameters=parameters)
         if debug:
             print(persp, "got activ_count")
         xx2 = time.time()
@@ -201,7 +201,7 @@ def apply(df, parameters=None):
         if debug:
             print(persp, "done aggregated_statistics_performance")
 
-        group_size_hist = factory.apply(df, persp, variant="group_size_hist", parameters=parameters)
+        group_size_hist = algorithm.apply(df, persp, variant="group_size_hist", parameters=parameters)
 
         if debug:
             print(persp, "done group_size_hist")

@@ -1,8 +1,8 @@
-from pm4pymdl.algo.mvp.gen_framework.models import factory as model_factory
-from pm4pymdl.algo.mvp.gen_framework.rel_events import factory as rel_ev_factory
-from pm4pymdl.algo.mvp.gen_framework.rel_activities import factory as rel_act_factory
-from pm4pymdl.algo.mvp.gen_framework.node_freq import factory as node_freq_factory
-from pm4pymdl.algo.mvp.gen_framework.edge_freq import factory as edge_freq_factory
+from pm4pymdl.algo.mvp.gen_framework.models import model_builder as model_factory
+from pm4pymdl.algo.mvp.gen_framework.rel_events import rel_events_builder as rel_ev_factory
+from pm4pymdl.algo.mvp.gen_framework.rel_activities import rel_activities_builder as rel_act_factory
+from pm4pymdl.algo.mvp.gen_framework.node_freq import node_freq_builder as node_freq_factory
+from pm4pymdl.algo.mvp.gen_framework.edge_freq import edge_freq_builder as edge_freq_factory
 from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl, clean_objtypes
 import pandas as pd
 

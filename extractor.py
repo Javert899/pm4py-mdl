@@ -1,8 +1,8 @@
 import os
 import pandas as pd
 from frozendict import frozendict
-from pm4pymdl.algo.mvp.gen_framework import factory as discovery
-from pm4pymdl.visualization.mvp.gen_framework import factory as vis_factory
+from pm4pymdl.algo.mvp.gen_framework import algorithm as discovery
+from pm4pymdl.visualization.mvp.gen_framework import visualizer as vis_factory
 from pm4pymdl.algo.mvp.utils import clean_frequency, clean_arc_frequency
 
 dir = r"C:\Users\aless\Documents\sap_extraction"

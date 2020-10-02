@@ -1,6 +1,6 @@
 import pandas as pd
 from dateutil.parser import parse
-from pm4pymdl.objects.mdl.exporter import factory as mdl_exporter
+from pm4pymdl.objects.mdl.exporter import exporter as mdl_exporter
 from pm4pymdl.algo.mvp.utils import exploded_mdl_to_succint_mdl
 
 cdhdr = pd.read_csv("cdhdr.csv", sep=",", quotechar="\"")

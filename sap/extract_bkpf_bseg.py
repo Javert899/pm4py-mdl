@@ -1,6 +1,6 @@
 import pandas as pd
-from pm4pymdl.algo.mvp.discovery import factory as mvp_disc_factory
-from pm4pymdl.visualization.mvp import factory as mvp_vis_factory
+from pm4pymdl.algo.mvp.discovery import algorithm as mvp_disc_factory
+from pm4pymdl.visualization.mvp import visualizer as mvp_vis_factory
 
 df1 = pd.read_csv("bkpf.csv")
 renaming = {"tcode": "event_activity", "id": "event_id", "budat": "event_timestamp", "xblnr": "xblnr", "belnr": "belnr", "usnam": "usnam"}
@@ -93,7 +93,7 @@ mapping["GBB"] = "Offsetting entry for inventory posting"
 mapping["MB1B"] = "Enter Transfer Posting"
 df["event_activity"] = df["event_activity"].apply(lambda x: mapping[x])
 
-from pm4pymdl.objects.mdl.exporter import factory as mdl_exporter
+from pm4pymdl.objects.mdl.exporter import exporter as mdl_exporter
 mdl_exporter.apply(df, "bkpf_bseg.mdl")
 
 #print(df["event_activity"].unique())
@@ -109,20 +109,4 @@ model = mvp_disc_factory.apply(df, parameters={"min_dfg_occurrences": 3, "perfor
 
 gviz = mvp_vis_factory.apply(model, parameters={"format": "svg"})
 mvp_vis_factory.save(gviz, "bkpf_caseid_performance.svg")
-
-#gviz = mvp_vis_factory.apply(model)
-#mvp_vis_factory.view(gviz)
-
-#df["case:concept:name"] = df["caseid"]
-#df["concept:name"] = df["event_activity"]
-#df["time:timestamp"] = df["event_timestamp"]
-
-#from pm4py.algo.discovery.inductive import factory as inductive_miner
-
-#net, im, fm = inductive_miner.apply(df)
-
-#from pm4py.visualization.petrinet import factory as pn_vis_factory
-
-#gviz = pn_vis_factory.apply(net, im, fm)
-#pn_vis_factory.view(gviz)
 

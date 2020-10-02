@@ -1,6 +1,6 @@
-from pm4pymdl.objects.mdl.importer import factory as mdl_importer
+from pm4pymdl.objects.mdl.importer import importer as mdl_importer
 from pm4pymdl.algo.mvp.gen_framework3 import discovery, conformance
-from pm4pymdl.visualization.mvp.gen_framework3 import factory as visualizer
+from pm4pymdl.visualization.mvp.gen_framework3 import visualizer as visualizer
 
 dataframe = mdl_importer.apply("../example_logs/mdl/o2c_red.mdl")
 model = discovery.apply(dataframe, parameters={"epsilon": 0.1, "noise_threshold": 0.1})

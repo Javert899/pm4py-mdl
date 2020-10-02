@@ -1,4 +1,4 @@
-from pm4pymdl.objects.mdl.importer import factory as mdl_importer
+from pm4pymdl.objects.mdl.importer import importer as mdl_importer
 
 # import a log in Parquet format, that is stored as exploded MDL table
 exploded_table = mdl_importer.apply("../example_logs/parquet/pkdd99.parquet")

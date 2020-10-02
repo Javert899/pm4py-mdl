@@ -1,1 +1,1 @@
-from pm4pymdl.algo.mvp.discovery import versions, factory
+from pm4pymdl.algo.mvp.discovery import versions, algorithm

@@ -1,6 +1,6 @@
-from pm4pymdl.objects.mdl.importer import factory as mdl_importer
-from pm4pymdl.algo.mvp.gen_framework import factory as discovery
-from pm4pymdl.visualization.mvp.gen_framework import factory as vis_factory
+from pm4pymdl.objects.mdl.importer import importer as mdl_importer
+from pm4pymdl.algo.mvp.gen_framework import algorithm as discovery
+from pm4pymdl.visualization.mvp.gen_framework import visualizer as vis_factory
 import pandas as pd
 
 df_offer = mdl_importer.apply("../example_logs/parquet/bpic2017_offer.parquet")

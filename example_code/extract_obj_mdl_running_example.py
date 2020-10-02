@@ -1,4 +1,4 @@
-from pm4pymdl.objects.mdl.importer import factory as mdl_importer
+from pm4pymdl.objects.mdl.importer import importer as mdl_importer
 import os
 
 

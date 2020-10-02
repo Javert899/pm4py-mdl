@@ -1,8 +1,8 @@
-from pm4pymdl.objects.mdl.importer import factory as mdl_importer
+from pm4pymdl.objects.mdl.importer import importer as mdl_importer
 from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl
-from pm4pymdl.algo.mvp.gen_framework import factory as discovery
-from pm4pymdl.visualization.mvp.gen_framework import factory as vis_factory
-from pm4pymdl.objects.mdl.exporter import factory as mdl_exporter
+from pm4pymdl.algo.mvp.gen_framework import algorithm as discovery
+from pm4pymdl.visualization.mvp.gen_framework import visualizer as vis_factory
+from pm4pymdl.objects.mdl.exporter import exporter as mdl_exporter
 
 # import a succint MDL table
 succint_table = mdl_importer.apply("../example_logs/mdl/order_management.mdl")

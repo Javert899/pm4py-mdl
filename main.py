@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, make_response, jsonify, redirect, url_for
 import base64
-from pm4pymdl.objects.mdl.importer import factory as mdl_importer
+from pm4pymdl.objects.mdl.importer import importer as mdl_importer
 from controllers import process as pc_controller
 from controllers.process import Process
 from controllers import defaults

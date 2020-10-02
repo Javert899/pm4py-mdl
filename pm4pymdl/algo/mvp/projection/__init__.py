@@ -1,1 +1,1 @@
-from pm4pymdl.algo.mvp.projection import factory, versions
+from pm4pymdl.algo.mvp.projection import algorithm, versions
