@@ -53,6 +53,7 @@ def apply_stream(stream, parameters=None):
         types_lifecycle[cl][o].append(ev)
 
     for t in types_lifecycle:
+        eot[t] = dict()
         objects_lifecycle = types_lifecycle[t]
         for o in objects_lifecycle:
             evs = objects_lifecycle[o]
@@ -62,10 +63,10 @@ def apply_stream(stream, parameters=None):
                 a1 = evs[i]["event_activity"]
                 if a1 not in eo:
                     eo[a1] = set()
-                    eot[a1] = {}
-                if t not in eot[a1]:
-                    eot[a1][t] = set()
+                if a1 not in eot[t]:
+                    eot[t][a1] = set()
                 eo[a1].add((i1, o))
+                eot[t][a1].add((i1, o))
                 if i < len(evs)-1:
                     i2 = evs[i+1]["event_id"]
                     a2 = evs[i+1]["event_activity"]
@@ -82,18 +83,33 @@ def apply_stream(stream, parameters=None):
         ret["activities"][act] = {}
         ret["activities"][act]["events"] = len({x[0] for x in eo[act]})
         ret["activities"][act]["objects"] = len({x[1] for x in eo[act]})
-        ret["activities"][act]["eo"] = len(eo[act])
+        ret["activities"][act]["eo"] = eo[act]
     ret["types_view"] = {}
     for t in types_lifecycle:
-        ret["types_view"][t] = {"edges": {}}
+        ret["types_view"][t] = {"edges": {}, "activities": {}}
         available_keys = {x for x in eoe.keys() if x[1] == t}
         for k in available_keys:
             a1 = k[0]
             a2 = k[2]
             values = eoe[k]
-            ret["types_view"][t][(a1, a2)] = {}
-            ret["types_view"][t][(a1, a2)]["events"] = len({x[0] for x in values})
-            ret["types_view"][t][(a1, a2)]["objects"] = len({x[1] for x in values})
-            ret["types_view"][t][(a1, a2)]["eo"] = len(values)
+            ret["types_view"][t]["edges"][(a1, a2)] = {}
+            ret["types_view"][t]["edges"][(a1, a2)]["events"] = {(x[0], x[2]) for x in values}
+            ret["types_view"][t]["edges"][(a1, a2)]["objects"] = {x[1] for x in values}
+            ret["types_view"][t]["edges"][(a1, a2)]["eo"] = values
+        for act in eot[t]:
+            values = eot[t][act]
+            ret["types_view"][t]["activities"][act] = {}
+            ret["types_view"][t]["activities"][act]["events"] = {x[0] for x in values}
+            ret["types_view"][t]["activities"][act]["objects"] = {x[1] for x in values}
+            ret["types_view"][t]["activities"][act]["eo"] = values
+
+        for edge in ret["types_view"][t]["edges"]:
+            ret["types_view"][t]["edges"][edge]["events"] = len(ret["types_view"][t]["edges"][edge]["events"])
+            ret["types_view"][t]["edges"][edge]["objects"] = len(ret["types_view"][t]["edges"][edge]["objects"])
+            ret["types_view"][t]["edges"][edge]["eo"] = len(ret["types_view"][t]["edges"][edge]["eo"])
+        for act in ret["types_view"][t]["activities"]:
+            ret["types_view"][t]["activities"][act]["events"] = len(ret["types_view"][t]["activities"][act]["events"])
+            ret["types_view"][t]["activities"][act]["objects"] = len(ret["types_view"][t]["activities"][act]["objects"])
+            ret["types_view"][t]["activities"][act]["eo"] = len(ret["types_view"][t]["activities"][act]["eo"])
 
     return ret
