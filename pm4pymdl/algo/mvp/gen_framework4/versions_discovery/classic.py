@@ -87,6 +87,12 @@ def apply_stream(stream, parameters=None):
     ret["types_view"] = {}
     for t in types_lifecycle:
         ret["types_view"][t] = {"edges": {}, "activities": {}}
+        for act in eot[t]:
+            values = eot[t][act]
+            ret["types_view"][t]["activities"][act] = {}
+            ret["types_view"][t]["activities"][act]["events"] = {x[0] for x in values}
+            ret["types_view"][t]["activities"][act]["objects"] = {x[1] for x in values}
+            ret["types_view"][t]["activities"][act]["eo"] = values
         available_keys = {x for x in eoe.keys() if x[1] == t}
         for k in available_keys:
             a1 = k[0]
@@ -96,13 +102,18 @@ def apply_stream(stream, parameters=None):
             ret["types_view"][t]["edges"][(a1, a2)]["events"] = {(x[0], x[2]) for x in values}
             ret["types_view"][t]["edges"][(a1, a2)]["objects"] = {x[1] for x in values}
             ret["types_view"][t]["edges"][(a1, a2)]["eo"] = values
-        for act in eot[t]:
-            values = eot[t][act]
-            ret["types_view"][t]["activities"][act] = {}
-            ret["types_view"][t]["activities"][act]["events"] = {x[0] for x in values}
-            ret["types_view"][t]["activities"][act]["objects"] = {x[1] for x in values}
-            ret["types_view"][t]["activities"][act]["eo"] = values
-
+            ret["types_view"][t]["edges"][(a1, a2)]["support_entry"] = ret["types_view"][t]["activities"][a1]["objects"].intersection(ret["types_view"][t]["edges"][(a1, a2)]["objects"])
+            ret["types_view"][t]["edges"][(a1, a2)]["dev_entry"] = ret["types_view"][t]["activities"][a1]["objects"].difference(ret["types_view"][t]["edges"][(a1, a2)]["objects"])
+            ret["types_view"][t]["edges"][(a1, a2)]["support_exit"] = ret["types_view"][t]["activities"][a2]["objects"].intersection(ret["types_view"][t]["edges"][(a1, a2)]["objects"])
+            ret["types_view"][t]["edges"][(a1, a2)]["dev_exit"] = ret["types_view"][t]["activities"][a2]["objects"].difference(ret["types_view"][t]["edges"][(a1, a2)]["objects"])
+            sen = len(ret["types_view"][t]["edges"][(a1, a2)]["support_entry"])
+            den = len(ret["types_view"][t]["edges"][(a1, a2)]["dev_entry"])
+            sex = len(ret["types_view"][t]["edges"][(a1, a2)]["support_exit"])
+            dex = len(ret["types_view"][t]["edges"][(a1, a2)]["dev_exit"])
+            if sen > support and den/sen > epsilon:
+                ret["types_view"][t]["edges"][(a1, a2)]["must_entry"] = True
+            else:
+                ret["types_view"][t]["edges"][(a1, a2)]["must_entry"] = False
         for edge in ret["types_view"][t]["edges"]:
             ret["types_view"][t]["edges"][edge]["events"] = len(ret["types_view"][t]["edges"][edge]["events"])
             ret["types_view"][t]["edges"][edge]["objects"] = len(ret["types_view"][t]["edges"][edge]["objects"])
