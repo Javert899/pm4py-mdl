@@ -3,11 +3,11 @@ from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl, exploded_mdl_to
 from pm4py.algo.discovery.dfg.adapters.pandas import df_statistics
 from pm4pymdl.algo.mvp.gen_framework import algorithm as mdfg_disc_factory
 from pm4pymdl.algo.mvp.gen_framework2 import algorithm as mdfg_disc_factory2
-from pm4pymdl.algo.mvp.gen_framework3 import discovery as mdfg_disc_factory3
+from pm4pymdl.algo.mvp.gen_framework4 import discovery as mdfg_disc_factory3
 from pm4pymdl.algo.mvp.get_logs_and_replay import algorithm as petri_disc_factory
 from pm4pymdl.visualization.mvp.gen_framework import visualizer as mdfg_vis_factory
 from pm4pymdl.visualization.mvp.gen_framework2 import visualizer as mdfg_vis_factory2
-from pm4pymdl.visualization.mvp.gen_framework3 import visualizer as mdfg_vis_factory3
+from pm4pymdl.visualization.mvp.gen_framework4 import visualizer as mdfg_vis_factory3
 from pm4pymdl.visualization.petrinet import visualizer as pn_vis_factory
 from pm4pymdl.algo.mvp.utils import get_activ_attrs_with_type, get_activ_otypes
 from pm4pymdl.algo.mvp.utils import filter_act_attr_val, filter_act_ot, filter_timestamp, filter_metaclass, \
