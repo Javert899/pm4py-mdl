@@ -101,6 +101,36 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
             act_nodes[act] = this_uuid
             viz.node(this_uuid, label=label, color=act_type_color, shape="box", fontsize=FONTSIZE_NODES, fontname=FONTNAME_NODES)
 
+    for index, tk in enumerate(types_keys):
+        t = model["types_view"][tk]
+        for edge in t["edges"]:
+            source = edge[0]
+            target = edge[1]
+            source_type = model["activities_mapping"][source]
+            target_type = model["activities_mapping"][target]
+
+            if source in act_nodes and target in act_nodes:
+                if projection == "no" or (projection == "source" and source_type == tk) or (projection == "target" and target_type == tk):
+                    ann = t["edges"][edge][freq]
+                    style = "solid"
+                    this_penwidth = SOLID_PENWIDTH
+                    freq_ev = t["edges"][edge]["events"]
+                    if not freq == "semantics":
+                        fr = t["edges"][edge][freq]
+                    else:
+                        fr = freq_ev
+
+                    if count_events:
+                        fr_incl = freq_ev
+                    else:
+                        fr_incl = fr
+
+                    if fr_incl >= min_edge_freq:
+                        label = ""
+                        viz.edge(act_nodes[source], act_nodes[target], style=style, label=label, color=types_colors[tk],
+                                 fontcolor=types_colors[tk], fontsize=FONTSIZE_EDGES, fontname=FONTNAME_EDGES,
+                                 penwidth=this_penwidth)
+
     viz.format = image_format
 
     return viz
