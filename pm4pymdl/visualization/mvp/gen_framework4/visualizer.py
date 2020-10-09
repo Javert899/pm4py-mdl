@@ -56,7 +56,6 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
 
     filename = tempfile.NamedTemporaryFile(suffix='.gv')
     viz = Digraph("pt", filename=filename.name, engine='dot', graph_attr={'bgcolor': 'transparent'})
-    viz.attr(overlap='false')
     image_format = parameters["format"] if "format" in parameters else "png"
 
     min_act_freq = parameters["min_act_freq"] if "min_act_freq" in parameters else 0
@@ -71,7 +70,7 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
     FONTNAME_NODES = 'bold'
     FONTNAME_EDGES = 'bold'
 
-    SOLID_PENWIDTH = '4'
+    PENWIDTH = '4'
 
     for index, tk in enumerate(types_keys):
         type_color = COLORS[index % len(COLORS)]
@@ -112,8 +111,22 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
             if source in act_nodes and target in act_nodes:
                 if projection == "no" or (projection == "source" and source_type == tk) or (projection == "target" and target_type == tk):
                     ann = t["edges"][edge][freq]
-                    style = "solid"
-                    this_penwidth = SOLID_PENWIDTH
+                    style = "dashed"
+
+                    if t["edges"][edge]["must_exit"]:
+                        arrowtail = "box"
+                    else:
+                        arrowtail = None
+
+                    if t["edges"][edge]["must_entry"]:
+                        arrowhead = "box"
+                    else:
+                        arrowhead = "normal"
+
+                    if arrowtail == "box" and arrowhead == "box":
+                        style = "solid"
+
+                    this_penwidth = PENWIDTH
                     freq_ev = t["edges"][edge]["events"]
                     if not freq == "semantics":
                         fr = t["edges"][edge][freq]
@@ -126,11 +139,15 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
                         fr_incl = fr
 
                     if fr_incl >= min_edge_freq:
-                        label = ""
-                        viz.edge(act_nodes[source], act_nodes[target], style=style, label=label, color=types_colors[tk],
-                                 fontcolor=types_colors[tk], fontsize=FONTSIZE_EDGES, fontname=FONTNAME_EDGES,
-                                 penwidth=this_penwidth)
-
+                        label1 = ""
+                        if arrowtail is not None:
+                            viz.edge(act_nodes[source], act_nodes[target], style=style, label=label1, color=types_colors[tk],
+                                     fontcolor=types_colors[tk], fontsize=FONTSIZE_EDGES, fontname=FONTNAME_EDGES,
+                                     penwidth=this_penwidth, arrowhead=arrowhead, arrowtail=arrowtail, dir="both")
+                        else:
+                            viz.edge(act_nodes[source], act_nodes[target], style=style, label=label1, color=types_colors[tk],
+                                     fontcolor=types_colors[tk], fontsize=FONTSIZE_EDGES, fontname=FONTNAME_EDGES,
+                                     penwidth=this_penwidth, arrowhead=arrowhead)
     viz.format = image_format
 
     return viz
