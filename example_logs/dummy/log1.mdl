@@ -1,0 +1,7 @@
+event_id,event_activity,event_timestamp,event_prepaid,event_paid,event_receiv,order,item,delivery
+1,Create Order,2000-01-01,500,,,"['O1']","['I1','I2','I3']",
+2,Start Delivery,2000-01-02,,,,,"['I1','I2']","['D1']"
+3,Start Delivery,2000-01-03,,,,,"['I3']","['D2']"
+4,Complete Delivery,2000-01-04,,Mike,,,,"['D1']"
+5,Complete Delivery,2000-01-05,,Mike,,,,"['D2']"
+6,Complete Payment,2000-01-06,,1000,,"['O1']",,
