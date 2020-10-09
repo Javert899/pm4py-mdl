@@ -1,5 +1,6 @@
 from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl
 from pm4py.objects.conversion.log import converter
+import math
 
 
 def apply(df, parameters=None):
@@ -35,6 +36,7 @@ def apply_stream(stream, parameters=None):
     support = parameters["support"] if "support" in parameters else 1
     epsilon = parameters["epsilon"] if "epsilon" in parameters else 0.0
     debug = parameters["debug"] if "debug" in parameters else False
+    noise_obj_number = parameters["noise_obj_number"] if "noise_obj_number" in parameters else 0.0
 
     types_lifecycle = {}
 
@@ -85,6 +87,8 @@ def apply_stream(stream, parameters=None):
         ret["activities"][act]["objects"] = len({x[1] for x in eo[act]})
         ret["activities"][act]["eo"] = eo[act]
     ret["types_view"] = {}
+    activities_mapping = {}
+    activities_mapping_count = {}
     for t in types_lifecycle:
         ret["types_view"][t] = {"edges": {}, "activities": {}}
         for act in eot[t]:
@@ -98,6 +102,14 @@ def apply_stream(stream, parameters=None):
             a1 = k[0]
             a2 = k[2]
             values = eoe[k]
+            g_1_2 = group_1_2(values)
+            g_1_3 = group_1_3(values)
+            g_1_2 = g_1_2[:math.ceil(len(g_1_2)*(1.0-noise_obj_number))]
+            g_1_3 = g_1_3[:math.ceil(len(g_1_3)*(1.0-noise_obj_number))]
+            g_1_2_min = min(g_1_2)
+            g_1_2_max = max(g_1_2)
+            g_1_3_min = min(g_1_3)
+            g_1_3_max = max(g_1_3)
             ret["types_view"][t]["edges"][(a1, a2)] = {}
             ret["types_view"][t]["edges"][(a1, a2)]["events"] = {(x[0], x[2]) for x in values}
             ret["types_view"][t]["edges"][(a1, a2)]["objects"] = {x[1] for x in values}
@@ -110,17 +122,52 @@ def apply_stream(stream, parameters=None):
             den = len(ret["types_view"][t]["edges"][(a1, a2)]["dev_entry"])
             sex = len(ret["types_view"][t]["edges"][(a1, a2)]["support_exit"])
             dex = len(ret["types_view"][t]["edges"][(a1, a2)]["dev_exit"])
-            if sen > support and den/sen > epsilon:
+            if sen >= support and den/sen <= epsilon:
                 ret["types_view"][t]["edges"][(a1, a2)]["must_entry"] = True
             else:
                 ret["types_view"][t]["edges"][(a1, a2)]["must_entry"] = False
+            if sex >= support and dex/sex <= epsilon:
+                ret["types_view"][t]["edges"][(a1, a2)]["must_exit"] = True
+            else:
+                ret["types_view"][t]["edges"][(a1, a2)]["must_exit"] = False
+            ret["types_view"][t]["edges"][(a1, a2)]["min_exit_obj"] = g_1_2_min
+            ret["types_view"][t]["edges"][(a1, a2)]["max_exit_obj"] = g_1_2_max
+            ret["types_view"][t]["edges"][(a1, a2)]["min_entry_obj"] = g_1_3_min
+            ret["types_view"][t]["edges"][(a1, a2)]["max_entry_obj"] = g_1_3_max
         for edge in ret["types_view"][t]["edges"]:
             ret["types_view"][t]["edges"][edge]["events"] = len(ret["types_view"][t]["edges"][edge]["events"])
             ret["types_view"][t]["edges"][edge]["objects"] = len(ret["types_view"][t]["edges"][edge]["objects"])
             ret["types_view"][t]["edges"][edge]["eo"] = len(ret["types_view"][t]["edges"][edge]["eo"])
         for act in ret["types_view"][t]["activities"]:
+            o = len(ret["types_view"][t]["activities"][act]["objects"])
+            if act not in activities_mapping or activities_mapping_count[act] < o:
+                activities_mapping[act] = t
+                activities_mapping_count[act] = o
             ret["types_view"][t]["activities"][act]["events"] = len(ret["types_view"][t]["activities"][act]["events"])
-            ret["types_view"][t]["activities"][act]["objects"] = len(ret["types_view"][t]["activities"][act]["objects"])
+            ret["types_view"][t]["activities"][act]["objects"] = o
             ret["types_view"][t]["activities"][act]["eo"] = len(ret["types_view"][t]["activities"][act]["eo"])
+        ret["activities_mapping"] = activities_mapping
 
     return ret
+
+
+def group_1_2(values):
+    ret = {}
+    for val in values:
+        e1 = val[0]
+        o = val[1]
+        if not e1 in ret:
+            ret[e1] = set()
+        ret[e1].add(o)
+    return list(len(x) for x in ret.values())
+
+
+def group_1_3(values):
+    ret = {}
+    for val in values:
+        e1 = val[2]
+        o = val[1]
+        if not e1 in ret:
+            ret[e1] = set()
+        ret[e1].add(o)
+    return list(len(x) for x in ret.values())
