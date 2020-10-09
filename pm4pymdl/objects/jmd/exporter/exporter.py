@@ -75,7 +75,7 @@ def apply(df, file_path, obj_df=None, parameters=None):
 
         for col in red_df.columns:
             if not col.startswith("case_") and not col in ["id", "activity", "timestamp"]:
-                att_types[col] = get_type(red_df2[col].dtype)
+                att_types[col] = get_type(red_df[col].dtype)
 
         acti_mandatory[act] = []
         for col in red_df2.columns:
@@ -134,19 +134,22 @@ def apply(df, file_path, obj_df=None, parameters=None):
         el2[prefix + "vmap"] = {}
 
         for k in el:
-            if k.startswith("case_"):
-                if str(el[k]).lower() != "nan":
-                    if type(el[k]) is str:
-                        y = eval(el[k])
-                    else:
-                        y = el[k]
-                    if y:
-                        if len(y) > 1 or len(y[0]) > 0:
-                            el2[prefix + "omap"][k.split("case_")[1]] = y
-                        for subel in y:
-                            objects_from_df_type[subel] = k.split("case_")[1]
-            elif not k in ["id", "activity", "timestamp"]:
-                el2[prefix + "vmap"][k] = el[k]
+            try:
+                if el[k] is not None and str(el[k]).lower() != "nan" and str(el[k]).lower() != "nat":
+                    if k.startswith("case_"):
+                        if type(el[k]) is str:
+                            y = eval(el[k])
+                        else:
+                            y = el[k]
+                        if y:
+                            if len(y) > 1 or len(y[0]) > 0:
+                                el2[prefix + "omap"][k.split("case_")[1]] = y
+                            for subel in y:
+                                objects_from_df_type[subel] = k.split("case_")[1]
+                    elif not k in ["id", "activity", "timestamp"]:
+                        el2[prefix + "vmap"][k] = el[k]
+            except:
+                pass
         el2[prefix + "omap"] = list(set(z for y in el2[prefix+"omap"].values() for z in y))
         ret[prefix + "events"][el["id"]] = el2
 
