@@ -68,7 +68,7 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
     FONTSIZE_NODES = '26'
 
     if freq == "semantics":
-        FONTSIZE_EDGES = '11'
+        FONTSIZE_EDGES = '19'
     else:
         FONTSIZE_EDGES = '26'
 
