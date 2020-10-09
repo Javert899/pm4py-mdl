@@ -1,5 +1,5 @@
 import pandas as pd
-from pm4pydistr.util.parquet_exporter import exporter as parquet_exporter
+from pm4pymdl.util.parquet_exporter import exporter as parquet_exporter
 from pm4py.algo.filtering.pandas.start_activities import start_activities_filter
 from pm4py.algo.filtering.pandas.end_activities import end_activities_filter
 import os

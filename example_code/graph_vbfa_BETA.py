@@ -1,4 +1,4 @@
-from pm4pydistr.util.parquet_importer import importer as parquet_importer
+from pm4pymdl.util.parquet_importer import importer as parquet_importer
 from pm4pymdl.algo.mvp.utils import build_graph
 from pm4py.objects.log.exporter.xes import exporter as xes_exporter
 import networkx
