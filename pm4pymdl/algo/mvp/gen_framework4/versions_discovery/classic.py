@@ -134,6 +134,7 @@ def apply_stream(stream, parameters=None):
             ret["types_view"][t]["edges"][(a1, a2)]["max_exit_obj"] = g_1_2_max
             ret["types_view"][t]["edges"][(a1, a2)]["min_entry_obj"] = g_1_3_min
             ret["types_view"][t]["edges"][(a1, a2)]["max_entry_obj"] = g_1_3_max
+            ret["types_view"][t]["edges"][(a1, a2)]["semantics"] = "EXI=%d..%d\nENT=%d..%d" % (g_1_2_min, g_1_2_max, g_1_3_min, g_1_3_max)
         for edge in ret["types_view"][t]["edges"]:
             ret["types_view"][t]["edges"][edge]["events"] = len(ret["types_view"][t]["edges"][edge]["events"])
             ret["types_view"][t]["edges"][edge]["objects"] = len(ret["types_view"][t]["edges"][edge]["objects"])

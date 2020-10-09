@@ -65,7 +65,12 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
     types_colors = {}
 
     FONTSIZE_NODES = '26'
-    FONTSIZE_EDGES = '26'
+
+    if freq == "semantics":
+        FONTSIZE_EDGES = '11'
+    else:
+        FONTSIZE_EDGES = '26'
+
 
     FONTNAME_NODES = 'bold'
     FONTNAME_EDGES = 'bold'
@@ -113,19 +118,6 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
                     ann = t["edges"][edge][freq]
                     style = "dashed"
 
-                    if t["edges"][edge]["must_exit"]:
-                        arrowtail = "box"
-                    else:
-                        arrowtail = None
-
-                    if t["edges"][edge]["must_entry"]:
-                        arrowhead = "box"
-                    else:
-                        arrowhead = "normal"
-
-                    if arrowtail == "box" and arrowhead == "box":
-                        style = "solid"
-
                     this_penwidth = PENWIDTH
                     freq_ev = t["edges"][edge]["events"]
                     if not freq == "semantics":
@@ -139,13 +131,35 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
                         fr_incl = fr
 
                     if fr_incl >= min_edge_freq:
-                        label1 = ""
+
+                        if t["edges"][edge]["must_exit"]:
+                            arrowtail = "box"
+                        else:
+                            arrowtail = None
+
+                        if t["edges"][edge]["must_entry"]:
+                            arrowhead = "normal"
+                        else:
+                            arrowhead = "curve"
+
+                        if arrowtail == "box" and arrowhead == "normal":
+                            style = "solid"
+
+                        if measure == "frequency":
+                            label = prefix + str(ann)
+                        else:
+                            if freq == "events":
+                                label = "E=%s" % (human_readable_stat(t["edges"][edge]["performance_events"]))
+                            elif freq == "semantics":
+                                label = ""
+                            else:
+                                label = "EO=%s" % (human_readable_stat(t["edges"][edge]["performance_eo"]))
                         if arrowtail is not None:
-                            viz.edge(act_nodes[source], act_nodes[target], style=style, label=label1, color=types_colors[tk],
+                            viz.edge(act_nodes[source], act_nodes[target], style=style, label=label, color=types_colors[tk],
                                      fontcolor=types_colors[tk], fontsize=FONTSIZE_EDGES, fontname=FONTNAME_EDGES,
                                      penwidth=this_penwidth, arrowhead=arrowhead, arrowtail=arrowtail, dir="both")
                         else:
-                            viz.edge(act_nodes[source], act_nodes[target], style=style, label=label1, color=types_colors[tk],
+                            viz.edge(act_nodes[source], act_nodes[target], style=style, label=label, color=types_colors[tk],
                                      fontcolor=types_colors[tk], fontsize=FONTSIZE_EDGES, fontname=FONTNAME_EDGES,
                                      penwidth=this_penwidth, arrowhead=arrowhead)
     viz.format = image_format
