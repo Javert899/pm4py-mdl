@@ -41,7 +41,8 @@ def human_readable_stat(c):
         return str(minutes) + "m"
     return str(seconds) + "s"
 
-def apply(model, measure="frequency", freq="events", classifier="activity", projection="no", count_events=False, parameters=None):
+
+def apply(model, measure="performance", freq="events", classifier="activity", projection="no", count_events=False, parameters=None):
     if parameters is None:
         parameters = {}
 

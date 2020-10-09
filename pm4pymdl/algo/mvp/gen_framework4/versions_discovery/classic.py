@@ -1,6 +1,7 @@
 from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl
 from pm4py.objects.conversion.log import converter
 import math
+from statistics import mean
 
 
 def apply(df, parameters=None):
@@ -44,6 +45,7 @@ def apply_stream(stream, parameters=None):
     eot = {}
     eoe = {}
     ee = {}
+    timestamps = {}
 
     for ev in stream:
         cl = [k for k in ev if not k.startswith("event_") and str(ev[k]) != "nan"][0]
@@ -63,6 +65,7 @@ def apply_stream(stream, parameters=None):
             while i < len(evs):
                 i1 = evs[i]["event_id"]
                 a1 = evs[i]["event_activity"]
+                t1 = evs[i]["event_timestamp"].timestamp()
                 if a1 not in eo:
                     eo[a1] = set()
                 if a1 not in eot[t]:
@@ -72,12 +75,22 @@ def apply_stream(stream, parameters=None):
                 if i < len(evs)-1:
                     i2 = evs[i+1]["event_id"]
                     a2 = evs[i+1]["event_activity"]
+                    t2 = evs[i+1]["event_timestamp"].timestamp()
                     if not (a1, t, a2) in eoe:
                         eoe[(a1, t, a2)] = set()
                         ee[(a1, t, a2)] = set()
                     eoe[(a1, t, a2)].add((i1, o, i2))
                     ee[(a1, t, a2)].add((i1, i2))
+                    if not (i1, o, i2) in timestamps:
+                        timestamps[(i1, o, i2)] = []
+                    if not (i1, i2) in timestamps:
+                        timestamps[(i1, i2)] = []
+                    timestamps[(i1, o, i2)].append(t2-t1)
+                    timestamps[(i1, i2)].append(t2-t1)
                 i = i + 1
+
+    for el in timestamps:
+        timestamps[el] = mean(timestamps[el])
 
     ret = {}
     ret["activities"] = {}
@@ -102,6 +115,9 @@ def apply_stream(stream, parameters=None):
             a1 = k[0]
             a2 = k[2]
             values = eoe[k]
+            values_ee = ee[k]
+            values_timestamp_eoe = mean([timestamps[v] for v in values])
+            values_timestamp_ee = mean([timestamps[v] for v in values_ee])
             g_1_2 = group_1_2(values)
             g_1_3 = group_1_3(values)
             g_1_2 = g_1_2[:math.ceil(len(g_1_2)*(1.0-noise_obj_number))]
@@ -135,6 +151,8 @@ def apply_stream(stream, parameters=None):
             ret["types_view"][t]["edges"][(a1, a2)]["min_entry_obj"] = g_1_3_min
             ret["types_view"][t]["edges"][(a1, a2)]["max_entry_obj"] = g_1_3_max
             ret["types_view"][t]["edges"][(a1, a2)]["semantics"] = "EXI=%d..%d\nENT=%d..%d" % (g_1_2_min, g_1_2_max, g_1_3_min, g_1_3_max)
+            ret["types_view"][t]["edges"][(a1, a2)]["performance_events"] = values_timestamp_ee
+            ret["types_view"][t]["edges"][(a1, a2)]["performance_eo"] = values_timestamp_eoe
         for edge in ret["types_view"][t]["edges"]:
             ret["types_view"][t]["edges"][edge]["events"] = len(ret["types_view"][t]["edges"][edge]["events"])
             ret["types_view"][t]["edges"][edge]["objects"] = len(ret["types_view"][t]["edges"][edge]["objects"])
