@@ -62,7 +62,7 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
     min_act_freq = parameters["min_act_freq"] if "min_act_freq" in parameters else 0
     min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 0
 
-    types_keys = list(model["types_view"].keys())
+    types_keys = sorted(list(model["types_view"].keys()))
     types_colors = {}
 
     FONTSIZE_NODES = '26'
@@ -83,7 +83,8 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
         types_colors[tk] = type_color
 
     act_nodes = {}
-    for act in model["activities"]:
+    ordered_activities = sorted(model["activities"])
+    for act in ordered_activities:
         fr_ev = model["activities"][act]["events"]
         if not freq == "semantics":
             fr = model["activities"][act][freq]
@@ -108,7 +109,8 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
 
     for index, tk in enumerate(types_keys):
         t = model["types_view"][tk]
-        for edge in t["edges"]:
+        edges = sorted(list(t["edges"]))
+        for edge in edges:
             source = edge[0]
             target = edge[1]
             source_type = model["activities_mapping"][source]
