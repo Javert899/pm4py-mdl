@@ -17,7 +17,7 @@ DEFAULT_VARIANT_LOG = None
 Variants = None
 
 try:
-    from pm4pydistr.util.parquet_importer.versions import fastparquet
+    from pm4pymdl.util.parquet_importer.versions import fastparquet
 
     VERSIONS["fastparquet"] = fastparquet
 except:
@@ -26,7 +26,7 @@ except:
     pass
 
 try:
-    from pm4pydistr.util.parquet_importer.versions import pyarrow
+    from pm4pymdl.util.parquet_importer.versions import pyarrow
 
     VERSIONS["pyarrow"] = pyarrow
     VERSIONS_LOG["pyarrow"] = pyarrow

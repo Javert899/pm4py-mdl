@@ -1,7 +1,7 @@
 import pandas
 
 from pm4py.objects.conversion.log.variants import to_data_frame as to_dataframe
-from pm4pydistr.util.parquet_exporter.versions import pandas as pandas_exporter
+from pm4pymdl.util.parquet_exporter.versions import pandas as pandas_exporter
 from enum import Enum
 from pm4py.util import exec_utils
 
@@ -14,7 +14,7 @@ class Variants(Enum):
 
 
 try:
-    from pm4pydistr.util.parquet_exporter.versions import pyarrow
+    from pm4pymdl.util.parquet_exporter.versions import pyarrow
 
     # enums cannot be changed
     class Variants(Enum):

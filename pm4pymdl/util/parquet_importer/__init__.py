@@ -1,1 +1,1 @@
-from pm4pydistr.util.parquet_importer import versions, importer, parameters
+from pm4pymdl.util.parquet_importer import versions, importer, parameters

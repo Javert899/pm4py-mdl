@@ -1,1 +1,1 @@
-from pm4pydistr.util.parquet_exporter.versions import pandas, pyarrow
+from pm4pymdl.util.parquet_exporter.versions import pandas, pyarrow

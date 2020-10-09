@@ -1,1 +1,1 @@
-from pm4pydistr.util.parquet_importer.versions import pyarrow
+from pm4pymdl.util.parquet_importer.versions import pyarrow

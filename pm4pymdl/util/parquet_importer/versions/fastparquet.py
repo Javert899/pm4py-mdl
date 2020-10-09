@@ -1,7 +1,7 @@
 from fastparquet import ParquetFile
 from pm4py.objects.log.util import dataframe_utils
 import deprecation
-from pm4pydistr.util.parquet_importer.parameters import Parameters
+from pm4pymdl.util.parquet_importer.parameters import Parameters
 from pm4py.util import exec_utils
 
 COLUMNS = Parameters.COLUMNS.value

@@ -22,7 +22,7 @@ def apply(df, file_path, obj_df=None, parameters=None):
 
         df.to_csv(file_path, index=False, sep=',', quotechar='\"')
     else:
-        from pm4pydistr.util.parquet_exporter import exporter as parquet_exporter
+        from pm4pymdl.util.parquet_exporter import exporter as parquet_exporter
 
         conversion_needed = False
         try:
