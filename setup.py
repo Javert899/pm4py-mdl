@@ -43,8 +43,8 @@ setup(
               'pm4pymdl.visualization', 'pm4pymdl.visualization.mvp', 'pm4pymdl.visualization.mvp.versions',
               'pm4pymdl.visualization.mvp.gen_framework', 'pm4pymdl.visualization.mvp.gen_framework.versions',
               'pm4pymdl.visualization.mvp.gen_framework2', 'pm4pymdl.visualization.mvp.gen_framework2.versions',
-              'pm4pymdl.visualization.mvp.gen_framework3', 'pm4pymdl.visualization.petrinet',
-              'pm4pymdl.visualization.petrinet.versions'],
+              'pm4pymdl.visualization.mvp.gen_framework3', 'pm4pymdl.visualization.mvp.gen_framework4',
+              'pm4pymdl.visualization.petrinet', 'pm4pymdl.visualization.petrinet.versions'],
     url='http://www.pm4py.org',
     license='GPL 3.0',
     install_requires=[
