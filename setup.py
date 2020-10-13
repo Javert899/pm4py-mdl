@@ -49,7 +49,7 @@ setup(
     license='GPL 3.0',
     install_requires=[
         "pm4py==1.5.2.3",
-        "pyarrow==0.15.1",
+        "pyarrow==1.0.1",
         "Flask",
         "flask-cors",
         "setuptools",
