@@ -46,9 +46,9 @@ setup(
               'pm4pymdl.visualization.mvp.gen_framework3', 'pm4pymdl.visualization.mvp.gen_framework4',
               'pm4pymdl.visualization.petrinet', 'pm4pymdl.visualization.petrinet.versions'],
     url='http://www.pm4py.org',
-    license='GPL 3.0',
+    license='MIT',
     install_requires=[
-        "pm4py==1.5.2.3",
+        "pm4py==2.0.0",
         "pyarrow==1.0.1",
         "Flask",
         "flask-cors",
