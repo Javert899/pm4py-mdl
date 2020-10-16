@@ -23,65 +23,28 @@ def apply(obj, parameters=None):
     nets = obj["nets"]
     replay = obj["replay"]
     act_count = obj["act_count"]
-    group_size = obj["group_size_hist_replay"]
-    aligned_traces = obj["aligned_traces"]
     place_fitness_per_trace_persp = obj["place_fitness_per_trace"]
     group_size_hist_persp = obj["group_size_hist"]
-    aggregated_statistics_frequency = obj["aggregated_statistics_frequency"]
     aggregated_statistics_performance_min = obj["aggregated_statistics_performance_min"]
-    aggregated_statistics_performance_max = obj["aggregated_statistics_performance_max"]
     aggregated_statistics_performance_median = obj["aggregated_statistics_performance_median"]
     aggregated_statistics_performance_mean = obj["aggregated_statistics_performance_mean"]
-    aligned_traces = obj["aligned_traces"]
 
     all_objs = {}
     trans_names = {}
 
     for index, persp in enumerate(nets):
         orig_act_count = {}
-        orig_arc_count = {}
 
         color = COLORS[index % len(COLORS)]
         net, im, fm = nets[persp]
         rr = replay[persp]
         ac = act_count[persp]
-        gs = group_size[persp]
 
-        ag_freq = aggregated_statistics_frequency[persp]
         ag_perf_min = aggregated_statistics_performance_min[persp]
-        ag_perf_max = aggregated_statistics_performance_max[persp]
         ag_perf_median = aggregated_statistics_performance_median[persp]
         ag_perf_mean = aggregated_statistics_performance_mean[persp]
-        al_trac = aligned_traces[persp]
         place_fitness_per_trace = place_fitness_per_trace_persp[persp]
         group_size_hist = group_size_hist_persp[persp]
-
-        for pl in place_fitness_per_trace:
-            if place_fitness_per_trace[pl]["c"] + place_fitness_per_trace[pl]["r"] > place_fitness_per_trace[pl]["p"] + \
-                    place_fitness_per_trace[pl]["m"]:
-                """place_fitness_per_trace[pl]["m"] += place_fitness_per_trace[pl]["c"] + place_fitness_per_trace[pl][
-                    "r"] - \
-                                                    place_fitness_per_trace[pl]["p"]"""
-                place_fitness_per_trace[pl]["c"] = place_fitness_per_trace[pl]["p"] + place_fitness_per_trace[pl]["m"] - \
-                                                   place_fitness_per_trace[pl]["r"]
-            elif place_fitness_per_trace[pl]["c"] + place_fitness_per_trace[pl]["r"] < place_fitness_per_trace[pl][
-                "p"] + \
-                    place_fitness_per_trace[pl]["m"]:
-                """place_fitness_per_trace[pl]["r"] += place_fitness_per_trace[pl]["p"] + place_fitness_per_trace[pl][
-                    "m"] - \
-                                                    place_fitness_per_trace[pl]["c"]"""
-                place_fitness_per_trace[pl]["p"] = place_fitness_per_trace[pl]["c"] + place_fitness_per_trace[pl]["r"] - \
-                                                   place_fitness_per_trace[pl]["m"]
-
-        # print("ag_freq",ag_freq)
-        # print("ag_perf_min",ag_perf_min)
-        # print("ag_perf_max",ag_perf_max)
-        # print("ag_perf_median",ag_perf_median)
-        # print("ag_perf_mean",ag_perf_mean)
-        # print("al_trac",al_trac)
-        # print("pl_fitness",place_fitness_per_trace)
-
-        # input()
 
         for pl in net.places:
             this_uuid = str(uuid.uuid4())
@@ -152,41 +115,30 @@ def apply(obj, parameters=None):
                     perf_str = ""
 
                 if type(source_node) is PetriNet.Place:
-                    if True or (target_node.label is not None and ac[target_node.label] > 0):
-                        # if ac[target_node.label] > 0:
-                        if target_node.label in group_size_hist and max(group_size_hist[target_node.label]) > 1:
-                            pre = "freq: median=%d mean=%.2f\\neve=%d uniqobj=%d\\n" % (
-                                median(group_size_hist[target_node.label]), mean(group_size_hist[target_node.label]),
-                                len(group_size_hist[target_node.label]), sum(group_size_hist[target_node.label]))
-                        else:
-                            # pre="freq: %d\\n" % len(group_size_hist[target_node.label])
-                            pre = "uniqobj=" + str(int(arc_count))
-                        if target_node.label in group_size_hist and sum(group_size_hist[target_node.label]) != len(
-                                group_size_hist[target_node.label]):
-                            to_double_arc = True
-
-                        ratio = pre + perf_str + ""
+                    if target_node.label in group_size_hist and max(group_size_hist[target_node.label]) > 1:
+                        pre = "freq: median=%d mean=%.2f\\neve=%d uniqobj=%d\\n" % (
+                            median(group_size_hist[target_node.label]), mean(group_size_hist[target_node.label]),
+                            len(group_size_hist[target_node.label]), sum(group_size_hist[target_node.label]))
                     else:
-                        # ratio = "1.00" + perf_str + ""
-                        ratio = "freq: " + str(int(arc_count))
+                        pre = "uniqobj=" + str(int(arc_count))
+                    if target_node.label in group_size_hist and sum(group_size_hist[target_node.label]) != len(
+                            group_size_hist[target_node.label]):
+                        to_double_arc = True
+
+                    ratio = pre + perf_str + ""
+
                 else:
-                    if True or (source_node.label is not None and ac[source_node.label] > 0):
-                        # if ac[source_node.label] > 0:
-                        if source_node.label in group_size_hist and max(group_size_hist[source_node.label]) > 1:
-                            pre = "freq: median=%d mean=%.2f\\neve=%d uniqobj=%d\\n" % (
-                                median(group_size_hist[source_node.label]), mean(group_size_hist[source_node.label]),
-                                len(group_size_hist[source_node.label]), sum(group_size_hist[source_node.label]))
-                        else:
-                            # pre="freq: %d\\n" % len(group_size_hist[source_node.label])
-                            pre = "uniqobj=" + str(int(arc_count))
-                        if source_node.label in group_size_hist and sum(group_size_hist[source_node.label]) != len(
-                                group_size_hist[source_node.label]):
-                            to_double_arc = True
-
-                        ratio = pre + perf_str + ""
+                    if source_node.label in group_size_hist and max(group_size_hist[source_node.label]) > 1:
+                        pre = "freq: median=%d mean=%.2f\\neve=%d uniqobj=%d\\n" % (
+                            median(group_size_hist[source_node.label]), mean(group_size_hist[source_node.label]),
+                            len(group_size_hist[source_node.label]), sum(group_size_hist[source_node.label]))
                     else:
-                        # ratio = "1.00" + perf_str + ""
-                        ratio = "freq: " + str(int(arc_count))
+                        pre = "uniqobj=" + str(int(arc_count))
+                    if source_node.label in group_size_hist and sum(group_size_hist[source_node.label]) != len(
+                            group_size_hist[source_node.label]):
+                        to_double_arc = True
+
+                    ratio = pre + perf_str + ""
 
                 if to_double_arc:
                     g.edge(all_objs[source_node], all_objs[target_node], label=ratio, penwidth=str(3.0*float(rr[arc]['penwidth'])),
