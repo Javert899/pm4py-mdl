@@ -29,24 +29,28 @@ def apply(obj, parameters=None):
     aggregated_statistics_performance_mean = obj["aggregated_statistics_performance_mean"]
 
     nodes = {}
+    places_produced = {}
 
     for index, persp in enumerate(nets):
-        orig_act_count = {}
-
-        color = COLORS[index % len(COLORS)]
         net, im, fm = nets[persp]
-        rr = replay[persp]
-        ac = act_count[persp]
 
-        ag_perf_min = aggregated_statistics_performance_min[persp]
-        ag_perf_median = aggregated_statistics_performance_median[persp]
-        ag_perf_mean = aggregated_statistics_performance_mean[persp]
         place_fitness_per_trace = place_fitness_per_trace_persp[persp]
         group_size_hist = group_size_hist_persp[persp]
 
         places_to_consider = [x for x in net.places if x.name not in ["source", "sink"] and x.name in group_size_hist]
+        for p in places_to_consider:
+            if not p in places_produced:
+                places_produced[p.name] = 0
+            places_produced[p.name] += place_fitness_per_trace[p]["p"]
+
+    for index, persp in enumerate(nets):
+        net, im, fm = nets[persp]
+
+        group_size_hist = group_size_hist_persp[persp]
+
+        places_to_consider = [x for x in net.places if x.name not in ["source", "sink"] and x.name in group_size_hist]
         for pl in places_to_consider:
-            g.node(pl.name, shape="box")
+            g.node(pl.name, label=pl.name+" (O="+str(places_produced[pl.name])+")", shape="box")
 
         for tr in net.transitions:
             for source_arc in tr.in_arcs:
@@ -57,10 +61,10 @@ def apply(obj, parameters=None):
                         if target_place in places_to_consider:
                             label = None
                             label = ""
-                            label += "ENT freq: median=%d mean=%.2f\\neve=%d uniqobj=%d\\n\\n" % (
+                            label += "SOU freq: median=%d mean=%.2f\\neve=%d uniqobj=%d\\n\\n" % (
                             median(group_size_hist[source_place.name]), mean(group_size_hist[source_place.name]),
                             len(group_size_hist[source_place.name]), sum(group_size_hist[source_place.name]))
-                            label += "EXI freq: median=%d mean=%.2f\\neve=%d uniqobj=%d\\n\\n" % (
+                            label += "TAR freq: median=%d mean=%.2f\\neve=%d uniqobj=%d\\n\\n" % (
                             median(group_size_hist[target_place.name]), mean(group_size_hist[target_place.name]),
                             len(group_size_hist[target_place.name]), sum(group_size_hist[target_place.name]))
                             g.edge(source_place.name, target_place.name, label=label)
