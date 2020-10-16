@@ -1,11 +1,13 @@
-from pm4pymdl.visualization.petrinet.versions import from_log_and_replay
+from pm4pymdl.visualization.petrinet.versions import from_log_and_replay, dfg_mining
 from pm4py.visualization.common import gview
 from pm4py.visualization.common import save as gsave
 
 
 FROM_LOG_AND_REPLAY = "from_log_and_replay"
+DFG_MINING = "dfg_mining"
 
-VERSIONS = {FROM_LOG_AND_REPLAY: from_log_and_replay.apply}
+VERSIONS = {FROM_LOG_AND_REPLAY: from_log_and_replay.apply, DFG_MINING: dfg_mining.apply}
+
 
 def apply(obj, variant=FROM_LOG_AND_REPLAY, parameters=None):
     return VERSIONS[variant](obj, parameters=parameters)
