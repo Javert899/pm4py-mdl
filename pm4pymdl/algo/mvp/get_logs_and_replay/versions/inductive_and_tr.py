@@ -3,6 +3,10 @@ from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl, clean_frequency
 from pm4pymdl.algo.mvp.projection import algorithm
 from pm4py.algo.discovery.alpha import algorithm as alpha_miner
 from pm4py.algo.discovery.inductive import algorithm as inductive_miner
+from pm4py.algo.discovery.dfg import algorithm as dfg_discovery
+from pm4py.statistics.start_activities.log import get as sa_get
+from pm4py.statistics.end_activities.log import get as ea_get
+from pm4py.objects.conversion.dfg import converter as dfg_converter
 from pm4py.algo.conformance.tokenreplay import algorithm as tr_factory
 from pm4py.visualization.petrinet.util import performance_map
 from pm4py.algo.filtering.log.variants import variants_filter as variants_module
@@ -45,7 +49,23 @@ def reduce_petri_net(net):
     return net
 
 
-def apply(df, parameters=None):
+def discover_alpha(log):
+    return alpha_miner.apply(log)
+
+
+def discover_inductive(log):
+    return inductive_miner.apply(log)
+
+
+def discover_dfg_miner(log):
+    dfg = dfg_discovery.apply(log)
+    sa = sa_get.get_start_activities(log)
+    ea = ea_get.get_end_activities(log)
+    net, im, fm = dfg_converter.apply(dfg, parameters={"start_activities": sa, "end_activities": ea})
+    return net, im, fm
+
+
+def apply(df, discovery_algorithm=discover_inductive, parameters=None):
     if parameters is None:
         parameters = {}
 
@@ -119,7 +139,8 @@ def apply(df, parameters=None):
             print(persp, "got log")
 
         cc = time.time()
-        net, im, fm = inductive_miner.apply(filtered_log)
+        #net, im, fm = inductive_miner.apply(filtered_log)
+        net, im, fm = discovery_algorithm(filtered_log)
 
         """if persp == "items":
             trans_map = {t.label:t for t in net.transitions}
@@ -130,7 +151,7 @@ def apply(df, parameters=None):
             add_arc_from_to(source_place_it, skip_trans_1, net)
             add_arc_from_to(skip_trans_1, target_place_re, net)"""
 
-        net = reduce_petri_net(net)
+        #net = reduce_petri_net(net)
         dd = time.time()
 
         diff_model += (dd - cc)
