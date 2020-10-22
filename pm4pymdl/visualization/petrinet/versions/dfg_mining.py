@@ -39,7 +39,7 @@ def apply(obj, parameters=None):
 
         places_to_consider = [x for x in net.places if x.name not in ["source", "sink"] and x.name in group_size_hist]
         for p in places_to_consider:
-            if not p in places_produced:
+            if not p.name in places_produced:
                 places_produced[p.name] = 0
             places_produced[p.name] += place_fitness_per_trace[p]["p"]
 
@@ -50,7 +50,7 @@ def apply(obj, parameters=None):
 
         places_to_consider = [x for x in net.places if x.name not in ["source", "sink"] and x.name in group_size_hist]
         for pl in places_to_consider:
-            g.node(pl.name, label=pl.name+" (O="+str(places_produced[pl.name])+")", shape="box")
+            g.node(pl.name, label=pl.name, shape="box")
 
         for tr in net.transitions:
             for source_arc in tr.in_arcs:
@@ -61,11 +61,11 @@ def apply(obj, parameters=None):
                         if target_place in places_to_consider:
                             label = None
                             label = ""
-                            label += "SOU freq: median=%d mean=%.2f\\neve=%d uniqobj=%d\\n\\n" % (
-                            median(group_size_hist[source_place.name]), mean(group_size_hist[source_place.name]),
+                            label += "SOU freq: mean=%.2f min=%.2f max=%.2f\\neve=%d uniqobj=%d\\n\\n" % (
+                            mean(group_size_hist[source_place.name]), min(group_size_hist[source_place.name]), max(group_size_hist[source_place.name]),
                             len(group_size_hist[source_place.name]), sum(group_size_hist[source_place.name]))
-                            label += "TAR freq: median=%d mean=%.2f\\neve=%d uniqobj=%d\\n\\n" % (
-                            median(group_size_hist[target_place.name]), mean(group_size_hist[target_place.name]),
+                            label += "TAR freq: mean=%.2f min=%.2f max=%.2f\\neve=%d uniqobj=%d\\n\\n" % (
+                            mean(group_size_hist[target_place.name]), min(group_size_hist[target_place.name]), max(group_size_hist[target_place.name]),
                             len(group_size_hist[target_place.name]), sum(group_size_hist[target_place.name]))
                             g.edge(source_place.name, target_place.name, label=label)
 
