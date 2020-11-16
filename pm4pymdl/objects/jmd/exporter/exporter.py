@@ -1,24 +1,106 @@
-from pm4pymdl.algo.mvp.utils import exploded_mdl_to_succint_mdl, succint_mdl_to_exploded_mdl
-import pandas as pd
 import json
+
+import pandas as pd
+
+from pm4pymdl.algo.mvp.utils import exploded_mdl_to_succint_mdl
 
 
 def json_serial(obj):
     """JSON serializer for objects not serializable by default json code"""
     if "time" in str(type(obj)):
         stru = str(obj)
-        stru = stru.replace(" ","T") + "Z"
+        stru = stru.replace(" ", "T") + "Z"
         return stru
     return str(obj)
 
 
 def get_type(t0):
     if "float" in str(t0).lower() or "double" in str(t0).lower():
-        return "double"
+        return "float"
     elif "object" in str(t0).lower():
         return "string"
     else:
         return "string"
+
+
+def apply_xml(df, file_path, obj_df=None, parameters=None):
+    ret = get_python_obj(df, obj_df=obj_df, parameters=parameters)
+    from lxml import etree
+
+    prefix = "ocel:"
+
+    root = etree.Element("log")
+    root.set("ocel-xml.version", "0.1")
+    root.set("ocel-xml.features", "nested-attributes")
+    global_event = etree.SubElement(root, "global")
+    global_event.set("scope", "event")
+    for k, v in ret["global-event"].items():
+        child = etree.SubElement(global_event, "string")
+        child.set("key", k)
+        child.set("value", v)
+    global_object = etree.SubElement(root, "global")
+    global_object.set("scope", "event")
+    for k, v in ret["global-object"].items():
+        child = etree.SubElement(global_object, "string")
+        child.set("key", k)
+        child.set("value", v)
+    global_log = etree.SubElement(root, "global")
+    global_object.set("scope", "log")
+    attribute_names = etree.SubElement(global_log, "list")
+    attribute_names.set("key", "attribute-names")
+    object_types = etree.SubElement(global_log, "list")
+    object_types.set("key", "object-types")
+    for k in ret["global-log"]["attribute-names"]:
+        subel = etree.SubElement(attribute_names, "string")
+        subel.set("key", "attribute-name")
+        subel.set("value", k)
+    for k in ret["global-log"]["object-types"]:
+        subel = etree.SubElement(object_types, "string")
+        subel.set("key", "object-type")
+        subel.set("value", k)
+    events = etree.SubElement(root, "events")
+    for k, v in ret[prefix + "events"].items():
+        event = etree.SubElement(events, "event")
+        event_id = etree.SubElement(event, "string")
+        event_id.set("key", "id")
+        event_id.set("value", str(k))
+        event_activity = etree.SubElement(event, "string")
+        event_activity.set("key", "activity")
+        event_activity.set("value", v[prefix+"activity"])
+        event_timestamp = etree.SubElement(event, "date")
+        event_timestamp.set("key", "timestamp")
+        event_timestamp.set("value", str(v[prefix+"timestamp"]))
+        event_omap = etree.SubElement(event, "list")
+        event_omap.set("key", "omap")
+        for k2 in v[prefix+"omap"]:
+            obj = etree.SubElement(event_omap, "string")
+            obj.set("key", "object-id")
+            obj.set("value", k2)
+        event_vmap = etree.SubElement(event, "list")
+        event_vmap.set("key", "vmap")
+        for k2, v2 in v[prefix+"vmap"].items():
+            attr = etree.SubElement(event_vmap, get_type(df["event_"+k2].dtype))
+            attr.set("key", k2)
+            attr.set("value", str(v2))
+    objects = etree.SubElement(root, "events")
+    for k, v in ret[prefix+"objects"].items():
+        object = etree.SubElement(objects, "object")
+        object_id = etree.SubElement(object, "string")
+        object_id.set("key", "id")
+        object_id.set("value", str(k))
+        object_type = etree.SubElement(object, "string")
+        object_type.set("key", "type")
+        object_type.set("value", v[prefix+"type"])
+        object_ovmap = etree.SubElement(object, "list")
+        object_ovmap.set("key", "ovmap")
+        for k2, v2 in v[prefix+"ovmap"].items():
+            if str(v2).lower() != "nan" and str(v2).lower() != "nat":
+                object_att = etree.SubElement(object_ovmap, get_type(obj_df["object_"+k2].dtype))
+                object_att.set("key", k2)
+                object_att.set("value", str(v2))
+
+    tree = etree.ElementTree(root)
+    tree.write(file_path, pretty_print=True, xml_declaration=True, encoding="utf-8")
 
 
 def apply(df, file_path, obj_df=None, parameters=None):
@@ -114,7 +196,7 @@ def get_python_obj(df, obj_df=None, parameters=None):
             ot_mandatory[ot] = []
             for col in red_df2.columns:
                 if not col in ["id"]:
-                    #type_mandatory[ot][col] = get_type(red_df2[col].dtype)
+                    # type_mandatory[ot][col] = get_type(red_df2[col].dtype)
                     ot_mandatory[ot].append(col)
 
             ot_df[ot] = red_df
@@ -123,14 +205,15 @@ def get_python_obj(df, obj_df=None, parameters=None):
     att_names = sorted(list(set(att_types.keys())))
     att_typ_values = sorted(list(set(att_types.values())))
     object_types = sorted(list(obj_types))
-    ret[prefix+"attribute-names"] = att_names
-    #ret[prefix+"att_types"] = att_typ_values
-    ret[prefix+"object-types"] = [x for x in object_types if not x.startswith("object_")]
-    #ret[prefix+"types_corr"] = att_types
-    ret[prefix+"events"] = {}
-    ret[prefix+"objects"] = {}
-    #ret[prefix+"att_mand"] = acti_mandatory
-    #ret[prefix+"ot_mand"] = ot_mandatory
+    ret["global-event"] = {"activity": "__INVALID__"}
+    ret["global-object"] = {"type": "__INVALID__"}
+    ret["global-log"] = {"attribute-names": att_names,
+                                  "object-types": [x for x in object_types if not x.startswith("object_")]}
+    # ret[prefix+"types_corr"] = att_types
+    ret[prefix + "events"] = {}
+    ret[prefix + "objects"] = {}
+    # ret[prefix+"att_mand"] = acti_mandatory
+    # ret[prefix+"ot_mand"] = ot_mandatory
 
     stream = df.dropna(how="all", axis=1).to_dict("r")
     for el in stream:
@@ -157,7 +240,7 @@ def get_python_obj(df, obj_df=None, parameters=None):
                         el2[prefix + "vmap"][k] = el[k]
             except:
                 pass
-        el2[prefix + "omap"] = list(set(z for y in el2[prefix+"omap"].values() for z in y))
+        el2[prefix + "omap"] = list(set(z for y in el2[prefix + "omap"].values() for z in y))
         ret[prefix + "events"][el["id"]] = el2
 
     for t in ot_df:
@@ -172,6 +255,6 @@ def get_python_obj(df, obj_df=None, parameters=None):
             ret[prefix + "objects"][el["id"]] = el2
     for o in objects_from_df_type:
         if not o in ret[prefix + "objects"]:
-            ret[prefix + "objects"][o] = {prefix+"type": objects_from_df_type[o], prefix+"ovmap": {}}
+            ret[prefix + "objects"][o] = {prefix + "type": objects_from_df_type[o], prefix + "ovmap": {}}
 
     return ret
