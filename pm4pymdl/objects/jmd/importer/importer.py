@@ -7,7 +7,7 @@ def apply(file_path, return_obj_df=None, parameters=None):
     if parameters is None:
         parameters = {}
 
-    prefix = "jmd:"
+    prefix = "ocel:"
     F = open(file_path, "rb")
     obj = json.load(F)
     F.close()

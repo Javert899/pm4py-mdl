@@ -25,7 +25,7 @@ def apply(df, file_path, obj_df=None, parameters=None):
     if parameters is None:
         parameters = {}
 
-    prefix = "jmd:"
+    prefix = "ocel:"
 
     conversion_needed = True
     try:
@@ -116,14 +116,14 @@ def apply(df, file_path, obj_df=None, parameters=None):
     att_names = sorted(list(set(att_types.keys())))
     att_typ_values = sorted(list(set(att_types.values())))
     object_types = sorted(list(obj_types))
-    ret[prefix+"att_names"] = att_names
-    ret[prefix+"att_types"] = att_typ_values
-    ret[prefix+"object_types"] = object_types
-    ret[prefix+"types_corr"] = att_types
+    ret[prefix+"attribute-names"] = att_names
+    #ret[prefix+"att_types"] = att_typ_values
+    ret[prefix+"object-types"] = [x for x in object_types if not x.startswith("object_")]
+    #ret[prefix+"types_corr"] = att_types
     ret[prefix+"events"] = {}
     ret[prefix+"objects"] = {}
-    ret[prefix+"att_mand"] = acti_mandatory
-    ret[prefix+"ot_mand"] = ot_mandatory
+    #ret[prefix+"att_mand"] = acti_mandatory
+    #ret[prefix+"ot_mand"] = ot_mandatory
 
     stream = df.dropna(how="all", axis=1).to_dict("r")
     for el in stream:
