@@ -20,8 +20,8 @@ def apply(file_path, return_obj_df=None, parameters=None):
     obj_stream = list(obj_stream.values())
     obj_type = {}
     for el in obj_stream:
-        obj_type[el["object_id"]] = el[prefix+"otyp"]
-        del el[prefix+"otyp"]
+        obj_type[el["object_id"]] = el[prefix+"type"]
+        del el[prefix+"type"]
         for k2 in el[prefix+"ovmap"]:
             el["object_"+k2] = el[prefix+"ovmap"][k2]
         del el[prefix+"ovmap"]

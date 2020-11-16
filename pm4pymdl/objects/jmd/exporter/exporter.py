@@ -157,7 +157,7 @@ def apply(df, file_path, obj_df=None, parameters=None):
         stream = ot_df[t].to_dict('r')
         for el in stream:
             el2 = {}
-            el2[prefix + "otyp"] = t
+            el2[prefix + "type"] = t
             el2[prefix + "ovmap"] = {}
             for k in el:
                 if not k in ["id", "type"]:
@@ -165,7 +165,7 @@ def apply(df, file_path, obj_df=None, parameters=None):
             ret[prefix + "objects"][el["id"]] = el2
     for o in objects_from_df_type:
         if not o in ret[prefix + "objects"]:
-            ret[prefix + "objects"][o] = {prefix+"otyp": objects_from_df_type[o], prefix+"ovmap": {}}
+            ret[prefix + "objects"][o] = {prefix+"type": objects_from_df_type[o], prefix+"ovmap": {}}
     F = open(file_path, "w")
     json.dump(ret, F, default=json_serial, indent=2)
     F.close()
