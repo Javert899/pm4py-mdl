@@ -22,6 +22,13 @@ def get_type(t0):
 
 
 def apply(df, file_path, obj_df=None, parameters=None):
+    ret = get_python_obj(df, obj_df=obj_df, parameters=parameters)
+    F = open(file_path, "w")
+    json.dump(ret, F, default=json_serial, indent=2)
+    F.close()
+
+
+def get_python_obj(df, obj_df=None, parameters=None):
     if parameters is None:
         parameters = {}
 
@@ -166,6 +173,5 @@ def apply(df, file_path, obj_df=None, parameters=None):
     for o in objects_from_df_type:
         if not o in ret[prefix + "objects"]:
             ret[prefix + "objects"][o] = {prefix+"type": objects_from_df_type[o], prefix+"ovmap": {}}
-    F = open(file_path, "w")
-    json.dump(ret, F, default=json_serial, indent=2)
-    F.close()
+
+    return ret
