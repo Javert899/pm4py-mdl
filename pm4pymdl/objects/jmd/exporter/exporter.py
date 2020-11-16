@@ -45,7 +45,7 @@ def apply_xml(df, file_path, obj_df=None, parameters=None):
         child.set("key", k)
         child.set("value", v)
     global_log = etree.SubElement(root, "global")
-    global_object.set("scope", "log")
+    global_log.set("scope", "log")
     attribute_names = etree.SubElement(global_log, "list")
     attribute_names.set("key", "attribute-names")
     object_types = etree.SubElement(global_log, "list")
