@@ -3,6 +3,7 @@ import json
 import pandas as pd
 from dateutil import parser
 from lxml import etree, objectify
+import dateutil
 
 
 def apply(file_path, return_obj_df=None, parameters=None):
@@ -10,6 +11,14 @@ def apply(file_path, return_obj_df=None, parameters=None):
         return apply_xml(file_path, return_obj_df=return_obj_df, parameters=parameters)
     elif "json" in file_path.lower():
         return apply_json(file_path, return_obj_df=return_obj_df, parameters=parameters)
+
+
+def parse_xml(value, tag_str_lower):
+    if "float" in tag_str_lower:
+        return float(value)
+    elif "date" in tag_str_lower:
+        return dateutil.parser.parse(value)
+    return str(value)
 
 
 def apply_xml(file_path, return_obj_df=None, parameters=None):
@@ -22,13 +31,65 @@ def apply_xml(file_path, return_obj_df=None, parameters=None):
     tree = objectify.parse(file_path, parser=parser)
     root = tree.getroot()
 
+    eve_stream = []
+    obj_stream = []
+    obj_types = {}
+
     for child in root:
         if child.tag.lower().endswith("events"):
-            print("events")
-            print(child)
+            for event in child:
+                eve = {}
+                for child2 in event:
+                    if child2.get("key") == "id":
+                        eve["event_id"] = child2.get("value")
+                    elif child2.get("key") == "timestamp":
+                        eve["event_timestamp"] = dateutil.parser.parse(child2.get("value"))
+                    elif child2.get("key") == "activity":
+                        eve["event_activity"] = child2.get("value")
+                    elif child2.get("key") == "omap":
+                        omap = []
+                        for child3 in child2:
+                            omap.append(child3.get("value"))
+                        eve["@@omap"] = omap
+                    elif child2.get("key") == "vmap":
+                        for child3 in child2:
+                            eve[child3.get("key")] = parse_xml(child3.get("value"), child3.tag.lower())
+                eve_stream.append(eve)
+
         elif child.tag.lower().endswith("objects"):
-            print("objects")
-            print(child)
+            for object in child:
+                obj = {}
+                for child2 in object:
+                    if child2.get("key") == "id":
+                        obj["object_id"] = child2.get("value")
+                    elif child2.get("key") == "type":
+                        obj["object_type"] = child2.get("value")
+                    elif child2.get("key") == "ovmap":
+                        for child3 in child2:
+                            obj[child3.get("key")] = parse_xml(child3.get("value"), child3.tag.lower())
+                obj_stream.append(obj)
+
+    for obj in obj_stream:
+        obj_types[obj["object_id"]] = obj["object_type"]
+
+    for eve in eve_stream:
+        for obj in eve["@@omap"]:
+            ot = obj_types[obj]
+            if not ot in eve:
+                eve[ot] = []
+            eve[ot].append(obj)
+        del eve["@@omap"]
+
+    eve_df = pd.DataFrame(eve_stream)
+    obj_df = pd.DataFrame(obj_stream)
+
+    eve_df.type = "succint"
+
+    if return_obj_df or (return_obj_df is None and len(obj_df.columns) > 1):
+        return eve_df, obj_df
+    return eve_df
+
+
 
 def apply_json(file_path, return_obj_df=None, parameters=None):
     if parameters is None:
