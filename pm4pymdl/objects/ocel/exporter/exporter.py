@@ -96,7 +96,7 @@ def apply_xml(df, file_path, obj_df=None, parameters=None):
             attr = etree.SubElement(event_vmap, get_type(df["event_"+k2].dtype))
             attr.set("key", k2)
             attr.set("value", str(v2))
-    objects = etree.SubElement(root, "events")
+    objects = etree.SubElement(root, "objects")
     for k, v in ret[prefix+"objects"].items():
         object = etree.SubElement(objects, "object")
         object_id = etree.SubElement(object, "string")
