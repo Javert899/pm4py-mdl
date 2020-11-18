@@ -34,15 +34,15 @@ def apply_xml(df, file_path, obj_df=None, parameters=None):
     root.set("ocel-xml.features", "nested-attributes")
     global_event = etree.SubElement(root, "global")
     global_event.set("scope", "event")
-    for k, v in ret["global-event"].items():
+    for k, v in ret[prefix +"global-event"].items():
         child = etree.SubElement(global_event, "string")
-        child.set("key", k)
+        child.set("key", k.split(prefix)[-1])
         child.set("value", v)
     global_object = etree.SubElement(root, "global")
     global_object.set("scope", "event")
-    for k, v in ret["global-object"].items():
+    for k, v in ret[prefix +"global-object"].items():
         child = etree.SubElement(global_object, "string")
-        child.set("key", k)
+        child.set("key", k.split(prefix)[-1])
         child.set("value", v)
     global_log = etree.SubElement(root, "global")
     global_log.set("scope", "log")
@@ -50,11 +50,11 @@ def apply_xml(df, file_path, obj_df=None, parameters=None):
     attribute_names.set("key", "attribute-names")
     object_types = etree.SubElement(global_log, "list")
     object_types.set("key", "object-types")
-    for k in ret["global-log"]["attribute-names"]:
+    for k in ret[prefix +"global-log"][prefix +"attribute-names"]:
         subel = etree.SubElement(attribute_names, "string")
         subel.set("key", "attribute-name")
         subel.set("value", k)
-    for k in ret["global-log"]["object-types"]:
+    for k in ret[prefix +"global-log"][prefix +"object-types"]:
         subel = etree.SubElement(object_types, "string")
         subel.set("key", "object-type")
         subel.set("value", k)
@@ -205,10 +205,10 @@ def get_python_obj(df, obj_df=None, parameters=None):
     att_names = sorted(list(set(att_types.keys())))
     att_typ_values = sorted(list(set(att_types.values())))
     object_types = sorted(list(obj_types))
-    ret["global-event"] = {"activity": "__INVALID__"}
-    ret["global-object"] = {"type": "__INVALID__"}
-    ret["global-log"] = {"attribute-names": att_names,
-                                  "object-types": [x for x in object_types if not x.startswith("object_")]}
+    ret[prefix +"global-event"] = {prefix +"activity": "__INVALID__"}
+    ret[prefix +"global-object"] = {prefix +"type": "__INVALID__"}
+    ret[prefix +"global-log"] = {prefix +"attribute-names": att_names,
+                                  prefix +"object-types": [x for x in object_types if not x.startswith("object_")]}
     # ret[prefix+"types_corr"] = att_types
     ret[prefix + "events"] = {}
     ret[prefix + "objects"] = {}
