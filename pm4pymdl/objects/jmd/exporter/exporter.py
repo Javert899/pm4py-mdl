@@ -23,6 +23,20 @@ def get_type(t0):
         return "string"
 
 
+def apply(df, file_path, obj_df=None, parameters=None):
+    if "xml" in file_path.lower():
+        return apply_xml(df, file_path, obj_df=obj_df, parameters=parameters)
+    elif "json" in file_path.lower():
+        return apply_json(df, file_path, obj_df=obj_df, parameters=parameters)
+
+
+def apply_json(df, file_path, obj_df=None, parameters=None):
+    ret = get_python_obj(df, obj_df=obj_df, parameters=parameters)
+    F = open(file_path, "w")
+    json.dump(ret, F, default=json_serial, indent=2)
+    F.close()
+
+
 def apply_xml(df, file_path, obj_df=None, parameters=None):
     ret = get_python_obj(df, obj_df=obj_df, parameters=parameters)
     from lxml import etree
@@ -101,13 +115,6 @@ def apply_xml(df, file_path, obj_df=None, parameters=None):
 
     tree = etree.ElementTree(root)
     tree.write(file_path, pretty_print=True, xml_declaration=True, encoding="utf-8")
-
-
-def apply(df, file_path, obj_df=None, parameters=None):
-    ret = get_python_obj(df, obj_df=obj_df, parameters=parameters)
-    F = open(file_path, "w")
-    json.dump(ret, F, default=json_serial, indent=2)
-    F.close()
 
 
 def get_python_obj(df, obj_df=None, parameters=None):
@@ -256,5 +263,8 @@ def get_python_obj(df, obj_df=None, parameters=None):
     for o in objects_from_df_type:
         if not o in ret[prefix + "objects"]:
             ret[prefix + "objects"][o] = {prefix + "type": objects_from_df_type[o], prefix + "ovmap": {}}
+
+    print("events = ", len(ret[prefix + "events"]))
+    print("objects = ", len(ret[prefix + "objects"]))
 
     return ret
