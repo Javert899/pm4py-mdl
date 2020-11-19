@@ -25,8 +25,6 @@ def apply_xml(file_path, return_obj_df=None, parameters=None):
     if parameters is None:
         parameters = {}
 
-    from pm4py.objects.petri.importer.variants.pnml import import_net
-
     parser = etree.XMLParser(remove_comments=True)
     tree = objectify.parse(file_path, parser=parser)
     root = tree.getroot()
@@ -53,7 +51,7 @@ def apply_xml(file_path, return_obj_df=None, parameters=None):
                         eve["@@omap"] = omap
                     elif child2.get("key") == "vmap":
                         for child3 in child2:
-                            eve[child3.get("key")] = parse_xml(child3.get("value"), child3.tag.lower())
+                            eve["event_" + child3.get("key")] = parse_xml(child3.get("value"), child3.tag.lower())
                 eve_stream.append(eve)
 
         elif child.tag.lower().endswith("objects"):
@@ -66,7 +64,7 @@ def apply_xml(file_path, return_obj_df=None, parameters=None):
                         obj["object_type"] = child2.get("value")
                     elif child2.get("key") == "ovmap":
                         for child3 in child2:
-                            obj[child3.get("key")] = parse_xml(child3.get("value"), child3.tag.lower())
+                            obj["object_" + child3.get("key")] = parse_xml(child3.get("value"), child3.tag.lower())
                 obj_stream.append(obj)
 
     for obj in obj_stream:
