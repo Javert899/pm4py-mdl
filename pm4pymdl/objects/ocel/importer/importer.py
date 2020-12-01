@@ -14,9 +14,19 @@ def validate_with_schema(file_path, schema_path):
         schema_content = json.load(open(schema_path, "rb"))
         try:
             validate(instance=file_content, schema=schema_content)
+            return True
         except jsonschema.exceptions.ValidationError as err:
             return False
-        return True
+        return False
+    elif "xml" in file_path:
+        try:
+            import lxml
+            xml_file = lxml.etree.parse(file_path)
+            xml_validator = lxml.etree.XMLSchema(file=schema_path)
+            is_valid = xml_validator.validate(xml_file)
+            return is_valid
+        except:
+            return False
 
 
 def apply(file_path, return_obj_df=None, parameters=None):
