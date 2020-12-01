@@ -4,6 +4,19 @@ import pandas as pd
 from dateutil import parser
 from lxml import etree, objectify
 import dateutil
+from jsonschema import validate
+import jsonschema
+
+
+def validate_with_schema(file_path, schema_path):
+    if "json" in file_path.lower():
+        file_content = json.load(open(file_path, "rb"))
+        schema_content = json.load(open(schema_path, "rb"))
+        try:
+            validate(instance=file_content, schema=schema_content)
+        except jsonschema.exceptions.ValidationError as err:
+            return False
+        return True
 
 
 def apply(file_path, return_obj_df=None, parameters=None):
