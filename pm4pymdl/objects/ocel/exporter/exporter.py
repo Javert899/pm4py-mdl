@@ -191,7 +191,7 @@ def get_python_obj(df, obj_df=None, parameters=None):
             col = list(red_df.columns)
             rep_dict = {}
             for x in col:
-                rep_dict[x] = x.split("object_")[1]
+                rep_dict[x] = x.split("object_")[-1]
             red_df = red_df.rename(columns=rep_dict)
 
             for col in red_df.columns:
@@ -247,6 +247,9 @@ def get_python_obj(df, obj_df=None, parameters=None):
                         el2[prefix + "vmap"][k] = el[k]
             except:
                 pass
+        for x, y in el2[prefix + "omap"].items():
+            if type(y) is list and type(y[0]) is list:
+                el2[prefix + "omap"][x] = y[0]
         el2[prefix + "omap"] = list(set(z for y in el2[prefix + "omap"].values() for z in y))
         ret[prefix + "events"][el["id"]] = el2
 

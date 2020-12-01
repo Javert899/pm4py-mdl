@@ -131,6 +131,7 @@ def apply_json(file_path, return_obj_df=None, parameters=None):
     for el in obj_stream:
         obj_type[el["object_id"]] = el[prefix + "type"]
         el["object_type"] = el[prefix + "type"]
+        del el[prefix + "type"]
         for k2 in el[prefix + "ovmap"]:
             el["object_" + k2] = el[prefix + "ovmap"][k2]
         del el[prefix + "ovmap"]
