@@ -9,7 +9,6 @@ def json_serial(obj):
     """JSON serializer for objects not serializable by default json code"""
     if "time" in str(type(obj)):
         stru = str(obj)
-        stru = stru.replace(" ", "T") + "Z"
         return stru
     return str(obj)
 
@@ -266,6 +265,8 @@ def get_python_obj(df, obj_df=None, parameters=None):
     for o in objects_from_df_type:
         if not o in ret[prefix + "objects"]:
             ret[prefix + "objects"][o] = {prefix + "type": objects_from_df_type[o], prefix + "ovmap": {}}
+
+    ret[prefix + "version"] = "0.1"
 
     print("events = ", len(ret[prefix + "events"]))
     print("objects = ", len(ret[prefix + "objects"]))
