@@ -6,6 +6,7 @@ from lxml import etree, objectify
 import dateutil
 from jsonschema import validate
 import jsonschema
+from datetime import datetime
 
 
 def validate_with_schema(file_path, schema_path):
@@ -40,7 +41,7 @@ def parse_xml(value, tag_str_lower):
     if "float" in tag_str_lower:
         return float(value)
     elif "date" in tag_str_lower:
-        return dateutil.parser.parse(value)
+        return datetime.fromisoformat(value)
     return str(value)
 
 
@@ -64,7 +65,7 @@ def apply_xml(file_path, return_obj_df=None, parameters=None):
                     if child2.get("key") == "id":
                         eve["event_id"] = child2.get("value")
                     elif child2.get("key") == "timestamp":
-                        eve["event_timestamp"] = dateutil.parser.parse(child2.get("value"))
+                        eve["event_timestamp"] = datetime.fromisoformat(child2.get("value"))
                     elif child2.get("key") == "activity":
                         eve["event_activity"] = child2.get("value")
                     elif child2.get("key") == "omap":
@@ -147,7 +148,7 @@ def apply_json(file_path, return_obj_df=None, parameters=None):
             new_omap[typ] = list(new_omap[typ])
         el[prefix + "omap"] = new_omap
         el["event_activity"] = el[prefix + "activity"]
-        el["event_timestamp"] = parser.parse(el[prefix + "timestamp"])
+        el["event_timestamp"] = datetime.fromisoformat(el[prefix + "timestamp"])
         del el[prefix + "activity"]
         del el[prefix + "timestamp"]
         for k2 in el[prefix + "vmap"]:

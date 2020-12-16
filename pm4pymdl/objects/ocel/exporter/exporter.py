@@ -1,6 +1,7 @@
 import json
 
 import pandas as pd
+from datetime import datetime
 
 from pm4pymdl.algo.mvp.utils import exploded_mdl_to_succint_mdl
 
@@ -8,8 +9,7 @@ from pm4pymdl.algo.mvp.utils import exploded_mdl_to_succint_mdl
 def json_serial(obj):
     """JSON serializer for objects not serializable by default json code"""
     if "time" in str(type(obj)):
-        stru = str(obj)
-        return stru
+        return obj.isoformat()
     return str(obj)
 
 
@@ -44,7 +44,6 @@ def apply_xml(df, file_path, obj_df=None, parameters=None):
 
     root = etree.Element("log")
     root.set("ocel-xml.version", "0.1")
-    root.set("ocel-xml.features", "nested-attributes")
     global_event = etree.SubElement(root, "global")
     global_event.set("scope", "event")
     for k, v in ret[prefix +"global-event"].items():
@@ -82,7 +81,7 @@ def apply_xml(df, file_path, obj_df=None, parameters=None):
         event_activity.set("value", v[prefix+"activity"])
         event_timestamp = etree.SubElement(event, "date")
         event_timestamp.set("key", "timestamp")
-        event_timestamp.set("value", str(v[prefix+"timestamp"]))
+        event_timestamp.set("value", v[prefix+"timestamp"].isoformat())
         event_omap = etree.SubElement(event, "list")
         event_omap.set("key", "omap")
         for k2 in v[prefix+"omap"]:
