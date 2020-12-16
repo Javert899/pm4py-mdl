@@ -12,16 +12,10 @@
 		"AttributeFloatType": {
 			"type": "number"
 		},
-		"AttributeIDType": {
-			"type": "string"
-		},
 		"AttributeIntType": {
 			"type": "integer"
 		},
 		"AttributeStringType": {
-			"type": "string"
-		},
-		"ObjectType": {
 			"type": "string"
 		},
 		"ObjectMappingType": {
@@ -32,24 +26,9 @@
 		},
 		"EventType": {
 			"properties": {
-				"ocel:id": { "$ref": "#/definitions/AttributeIDType" },
+				"ocel:id": { "$ref": "#/definitions/AttributeStringType" },
 				"ocel:activity": { "$ref": "#/definitions/AttributeStringType" },
 				"ocel:timestamp": { "$ref": "#/definitions/AttributeDateType" },
-				"ocel:vmap": {
-					"items": {
-						"$ref": "#/definitions/ValueMappingType"
-					},
-					"type": "object"
-				}
-			},
-			"required": [
-				"ocel:id", "ocel:activity", "ocel:timestamp", "ocel:omap", "ocel:vmap"
-			],
-			"type": "object"
-		},
-		"ObjectType": {
-			"properties": {
-				"ocel:id": { "$ref": "#/definitions/AttributeIDType" },
 				"ocel:vmap": {
 					"items": {
 						"$ref": "#/definitions/ValueMappingType"
@@ -59,12 +38,28 @@
 				"ocel:omap": { "type": "array" }
 			},
 			"required": [
-				"ocel:id", "ocel:vmap"
+				"ocel:id", "ocel:activity", "ocel:timestamp", "ocel:omap", "ocel:vmap"
+			],
+			"type": "object"
+		},
+		"ObjectType": {
+			"properties": {
+				"ocel:id": { "$ref": "#/definitions/AttributeStringType" },
+				"ocel:type": { "$ref": "#/definitions/AttributeStringType" },
+				"ocel:ovmap": {
+					"items": {
+						"$ref": "#/definitions/ValueMappingType"
+					},
+					"type": "object"
+				}
+			},
+			"required": [
+				"ocel:id", "ocel:type", "ocel:ovmap"
 			],
 			"type": "object"
 		}
 	},
-	"description": "TBD",
+	"description": "Schema for the JSON-OCEL implementation",
 	"properties": {
 		"ocel:events": {
 			"items": {
