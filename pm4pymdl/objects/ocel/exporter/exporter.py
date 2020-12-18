@@ -1,7 +1,6 @@
 import json
 
 import pandas as pd
-from datetime import datetime
 
 from pm4pymdl.algo.mvp.utils import exploded_mdl_to_succint_mdl
 
@@ -43,16 +42,15 @@ def apply_xml(df, file_path, obj_df=None, parameters=None):
     prefix = "ocel:"
 
     root = etree.Element("log")
-    root.set("ocel-xml.version", "0.1")
     global_event = etree.SubElement(root, "global")
     global_event.set("scope", "event")
-    for k, v in ret[prefix +"global-event"].items():
+    for k, v in ret[prefix + "global-event"].items():
         child = etree.SubElement(global_event, "string")
         child.set("key", k.split(prefix)[-1])
         child.set("value", v)
     global_object = etree.SubElement(root, "global")
     global_object.set("scope", "event")
-    for k, v in ret[prefix +"global-object"].items():
+    for k, v in ret[prefix + "global-object"].items():
         child = etree.SubElement(global_object, "string")
         child.set("key", k.split(prefix)[-1])
         child.set("value", v)
@@ -62,14 +60,20 @@ def apply_xml(df, file_path, obj_df=None, parameters=None):
     attribute_names.set("key", "attribute-names")
     object_types = etree.SubElement(global_log, "list")
     object_types.set("key", "object-types")
-    for k in ret[prefix +"global-log"][prefix +"attribute-names"]:
+    for k in ret[prefix + "global-log"][prefix + "attribute-names"]:
         subel = etree.SubElement(attribute_names, "string")
         subel.set("key", "attribute-name")
         subel.set("value", k)
-    for k in ret[prefix +"global-log"][prefix +"object-types"]:
+    for k in ret[prefix + "global-log"][prefix + "object-types"]:
         subel = etree.SubElement(object_types, "string")
         subel.set("key", "object-type")
         subel.set("value", k)
+    version = etree.SubElement(global_log, "string")
+    version.set("key", "version")
+    version.set("value", ret[prefix + "global-log"][prefix + "version"])
+    ordering = etree.SubElement(global_log, "string")
+    ordering.set("key", "ordering")
+    ordering.set("value", ret[prefix + "global-log"][prefix + "ordering"])
     events = etree.SubElement(root, "events")
     for k, v in ret[prefix + "events"].items():
         event = etree.SubElement(events, "event")
@@ -78,36 +82,36 @@ def apply_xml(df, file_path, obj_df=None, parameters=None):
         event_id.set("value", str(k))
         event_activity = etree.SubElement(event, "string")
         event_activity.set("key", "activity")
-        event_activity.set("value", v[prefix+"activity"])
+        event_activity.set("value", v[prefix + "activity"])
         event_timestamp = etree.SubElement(event, "date")
         event_timestamp.set("key", "timestamp")
-        event_timestamp.set("value", v[prefix+"timestamp"].isoformat())
+        event_timestamp.set("value", v[prefix + "timestamp"].isoformat())
         event_omap = etree.SubElement(event, "list")
         event_omap.set("key", "omap")
-        for k2 in v[prefix+"omap"]:
+        for k2 in v[prefix + "omap"]:
             obj = etree.SubElement(event_omap, "string")
             obj.set("key", "object-id")
             obj.set("value", k2)
         event_vmap = etree.SubElement(event, "list")
         event_vmap.set("key", "vmap")
-        for k2, v2 in v[prefix+"vmap"].items():
-            attr = etree.SubElement(event_vmap, get_type(df["event_"+k2].dtype))
+        for k2, v2 in v[prefix + "vmap"].items():
+            attr = etree.SubElement(event_vmap, get_type(df["event_" + k2].dtype))
             attr.set("key", k2)
             attr.set("value", str(v2))
     objects = etree.SubElement(root, "objects")
-    for k, v in ret[prefix+"objects"].items():
+    for k, v in ret[prefix + "objects"].items():
         object = etree.SubElement(objects, "object")
         object_id = etree.SubElement(object, "string")
         object_id.set("key", "id")
         object_id.set("value", str(k))
         object_type = etree.SubElement(object, "string")
         object_type.set("key", "type")
-        object_type.set("value", v[prefix+"type"])
+        object_type.set("value", v[prefix + "type"])
         object_ovmap = etree.SubElement(object, "list")
         object_ovmap.set("key", "ovmap")
-        for k2, v2 in v[prefix+"ovmap"].items():
+        for k2, v2 in v[prefix + "ovmap"].items():
             if str(v2).lower() != "nan" and str(v2).lower() != "nat":
-                object_att = etree.SubElement(object_ovmap, get_type(obj_df["object_"+k2].dtype))
+                object_att = etree.SubElement(object_ovmap, get_type(obj_df["object_" + k2].dtype))
                 object_att.set("key", k2)
                 object_att.set("value", str(v2))
 
@@ -210,10 +214,10 @@ def get_python_obj(df, obj_df=None, parameters=None):
     att_names = sorted(list(set(att_types.keys())))
     att_typ_values = sorted(list(set(att_types.values())))
     object_types = sorted(list(obj_types))
-    ret[prefix +"global-event"] = {prefix +"activity": "__INVALID__"}
-    ret[prefix +"global-object"] = {prefix +"type": "__INVALID__"}
-    ret[prefix +"global-log"] = {prefix +"attribute-names": att_names,
-                                  prefix +"object-types": [x for x in object_types if not x.startswith("object_")]}
+    ret[prefix + "global-event"] = {prefix + "activity": "__INVALID__"}
+    ret[prefix + "global-object"] = {prefix + "type": "__INVALID__"}
+    ret[prefix + "global-log"] = {prefix + "attribute-names": att_names,
+                                  prefix + "object-types": [x for x in object_types if not x.startswith("object_")]}
     # ret[prefix+"types_corr"] = att_types
     ret[prefix + "events"] = {}
     ret[prefix + "objects"] = {}
@@ -265,7 +269,9 @@ def get_python_obj(df, obj_df=None, parameters=None):
         if not o in ret[prefix + "objects"]:
             ret[prefix + "objects"][o] = {prefix + "type": objects_from_df_type[o], prefix + "ovmap": {}}
 
-    ret[prefix + "version"] = "0.1"
+    # ret[prefix + "version"] = "0.1"
+    ret[prefix + "global-log"][prefix + "version"] = "1.0"
+    ret[prefix + "global-log"][prefix + "ordering"] = "timestamp"
 
     print("events = ", len(ret[prefix + "events"]))
     print("objects = ", len(ret[prefix + "objects"]))
