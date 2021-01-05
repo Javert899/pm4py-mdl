@@ -53,7 +53,9 @@ setup(
         "Flask",
         "flask-cors",
         "setuptools",
-        "frozendict"
+        "frozendict",
+        "jsonschema",
+        "plantuml"
     ],
     project_urls={
         'Documentation': 'http://pm4py.pads.rwth-aachen.de/documentation/',
