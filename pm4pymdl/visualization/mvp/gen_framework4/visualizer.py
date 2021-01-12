@@ -65,8 +65,63 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
     types_keys = sorted(list(model["types_view"].keys()))
     types_colors = {}
 
-    FONTSIZE_NODES = '26'
+    for index, tk in enumerate(types_keys):
+        type_color = COLORS[index % len(COLORS)]
+        types_colors[tk] = type_color
 
+    act_nodes = {}
+    ordered_activities = sorted(model["activities"])
+    for act in ordered_activities:
+        act_nodes[act] = str(uuid.uuid4())
+        fr_ev = model["activities"][act]["events"]
+        fr_obj = model["activities"][act]["objects"]
+        fr_eo = model["activities"][act]["eo"]
+
+        if fr_ev > min_act_freq:
+            viz.node(act_nodes[act], label=act+"\nE=%d\nUO=%d\nTO=%d" % (fr_ev, fr_obj, fr_eo), shape="box")
+
+            for index, tk in enumerate(types_keys):
+                t = model["types_view"][tk]
+                if act in t["activities"]:
+                    this_ev = t["activities"][act]["events"]
+                    this_obj = t["activities"][act]["objects"]
+                    this_eo = t["activities"][act]["eo"]
+
+                    this_node = str(uuid.uuid4())
+                    viz.node(this_node, label=act+" ("+tk+")\nE=%d\nUO=%d\nTO=%d" % (this_ev, this_obj, this_eo), shape="tripleoctagon", fontsize="7", style="filled", fillcolor=types_colors[tk])
+
+                    viz.edge(this_node, act_nodes[act], color=types_colors[tk], arrowhead="none")
+
+    for index, tk in enumerate(types_keys):
+        t = model["types_view"][tk]
+        edges = sorted(list(t["edges"]))
+        for edge in edges:
+            source = edge[0]
+            target = edge[1]
+            source_type = model["activities_mapping"][source]
+            target_type = model["activities_mapping"][target]
+
+            if source in act_nodes and target in act_nodes:
+                fr_ev = t["edges"][edge]["events"]
+                fr_obj = t["edges"][edge]["objects"]
+                fr_eo = t["edges"][edge]["eo"]
+
+                source_ev = t["activities"][source]["events"]
+                source_obj = t["activities"][source]["objects"]
+                source_eo = t["activities"][source]["eo"]
+
+                target_ev = t["activities"][source]["events"]
+                target_obj = t["activities"][source]["objects"]
+                target_eo = t["activities"][source]["eo"]
+
+                this_node = str(uuid.uuid4())
+                viz.node(this_node, shape="none", fontsize="8", fontcolor=types_colors[tk], label="TO=%d\nUO=%d\nEC=%d" % (fr_eo, fr_obj, fr_ev))
+                viz.edge(act_nodes[source], this_node, color=types_colors[tk], fontcolor=types_colors[tk], taillabel="%" + " = %.2f" % (float(fr_obj)/float(source_obj) * 100.0), fontsize="7")
+                viz.edge(this_node, act_nodes[target], color=types_colors[tk], fontcolor=types_colors[tk], headlabel="%" + " = %.2f" % (float(fr_obj)/float(target_obj) * 100.0), fontsize="7")
+
+    """
+    FONTSIZE_NODES = '26'
+    FONTSIZE_EDGES = '26'
     if freq == "semantics":
         FONTSIZE_EDGES = '19'
     else:
@@ -165,6 +220,7 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
                             viz.edge(act_nodes[source], act_nodes[target], style=style, label=label, color=types_colors[tk],
                                      fontcolor=types_colors[tk], fontsize=FONTSIZE_EDGES, fontname=FONTNAME_EDGES,
                                      penwidth=this_penwidth, arrowhead=arrowhead)
+    """
     viz.format = image_format
 
     return viz
