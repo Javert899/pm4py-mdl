@@ -78,7 +78,7 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
         fr_eo = model["activities"][act]["eo"]
 
         if fr_ev > min_act_freq:
-            viz.node(act_nodes[act], label=act+"\nE=%d\nUO=%d\nTO=%d" % (fr_ev, fr_obj, fr_eo), shape="box")
+            viz.node(act_nodes[act], label=act+"\nE=%d,UO=%d,TO=%d" % (fr_ev, fr_obj, fr_eo), shape="box", penwidth="2", fontsize="27", fontweight="bold")
 
             for index, tk in enumerate(types_keys):
                 t = model["types_view"][tk]
@@ -90,7 +90,7 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
                     this_max = t["activities"][act]["max_obj"]
 
                     this_node = str(uuid.uuid4())
-                    viz.node(this_node, label=act+" ("+tk+")\nE=%d\nUO=%d\nTO=%d\nmin=%d\nmax=%d" % (this_ev, this_obj, this_eo, this_min, this_max), shape="tripleoctagon", fontsize="7", style="filled", fillcolor=types_colors[tk])
+                    viz.node(this_node, label=act+" ("+tk+")\nE=%d,UO=%d,TO=%d\nmin=%d,max=%d" % (this_ev, this_obj, this_eo, this_min, this_max), shape="tripleoctagon", fontsize="10", style="filled", fillcolor=types_colors[tk])
 
                     viz.edge(this_node, act_nodes[act], color=types_colors[tk], arrowhead="none")
 
@@ -117,9 +117,9 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
                 target_eo = t["activities"][source]["eo"]
 
                 this_node = str(uuid.uuid4())
-                viz.node(this_node, shape="none", fontsize="8", fontcolor=types_colors[tk], label="TO=%d\nUO=%d\nEC=%d" % (fr_eo, fr_obj, fr_ev))
-                viz.edge(act_nodes[source], this_node, color=types_colors[tk], fontcolor=types_colors[tk], taillabel="%" + " = %.2f" % (float(fr_obj)/float(source_obj) * 100.0), fontsize="7")
-                viz.edge(this_node, act_nodes[target], color=types_colors[tk], fontcolor=types_colors[tk], headlabel="%" + " = %.2f" % (float(fr_obj)/float(target_obj) * 100.0), fontsize="7")
+                viz.node(this_node, shape="none", fontsize="10", fontcolor=types_colors[tk], label="TO=%d,UO=%d,EC=%d" % (fr_eo, fr_obj, fr_ev))
+                viz.edge(act_nodes[source], this_node, color=types_colors[tk], fontcolor=types_colors[tk], taillabel="%" + " = %.2f" % (float(fr_obj)/float(source_obj) * 100.0), fontsize="9", penwidth="4")
+                viz.edge(this_node, act_nodes[target], color=types_colors[tk], fontcolor=types_colors[tk], headlabel="%" + " = %.2f" % (float(fr_obj)/float(target_obj) * 100.0), fontsize="9", penwidth="4")
 
     """
     FONTSIZE_NODES = '26'
