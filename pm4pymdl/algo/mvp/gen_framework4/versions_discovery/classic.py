@@ -106,10 +106,16 @@ def apply_stream(stream, parameters=None):
         ret["types_view"][t] = {"edges": {}, "activities": {}}
         for act in eot[t]:
             values = eot[t][act]
+            val_group = {x[0]: set() for x in values}
+            for x in values:
+                val_group[x[0]].add(x[1])
+            val_group = list(len(y) for x, y in val_group.items())
             ret["types_view"][t]["activities"][act] = {}
             ret["types_view"][t]["activities"][act]["events"] = {x[0] for x in values}
             ret["types_view"][t]["activities"][act]["objects"] = {x[1] for x in values}
             ret["types_view"][t]["activities"][act]["eo"] = values
+            ret["types_view"][t]["activities"][act]["min_obj"] = min(val_group)
+            ret["types_view"][t]["activities"][act]["max_obj"] = max(val_group)
         available_keys = {x for x in eoe.keys() if x[1] == t}
         for k in available_keys:
             a1 = k[0]

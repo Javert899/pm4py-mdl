@@ -86,9 +86,11 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
                     this_ev = t["activities"][act]["events"]
                     this_obj = t["activities"][act]["objects"]
                     this_eo = t["activities"][act]["eo"]
+                    this_min = t["activities"][act]["min_obj"]
+                    this_max = t["activities"][act]["max_obj"]
 
                     this_node = str(uuid.uuid4())
-                    viz.node(this_node, label=act+" ("+tk+")\nE=%d\nUO=%d\nTO=%d" % (this_ev, this_obj, this_eo), shape="tripleoctagon", fontsize="7", style="filled", fillcolor=types_colors[tk])
+                    viz.node(this_node, label=act+" ("+tk+")\nE=%d\nUO=%d\nTO=%d\nmin=%d\nmax=%d" % (this_ev, this_obj, this_eo, this_min, this_max), shape="tripleoctagon", fontsize="7", style="filled", fillcolor=types_colors[tk])
 
                     viz.edge(this_node, act_nodes[act], color=types_colors[tk], arrowhead="none")
 
