@@ -72,12 +72,13 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
     act_nodes = {}
     ordered_activities = sorted(model["activities"])
     for act in ordered_activities:
-        act_nodes[act] = str(uuid.uuid4())
         fr_ev = model["activities"][act]["events"]
         fr_obj = model["activities"][act]["objects"]
         fr_eo = model["activities"][act]["eo"]
 
         if fr_ev > min_act_freq:
+            act_nodes[act] = str(uuid.uuid4())
+
             viz.node(act_nodes[act], label=act+"\nE=%d,UO=%d,TO=%d" % (fr_ev, fr_obj, fr_eo), shape="box", penwidth="2", fontsize="27", fontweight="bold")
 
             for index, tk in enumerate(types_keys):

@@ -344,6 +344,7 @@ def main():
         Shared.logs["o2c"] = Process("o2c", "example_logs/mdl/o2c_red.mdl", Shared.logs)
         Shared.logs["runningexample"] = Process("runningexample", "example_logs/mdl/mdl-running-example.mdl",
                                                 Shared.logs)
+        Shared.logs["orders"] = Process("orders", "example_logs/mdl/order_management.mdl", Shared.logs)
     elif defaults.CONFIGURATION == 2:
         Shared.logs["bkpf"] = Process("bkpf", "sap/bkpf_bseg.mdl", Shared.logs)
         Shared.logs["cdhdr"] = Process("cdhdr", "sap/sap_withTrial.mdl", Shared.logs)
