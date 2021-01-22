@@ -1,4 +1,5 @@
 from pm4pymdl.objects.mdl.importer import importer as mdl_importer
+from pm4pymdl.objects.ocel.importer import importer as ocel_importer
 from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl, exploded_mdl_to_succint_mdl
 from pm4py.algo.discovery.dfg.adapters.pandas import df_statistics
 from pm4pymdl.algo.mvp.gen_framework import algorithm as mdfg_disc_factory
@@ -62,7 +63,10 @@ class Process(object):
         self.selected_act_obj_types = None
         self.name = name
         self.mdl_path = mdl_path
-        self.succint_dataframe = mdl_importer.apply(self.mdl_path)
+        if "ocel" in self.mdl_path:
+            self.succint_dataframe, odataframe = ocel_importer.apply(self.mdl_path)
+        else:
+            self.succint_dataframe = mdl_importer.apply(self.mdl_path)
         self.succint_dataframe = self.succint_dataframe.dropna(subset=["event_activity"])
         self.succint_dataframe.type = "succint"
         self.exploded_dataframe = succint_mdl_to_exploded_mdl.apply(self.succint_dataframe)
