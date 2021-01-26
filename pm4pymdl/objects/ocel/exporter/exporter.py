@@ -49,7 +49,7 @@ def apply_xml(df, file_path, obj_df=None, parameters=None):
         child.set("key", k.split(prefix)[-1])
         child.set("value", v)
     global_object = etree.SubElement(root, "global")
-    global_object.set("scope", "event")
+    global_object.set("scope", "object")
     for k, v in ret[prefix + "global-object"].items():
         child = etree.SubElement(global_object, "string")
         child.set("key", k.split(prefix)[-1])
