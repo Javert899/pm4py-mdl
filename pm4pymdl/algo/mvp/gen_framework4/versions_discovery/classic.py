@@ -144,6 +144,8 @@ def apply_stream(stream, parameters=None):
             den = len(ret["types_view"][t]["edges"][(a1, a2)]["dev_entry"])
             sex = len(ret["types_view"][t]["edges"][(a1, a2)]["support_exit"])
             dex = len(ret["types_view"][t]["edges"][(a1, a2)]["dev_exit"])
+            ret["types_view"][t]["edges"][(a1, a2)]["perc_entry"] = sen/(sen+den)
+            ret["types_view"][t]["edges"][(a1, a2)]["perc_exit"] = sex/(sex+dex)
             if sen >= support and den/sen <= epsilon:
                 ret["types_view"][t]["edges"][(a1, a2)]["must_entry"] = True
             else:
@@ -157,6 +159,7 @@ def apply_stream(stream, parameters=None):
             ret["types_view"][t]["edges"][(a1, a2)]["min_entry_obj"] = g_1_3_min
             ret["types_view"][t]["edges"][(a1, a2)]["max_entry_obj"] = g_1_3_max
             ret["types_view"][t]["edges"][(a1, a2)]["semantics"] = "EXI=%d..%d\nENT=%d..%d" % (g_1_2_min, g_1_2_max, g_1_3_min, g_1_3_max)
+            ret["types_view"][t]["edges"][(a1, a2)]["semantics_list"] = [[g_1_2_min, g_1_2_max], [g_1_3_min, g_1_3_max]]
             ret["types_view"][t]["edges"][(a1, a2)]["performance_events"] = values_timestamp_ee
             ret["types_view"][t]["edges"][(a1, a2)]["performance_eo"] = values_timestamp_eoe
         for edge in ret["types_view"][t]["edges"]:
