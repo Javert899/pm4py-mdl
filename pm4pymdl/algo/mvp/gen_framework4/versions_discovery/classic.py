@@ -175,6 +175,9 @@ def apply_stream(stream, parameters=None):
             if act not in activities_mapping or activities_mapping_count[act] < o:
                 activities_mapping[act] = t
                 activities_mapping_count[act] = o
+            ret["types_view"][t]["activities"][act]["events_set"] = ret["types_view"][t]["activities"][act]["events"]
+            ret["types_view"][t]["activities"][act]["objects_set"] = ret["types_view"][t]["activities"][act]["objects"]
+            ret["types_view"][t]["activities"][act]["eo_set"] = ret["types_view"][t]["activities"][act]["eo"]
             ret["types_view"][t]["activities"][act]["events"] = len(ret["types_view"][t]["activities"][act]["events"])
             ret["types_view"][t]["activities"][act]["objects"] = o
             ret["types_view"][t]["activities"][act]["eo"] = len(ret["types_view"][t]["activities"][act]["eo"])
