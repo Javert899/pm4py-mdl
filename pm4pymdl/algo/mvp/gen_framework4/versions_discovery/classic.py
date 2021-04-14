@@ -119,6 +119,7 @@ def apply_stream(stream, parameters=None):
             ret["types_view"][t]["activities"][act]["eo"] = values
             ret["types_view"][t]["activities"][act]["min_obj"] = min(val_group)
             ret["types_view"][t]["activities"][act]["max_obj"] = max(val_group)
+            ret["types_view"][t]["activities"][act]["val_group"] = val_group
         available_keys = {x for x in eoe.keys() if x[1] == t}
         for k in available_keys:
             a1 = k[0]

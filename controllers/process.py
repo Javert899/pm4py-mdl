@@ -406,8 +406,11 @@ class Process(object):
                                                    "min_edge_freq": self.selected_min_edge_freq_count})
         tfilepath = tempfile.NamedTemporaryFile(suffix='.svg')
         tfilepath.close()
-        mdfg_vis_factory.save(gviz, tfilepath.name)
-        self.model_view = base64.b64encode(open(tfilepath.name, "rb").read()).decode('utf-8')
+        tfilepath_name = tfilepath.name
+        tfilepath_name = "prova.svg"
+        mdfg_vis_factory.save(gviz, tfilepath_name)
+
+        self.model_view = base64.b64encode(open(tfilepath_name, "rb").read()).decode('utf-8')
 
     def get_new_visualization(self):
         classifier_function = None
