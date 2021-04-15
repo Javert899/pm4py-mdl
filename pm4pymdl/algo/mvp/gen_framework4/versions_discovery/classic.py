@@ -167,6 +167,9 @@ def apply_stream(stream, parameters=None):
             ret["types_view"][t]["edges"][(a1, a2)]["performance_events"] = values_timestamp_ee
             ret["types_view"][t]["edges"][(a1, a2)]["performance_eo"] = values_timestamp_eoe
         for edge in ret["types_view"][t]["edges"]:
+            ret["types_view"][t]["edges"][edge]["events_set"] = ret["types_view"][t]["edges"][edge]["events"]
+            ret["types_view"][t]["edges"][edge]["objects_set"] = ret["types_view"][t]["edges"][edge]["objects"]
+            ret["types_view"][t]["edges"][edge]["eo_set"] = ret["types_view"][t]["edges"][edge]["eo"]
             ret["types_view"][t]["edges"][edge]["events"] = len(ret["types_view"][t]["edges"][edge]["events"])
             ret["types_view"][t]["edges"][edge]["objects"] = len(ret["types_view"][t]["edges"][edge]["objects"])
             ret["types_view"][t]["edges"][edge]["eo"] = len(ret["types_view"][t]["edges"][edge]["eo"])
