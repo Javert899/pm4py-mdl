@@ -3,6 +3,8 @@ from pm4py.visualization.common import save as gsave
 import tempfile
 from graphviz import Digraph
 import uuid
+import math
+
 
 COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#306A8A", "#678225", "#2742FE", "#4C9A75",
           "#4C36E9", "#7DB022", "#EDAC54", "#EAC439", "#EAC439", "#1A9C45", "#8A51C4", "#496A63", "#FB9543", "#2B49DD",
@@ -42,7 +44,128 @@ def human_readable_stat(c):
     return str(seconds) + "s"
 
 
+def get_corr_hex(num):
+    """
+    Gets correspondence between a number
+    and an hexadecimal string
+
+    Parameters
+    -------------
+    num
+        Number
+
+    Returns
+    -------------
+    hex_string
+        Hexadecimal string
+    """
+    if num < 10:
+        return str(int(num))
+    elif num < 11:
+        return "A"
+    elif num < 12:
+        return "B"
+    elif num < 13:
+        return "C"
+    elif num < 14:
+        return "D"
+    elif num < 15:
+        return "E"
+    elif num < 16:
+        return "F"
+
+
+def get_gray_tonality(ev, max_ev):
+    inte = math.floor(255.0 - 150.0 * ev / (max_ev + 0.00001))
+
+    n1 = str(get_corr_hex(inte / 16))
+    n2 = str(get_corr_hex(inte % 16))
+
+    return "#" + n1 + n2 + n1 + n2 + n1 + n2
+
+
 def apply(model, measure="frequency", freq="events", classifier="activity", projection="no", count_events=False, parameters=None):
+    if parameters is None:
+        parameters = {}
+
+    filename = tempfile.NamedTemporaryFile(suffix='.gv')
+    viz = Digraph("pt", filename=filename.name, engine='dot', graph_attr={'bgcolor': 'transparent'})
+    image_format = parameters["format"] if "format" in parameters else "png"
+
+    min_act_freq = parameters["min_act_freq"] if "min_act_freq" in parameters else 5000
+    min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 1000
+
+    max_ev = 0
+    for a in model["activities"]:
+        act = model["activities"][a]
+        max_ev = max(max_ev, act["events"])
+
+    activities = {}
+    for a in model["activities"]:
+        act = model["activities"][a]
+        ev = act["events"]
+
+        if ev >= min_act_freq:
+            act_id = str(uuid.uuid4())
+            activities[a] = act_id
+
+            viz.node(act_id, label=a+"\\nE="+str(ev), shape="box", style="filled", fillcolor=get_gray_tonality(ev, max_ev))
+
+    type_index = -1
+    for t in model["types_view"]:
+        type = model["types_view"][t]
+        at_least_one_edge = False
+        at_least_one_sa = False
+        at_least_one_ea = False
+
+        for e in type["edges"]:
+            edge = type["edges"][e]
+            ev = edge["events"]
+
+            if ev >= min_edge_freq:
+                if e[0] in activities and e[1] in activities:
+                    at_least_one_edge = True
+                    break
+
+        for a in type["start_activities"]:
+            if a in activities:
+                at_least_one_sa = True
+                break
+
+        for a in type["end_activities"]:
+            if a in activities:
+                at_least_one_ea = True
+                break
+
+        if at_least_one_edge and at_least_one_sa and at_least_one_ea:
+            type_index = type_index + 1
+            this_color = COLORS[type_index % len(COLORS)]
+            sn_id = str(uuid.uuid4())
+            en_id = str(uuid.uuid4())
+            viz.node(sn_id, t, style="filled", fillcolor=this_color)
+            viz.node(en_id, t, style="filled", fillcolor=this_color)
+
+            for a in type["start_activities"]:
+                if a in activities:
+                    viz.edge(sn_id, activities[a], color=this_color)
+
+            for a in type["end_activities"]:
+                if a in activities:
+                    viz.edge(activities[a], en_id, color=this_color)
+
+            for e in type["edges"]:
+                edge = type["edges"][e]
+                ev = edge["events"]
+                if ev >= min_edge_freq:
+                    if e[0] in activities and e[1] in activities:
+                        viz.edge(activities[e[0]], activities[e[1]], label="EC="+str(ev), color=this_color)
+
+    viz.format = image_format
+
+    return viz
+
+
+def apply_extensive(model, measure="frequency", freq="events", classifier="activity", projection="no", count_events=False, parameters=None):
     if parameters is None:
         parameters = {}
 

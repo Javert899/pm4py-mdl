@@ -1,7 +1,9 @@
-from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl
-from pm4py.objects.conversion.log import converter
 import math
 from statistics import mean
+
+from pm4py.objects.conversion.log import converter
+
+from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl
 
 
 def apply(df, parameters=None):
@@ -22,7 +24,8 @@ def get_stream_from_dataframe(df, parameters=None):
     if df_type == "succint":
         df = succint_mdl_to_exploded_mdl.apply(df)
 
-    columns = [x for x in df.columns if not x.startswith("event") or x == "event_activity" or x == "event_id" or x == "event_timestamp"]
+    columns = [x for x in df.columns if
+               not x.startswith("event") or x == "event_activity" or x == "event_id" or x == "event_timestamp"]
     df = df[columns]
 
     stream = converter.apply(df, variant=converter.Variants.TO_EVENT_STREAM)
@@ -46,6 +49,8 @@ def apply_stream(stream, parameters=None):
     eoe = {}
     ee = {}
     timestamps = {}
+    start_activities = dict()
+    end_activities = dict()
 
     for ev in stream:
         cl = [k for k in ev if not k.startswith("event_") and str(ev[k]) != "nan"][0]
@@ -58,6 +63,8 @@ def apply_stream(stream, parameters=None):
 
     for t in types_lifecycle:
         eot[t] = dict()
+        start_activities[t] = set()
+        end_activities[t] = set()
         objects_lifecycle = types_lifecycle[t]
         for o in objects_lifecycle:
             evs = objects_lifecycle[o]
@@ -65,6 +72,8 @@ def apply_stream(stream, parameters=None):
             while i < len(evs):
                 i1 = evs[i]["event_id"]
                 a1 = evs[i]["event_activity"]
+                if i == 0:
+                    start_activities[t].add(a1)
                 t1 = evs[i]["event_timestamp"].timestamp()
                 if a1 not in eo:
                     eo[a1] = set()
@@ -72,10 +81,10 @@ def apply_stream(stream, parameters=None):
                     eot[t][a1] = set()
                 eo[a1].add((i1, o))
                 eot[t][a1].add((i1, o))
-                if i < len(evs)-1:
-                    i2 = evs[i+1]["event_id"]
-                    a2 = evs[i+1]["event_activity"]
-                    t2 = evs[i+1]["event_timestamp"].timestamp()
+                if i < len(evs) - 1:
+                    i2 = evs[i + 1]["event_id"]
+                    a2 = evs[i + 1]["event_activity"]
+                    t2 = evs[i + 1]["event_timestamp"].timestamp()
                     if not (a1, t, a2) in eoe:
                         eoe[(a1, t, a2)] = set()
                         ee[(a1, t, a2)] = set()
@@ -85,8 +94,10 @@ def apply_stream(stream, parameters=None):
                         timestamps[(i1, o, i2)] = []
                     if not (i1, i2) in timestamps:
                         timestamps[(i1, i2)] = []
-                    timestamps[(i1, o, i2)].append(t2-t1)
-                    timestamps[(i1, i2)].append(t2-t1)
+                    timestamps[(i1, o, i2)].append(t2 - t1)
+                    timestamps[(i1, i2)].append(t2 - t1)
+                else:
+                    end_activities[t].add(a1)
                 i = i + 1
 
     for el in timestamps:
@@ -106,7 +117,8 @@ def apply_stream(stream, parameters=None):
     activities_mapping = {}
     activities_mapping_count = {}
     for t in types_lifecycle:
-        ret["types_view"][t] = {"edges": {}, "activities": {}}
+        ret["types_view"][t] = {"edges": {}, "activities": {}, "start_activities": start_activities[t],
+                                "end_activities": end_activities[t]}
         for act in eot[t]:
             values = eot[t][act]
             val_group = {x[0]: set() for x in values}
@@ -130,8 +142,8 @@ def apply_stream(stream, parameters=None):
             values_timestamp_ee = mean([timestamps[v] for v in values_ee])
             g_1_2 = group_1_2(values)
             g_1_3 = group_1_3(values)
-            g_1_2 = g_1_2[:math.ceil(len(g_1_2)*(1.0-noise_obj_number))]
-            g_1_3 = g_1_3[:math.ceil(len(g_1_3)*(1.0-noise_obj_number))]
+            g_1_2 = g_1_2[:math.ceil(len(g_1_2) * (1.0 - noise_obj_number))]
+            g_1_3 = g_1_3[:math.ceil(len(g_1_3) * (1.0 - noise_obj_number))]
             g_1_2_min = min(g_1_2)
             g_1_2_max = max(g_1_2)
             g_1_3_min = min(g_1_3)
@@ -140,21 +152,25 @@ def apply_stream(stream, parameters=None):
             ret["types_view"][t]["edges"][(a1, a2)]["events"] = {(x[0], x[2]) for x in values}
             ret["types_view"][t]["edges"][(a1, a2)]["objects"] = {x[1] for x in values}
             ret["types_view"][t]["edges"][(a1, a2)]["eo"] = values
-            ret["types_view"][t]["edges"][(a1, a2)]["support_entry"] = ret["types_view"][t]["activities"][a2]["objects"].intersection(ret["types_view"][t]["edges"][(a1, a2)]["objects"])
-            ret["types_view"][t]["edges"][(a1, a2)]["dev_entry"] = ret["types_view"][t]["activities"][a2]["objects"].difference(ret["types_view"][t]["edges"][(a1, a2)]["objects"])
-            ret["types_view"][t]["edges"][(a1, a2)]["support_exit"] = ret["types_view"][t]["activities"][a1]["objects"].intersection(ret["types_view"][t]["edges"][(a1, a2)]["objects"])
-            ret["types_view"][t]["edges"][(a1, a2)]["dev_exit"] = ret["types_view"][t]["activities"][a1]["objects"].difference(ret["types_view"][t]["edges"][(a1, a2)]["objects"])
+            ret["types_view"][t]["edges"][(a1, a2)]["support_entry"] = ret["types_view"][t]["activities"][a2][
+                "objects"].intersection(ret["types_view"][t]["edges"][(a1, a2)]["objects"])
+            ret["types_view"][t]["edges"][(a1, a2)]["dev_entry"] = ret["types_view"][t]["activities"][a2][
+                "objects"].difference(ret["types_view"][t]["edges"][(a1, a2)]["objects"])
+            ret["types_view"][t]["edges"][(a1, a2)]["support_exit"] = ret["types_view"][t]["activities"][a1][
+                "objects"].intersection(ret["types_view"][t]["edges"][(a1, a2)]["objects"])
+            ret["types_view"][t]["edges"][(a1, a2)]["dev_exit"] = ret["types_view"][t]["activities"][a1][
+                "objects"].difference(ret["types_view"][t]["edges"][(a1, a2)]["objects"])
             sen = len(ret["types_view"][t]["edges"][(a1, a2)]["support_entry"])
             den = len(ret["types_view"][t]["edges"][(a1, a2)]["dev_entry"])
             sex = len(ret["types_view"][t]["edges"][(a1, a2)]["support_exit"])
             dex = len(ret["types_view"][t]["edges"][(a1, a2)]["dev_exit"])
-            ret["types_view"][t]["edges"][(a1, a2)]["perc_entry"] = sen/(sen+den)
-            ret["types_view"][t]["edges"][(a1, a2)]["perc_exit"] = sex/(sex+dex)
-            if sen >= support and den/sen <= epsilon:
+            ret["types_view"][t]["edges"][(a1, a2)]["perc_entry"] = sen / (sen + den)
+            ret["types_view"][t]["edges"][(a1, a2)]["perc_exit"] = sex / (sex + dex)
+            if sen >= support and den / sen <= epsilon:
                 ret["types_view"][t]["edges"][(a1, a2)]["must_entry"] = True
             else:
                 ret["types_view"][t]["edges"][(a1, a2)]["must_entry"] = False
-            if sex >= support and dex/sex <= epsilon:
+            if sex >= support and dex / sex <= epsilon:
                 ret["types_view"][t]["edges"][(a1, a2)]["must_exit"] = True
             else:
                 ret["types_view"][t]["edges"][(a1, a2)]["must_exit"] = False
@@ -162,7 +178,8 @@ def apply_stream(stream, parameters=None):
             ret["types_view"][t]["edges"][(a1, a2)]["max_exit_obj"] = g_1_2_max
             ret["types_view"][t]["edges"][(a1, a2)]["min_entry_obj"] = g_1_3_min
             ret["types_view"][t]["edges"][(a1, a2)]["max_entry_obj"] = g_1_3_max
-            ret["types_view"][t]["edges"][(a1, a2)]["semantics"] = "EXI=%d..%d\nENT=%d..%d" % (g_1_2_min, g_1_2_max, g_1_3_min, g_1_3_max)
+            ret["types_view"][t]["edges"][(a1, a2)]["semantics"] = "EXI=%d..%d\nENT=%d..%d" % (
+            g_1_2_min, g_1_2_max, g_1_3_min, g_1_3_max)
             ret["types_view"][t]["edges"][(a1, a2)]["semantics_list"] = [[g_1_2_min, g_1_2_max], [g_1_3_min, g_1_3_max]]
             ret["types_view"][t]["edges"][(a1, a2)]["performance_events"] = values_timestamp_ee
             ret["types_view"][t]["edges"][(a1, a2)]["performance_eo"] = values_timestamp_eoe
