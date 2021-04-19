@@ -119,9 +119,9 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
                     target_eo = t["activities"][source]["eo"]
 
                     this_node = str(uuid.uuid4())
-                    viz.node(this_node, shape="none", fontsize="10", fontcolor=types_colors[tk], label="TO=%d,UO=%d,EC=%d" % (fr_eo, fr_obj, fr_ev))
-                    viz.edge(act_nodes[source], this_node, color=types_colors[tk], fontcolor=types_colors[tk], taillabel="%" + " = %.2f" % (float(fr_obj)/float(source_obj) * 100.0), fontsize="9", penwidth="4")
-                    viz.edge(this_node, act_nodes[target], color=types_colors[tk], fontcolor=types_colors[tk], headlabel="%" + " = %.2f" % (float(fr_obj)/float(target_obj) * 100.0), fontsize="9", penwidth="4")
+                    viz.node(this_node, shape="none", fontsize="15", fontcolor=types_colors[tk], label="TO=%d,UO=%d,EC=%d" % (fr_eo, fr_obj, fr_ev))
+                    viz.edge(act_nodes[source], this_node, color=types_colors[tk], fontcolor=types_colors[tk], taillabel="%" + " = %.2f" % (float(fr_obj)/float(source_obj) * 100.0), fontsize="13", penwidth="4")
+                    viz.edge(this_node, act_nodes[target], color=types_colors[tk], fontcolor=types_colors[tk], headlabel="%" + " = %.2f" % (float(fr_obj)/float(target_obj) * 100.0), fontsize="13", penwidth="4")
 
     """
     FONTSIZE_NODES = '26'

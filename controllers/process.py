@@ -410,6 +410,17 @@ class Process(object):
         tfilepath_name = "prova.svg"
         mdfg_vis_factory.save(gviz, tfilepath_name)
 
+        gviz2 = mdfg_vis_factory3.apply(model, measure=self.selected_decoration_measure,
+                                       freq=self.selected_aggregation_measure,
+                                       projection=self.selected_projection,
+                                       parameters={"format": "png", "min_act_freq": self.selected_min_acti_count,
+                                                   "min_edge_freq": self.selected_min_edge_freq_count})
+        tfilepath = tempfile.NamedTemporaryFile(suffix='.png')
+        tfilepath.close()
+        tfilepath_name = tfilepath.name
+        tfilepath_name = "prova.png"
+        mdfg_vis_factory.save(gviz2, tfilepath_name)
+
         self.model_view = base64.b64encode(open(tfilepath_name, "rb").read()).decode('utf-8')
 
     def get_new_visualization(self):
