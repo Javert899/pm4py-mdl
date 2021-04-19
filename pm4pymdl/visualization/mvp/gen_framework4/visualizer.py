@@ -117,8 +117,20 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
 
             viz.node(act_id, label=a+"\\nE="+str(ev), shape="box", style="filled", fillcolor=get_gray_tonality(ev, max_ev))
 
-    type_index = -1
+    types_ord = []
     for t in model["types_view"]:
+        type = model["types_view"][t]
+        tc = 0
+        for a in type["activities"]:
+            act = type["activities"][a]
+            tc += act["events"]
+        types_ord.append((t, tc))
+
+    types_ord = sorted(types_ord, key=lambda x: (x[1], x[0]), reverse=True)
+
+    type_index = -1
+    for ttc in types_ord:
+        t = ttc[0]
         type = model["types_view"][t]
         at_least_one_edge = False
         at_least_one_sa = False
