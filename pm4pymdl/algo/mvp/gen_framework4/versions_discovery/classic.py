@@ -4,6 +4,7 @@ from statistics import mean
 from pm4py.objects.conversion.log import converter
 
 from pm4pymdl.algo.mvp.utils import succint_mdl_to_exploded_mdl
+from collections import Counter
 
 
 def apply(df, parameters=None):
@@ -63,8 +64,8 @@ def apply_stream(stream, parameters=None):
 
     for t in types_lifecycle:
         eot[t] = dict()
-        start_activities[t] = set()
-        end_activities[t] = set()
+        start_activities[t] = Counter()
+        end_activities[t] = Counter()
         objects_lifecycle = types_lifecycle[t]
         for o in objects_lifecycle:
             evs = objects_lifecycle[o]
@@ -73,7 +74,7 @@ def apply_stream(stream, parameters=None):
                 i1 = evs[i]["event_id"]
                 a1 = evs[i]["event_activity"]
                 if i == 0:
-                    start_activities[t].add(a1)
+                    start_activities[t][a1] += 1
                 t1 = evs[i]["event_timestamp"].timestamp()
                 if a1 not in eo:
                     eo[a1] = set()
@@ -97,7 +98,7 @@ def apply_stream(stream, parameters=None):
                     timestamps[(i1, o, i2)].append(t2 - t1)
                     timestamps[(i1, i2)].append(t2 - t1)
                 else:
-                    end_activities[t].add(a1)
+                    end_activities[t][a1] += 1
                 i = i + 1
 
     for el in timestamps:
@@ -117,8 +118,8 @@ def apply_stream(stream, parameters=None):
     activities_mapping = {}
     activities_mapping_count = {}
     for t in types_lifecycle:
-        ret["types_view"][t] = {"edges": {}, "activities": {}, "start_activities": start_activities[t],
-                                "end_activities": end_activities[t]}
+        ret["types_view"][t] = {"edges": {}, "activities": {}, "start_activities": dict(start_activities[t]),
+                                "end_activities": dict(end_activities[t])}
         for act in eot[t]:
             values = eot[t][act]
             val_group = {x[0]: set() for x in values}

@@ -84,6 +84,12 @@ def get_gray_tonality(ev, max_ev):
     return "#" + n1 + n2 + n1 + n2 + n1 + n2
 
 
+def get_penwidth(ev, max_ev):
+    inte = math.floor(11.0 * ev / (max_ev + 0.000001)) + 1
+
+    return str(inte)
+
+
 def apply(model, measure="frequency", freq="events", classifier="activity", projection="no", count_events=False, parameters=None):
     if parameters is None:
         parameters = {}
@@ -117,6 +123,7 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
         at_least_one_edge = False
         at_least_one_sa = False
         at_least_one_ea = False
+        max_edge = 0
 
         for e in type["edges"]:
             edge = type["edges"][e]
@@ -125,16 +132,19 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
             if ev >= min_edge_freq:
                 if e[0] in activities and e[1] in activities:
                     at_least_one_edge = True
+                    max_edge = max(max_edge, ev)
                     break
 
         for a in type["start_activities"]:
             if a in activities:
                 at_least_one_sa = True
+                max_edge = max(max_edge, type["start_activities"][a])
                 break
 
         for a in type["end_activities"]:
             if a in activities:
                 at_least_one_ea = True
+                max_edge = max(max_edge, type["end_activities"][a])
                 break
 
         if at_least_one_edge and at_least_one_sa and at_least_one_ea:
@@ -142,23 +152,25 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
             this_color = COLORS[type_index % len(COLORS)]
             sn_id = str(uuid.uuid4())
             en_id = str(uuid.uuid4())
-            viz.node(sn_id, t, style="filled", fillcolor=this_color)
-            viz.node(en_id, t, style="filled", fillcolor=this_color)
+            viz.node(sn_id, t, fontcolor=this_color, shape="underline")
+            viz.node(en_id, t, fontcolor=this_color, shape="none")
 
             for a in type["start_activities"]:
                 if a in activities:
-                    viz.edge(sn_id, activities[a], color=this_color)
+                    nsa = type["start_activities"][a]
+                    viz.edge(sn_id, activities[a], color=this_color, fontcolor=this_color, penwidth=get_penwidth(nsa, max_ev), style="dashed")
 
             for a in type["end_activities"]:
                 if a in activities:
-                    viz.edge(activities[a], en_id, color=this_color)
+                    nea = type["end_activities"][a]
+                    viz.edge(activities[a], en_id, color=this_color, fontcolor=this_color, penwidth=get_penwidth(nea, max_ev), style="dashed")
 
             for e in type["edges"]:
                 edge = type["edges"][e]
                 ev = edge["events"]
                 if ev >= min_edge_freq:
                     if e[0] in activities and e[1] in activities:
-                        viz.edge(activities[e[0]], activities[e[1]], label="EC="+str(ev), color=this_color)
+                        viz.edge(activities[e[0]], activities[e[1]], label="EC="+str(ev), color=this_color, fontcolor=this_color, penwidth=get_penwidth(ev, max_ev))
 
     viz.format = image_format
 
