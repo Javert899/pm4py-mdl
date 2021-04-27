@@ -98,14 +98,28 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
     viz = Digraph("pt", filename=filename.name, engine='dot', graph_attr={'bgcolor': 'transparent'})
     image_format = parameters["format"] if "format" in parameters else "png"
 
-    min_act_freq = parameters["min_act_freq"] if "min_act_freq" in parameters else 2500
-    min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 0
-    min_ot_freq = parameters["min_ot_freq"] if "min_ot_freq" in parameters else 5000
+    min_act_freq = parameters["min_act_freq"] if "min_act_freq" in parameters else 50
+    min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 50
+    min_ot_freq = parameters["min_ot_freq"] if "min_ot_freq" in parameters else 50
+
+    detail_nodes = parameters["detail_nodes"] if "detail_nodes" in parameters else []
+    detail_edges = parameters["detail_edges"] if "detail_edges" in parameters else []
 
     max_ev = 0
     for a in model["activities"]:
         act = model["activities"][a]
         max_ev = max(max_ev, act["events"])
+
+    types_ord = []
+    for t in model["types_view"]:
+        type = model["types_view"][t]
+        tc = 0
+        for a in type["activities"]:
+            act = type["activities"][a]
+            tc += act["events"]
+        types_ord.append((t, tc))
+
+    types_ord = sorted(types_ord, key=lambda x: (x[1], x[0]), reverse=True)
 
     activities = {}
     for a in model["activities"]:
@@ -118,17 +132,23 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
 
             viz.node(act_id, label=a+"\\nE="+str(ev), shape="box", style="filled", fillcolor=get_gray_tonality(ev, max_ev))
 
-    types_ord = []
-    for t in model["types_view"]:
-        type = model["types_view"][t]
-        tc = 0
-        for a in type["activities"]:
-            act = type["activities"][a]
-            tc += act["events"]
-        types_ord.append((t, tc))
+            """for ttc in types_ord:
+                t = ttc[0]
+                if (a, t) in detail_nodes:
+                    detail_info = model["types_view"][t]["activities"][a]
+                    detail_id = str(uuid.uuid4())
+                    label = ""
+                    label += a + " ("
+                    label += t
+                    label += ")\n\n"
+                    label += "events = %d\n" % (detail_info["events"])
+                    label += "unique objects = %d\n" % (detail_info["objects"])
+                    label += "total objects = %d\n" % (detail_info["eo"])
+                    label += "min. number of related objects = %d\n" % (detail_info["min_obj"])
+                    label += "max. number of related objects = %d\n" % (detail_info["max_obj"])
 
-    types_ord = sorted(types_ord, key=lambda x: (x[1], x[0]), reverse=True)
-    print(types_ord)
+                    viz.node(detail_id, label=label, shape="ellipse")
+                    viz.edge(detail_id, act_id)"""
 
     type_index = -1
     for ttc in types_ord:
@@ -182,6 +202,23 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
                     nea = type["end_activities"][a]
                     if nea >= min_edge_freq:
                         viz.edge(activities[a], en_id, color=this_color, fontcolor=this_color, penwidth=get_penwidth(nea, max_ev), style="dashed")
+
+            for a in type["activities"]:
+                if (a, t) in detail_nodes:
+                    detail_info = model["types_view"][t]["activities"][a]
+                    detail_id = str(uuid.uuid4())
+                    label = ""
+                    label += a + " ("
+                    label += t
+                    label += ")\n\n"
+                    label += "events = %d\n" % (detail_info["events"])
+                    label += "unique objects = %d\n" % (detail_info["objects"])
+                    label += "total objects = %d\n" % (detail_info["eo"])
+                    label += "min. number of related objects = %d\n" % (detail_info["min_obj"])
+                    label += "max. number of related objects = %d\n" % (detail_info["max_obj"])
+
+                    viz.node(detail_id, label=label, shape="ellipse", style="filled", fillcolor=this_color)
+                    viz.edge(detail_id, activities[a], color=this_color, arrowhead="diamond")
 
             for e in type["edges"]:
                 edge = type["edges"][e]
