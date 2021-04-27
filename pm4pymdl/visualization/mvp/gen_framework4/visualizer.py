@@ -6,7 +6,7 @@ import uuid
 import math
 
 
-COLORS = ["#05B202", "#A13CCD", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#306A8A", "#678225", "#2742FE", "#4C9A75",
+COLORS = ["#A13CCD", "#05B202", "#39F6C0", "#BA0D39", "#E90638", "#07B423", "#306A8A", "#678225", "#2742FE", "#4C9A75",
           "#4C36E9", "#7DB022", "#EDAC54", "#EAC439", "#EAC439", "#1A9C45", "#8A51C4", "#496A63", "#FB9543", "#2B49DD",
           "#13ADA5", "#2DD8C1", "#2E53D7", "#EF9B77", "#06924F", "#AC2C4D", "#82193F", "#0140D3"]
 
@@ -98,8 +98,9 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
     viz = Digraph("pt", filename=filename.name, engine='dot', graph_attr={'bgcolor': 'transparent'})
     image_format = parameters["format"] if "format" in parameters else "png"
 
-    min_act_freq = parameters["min_act_freq"] if "min_act_freq" in parameters else 5000
-    min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 1000
+    min_act_freq = parameters["min_act_freq"] if "min_act_freq" in parameters else 2500
+    min_edge_freq = parameters["min_edge_freq"] if "min_edge_freq" in parameters else 0
+    min_ot_freq = parameters["min_ot_freq"] if "min_ot_freq" in parameters else 5000
 
     max_ev = 0
     for a in model["activities"]:
@@ -127,9 +128,12 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
         types_ord.append((t, tc))
 
     types_ord = sorted(types_ord, key=lambda x: (x[1], x[0]), reverse=True)
+    print(types_ord)
 
     type_index = -1
     for ttc in types_ord:
+        if ttc[1] < min_ot_freq:
+            break
         t = ttc[0]
         type = model["types_view"][t]
         at_least_one_edge = False
@@ -159,7 +163,7 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
                 max_edge = max(max_edge, type["end_activities"][a])
                 break
 
-        if at_least_one_edge and at_least_one_sa and at_least_one_ea:
+        if at_least_one_sa and at_least_one_ea:
             type_index = type_index + 1
             this_color = COLORS[type_index % len(COLORS)]
             sn_id = str(uuid.uuid4())
@@ -170,12 +174,14 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
             for a in type["start_activities"]:
                 if a in activities:
                     nsa = type["start_activities"][a]
-                    viz.edge(sn_id, activities[a], color=this_color, fontcolor=this_color, penwidth=get_penwidth(nsa, max_ev), style="dashed")
+                    if nsa >= min_edge_freq:
+                        viz.edge(sn_id, activities[a], color=this_color, fontcolor=this_color, penwidth=get_penwidth(nsa, max_ev), style="dashed")
 
             for a in type["end_activities"]:
                 if a in activities:
                     nea = type["end_activities"][a]
-                    viz.edge(activities[a], en_id, color=this_color, fontcolor=this_color, penwidth=get_penwidth(nea, max_ev), style="dashed")
+                    if nea >= min_edge_freq:
+                        viz.edge(activities[a], en_id, color=this_color, fontcolor=this_color, penwidth=get_penwidth(nea, max_ev), style="dashed")
 
             for e in type["edges"]:
                 edge = type["edges"][e]
@@ -189,7 +195,7 @@ def apply(model, measure="frequency", freq="events", classifier="activity", proj
     return viz
 
 
-def apply_extensive(model, measure="frequency", freq="events", classifier="activity", projection="no", count_events=False, parameters=None):
+def apply_complete(model, measure="frequency", freq="events", classifier="activity", projection="no", count_events=False, parameters=None):
     if parameters is None:
         parameters = {}
 
@@ -242,7 +248,20 @@ def apply_extensive(model, measure="frequency", freq="events", classifier="activ
 
                     viz.edge(this_node, act_nodes[act], color=types_colors[tk], arrowhead="none")
 
-    for index, tk in enumerate(types_keys):
+    types_ord = []
+    for t in model["types_view"]:
+        type = model["types_view"][t]
+        tc = 0
+        for a in type["activities"]:
+            act = type["activities"][a]
+            tc += act["events"]
+        types_ord.append((t, tc))
+
+    types_ord = sorted(types_ord, key=lambda x: (x[1], x[0]), reverse=True)
+
+    index = 0
+    for tkk in types_ord:
+        tk = tkk[0]
         t = model["types_view"][tk]
         edges = sorted(list(t["edges"]))
         for edge in edges:
@@ -270,6 +289,7 @@ def apply_extensive(model, measure="frequency", freq="events", classifier="activ
                     viz.edge(act_nodes[source], this_node, color=types_colors[tk], fontcolor=types_colors[tk], taillabel="%" + " = %.2f" % (float(fr_obj)/float(source_obj) * 100.0), fontsize="13", penwidth="4")
                     viz.edge(this_node, act_nodes[target], color=types_colors[tk], fontcolor=types_colors[tk], headlabel="%" + " = %.2f" % (float(fr_obj)/float(target_obj) * 100.0), fontsize="13", penwidth="4")
 
+        index += 1
     """
     FONTSIZE_NODES = '26'
     FONTSIZE_EDGES = '26'
