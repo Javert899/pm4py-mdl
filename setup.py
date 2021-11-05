@@ -48,8 +48,8 @@ setup(
     url='http://www.pm4py.org',
     license='MIT',
     install_requires=[
-        "pm4py>=2.2.2",
-        "pyarrow==2.0.0",
+        "pm4py>=2.2.15",
+        "pyarrow",
         "Flask",
         "flask-cors",
         "setuptools",
